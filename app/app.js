@@ -271,6 +271,7 @@
 
   /* ================= 题面渲染 ================= */
   function samplesHtml(p) {
+    if ((p.id || '').indexOf('V-') === 0) return '<div class="muted small">代码分析题：请先独立推导指定输入的输出，再展开参考答案核对。</div>';
     var ss = p.samples || [];
     if (!ss.length) return '';
     return '<div class="samples">' + ss.map(function (s, i) {
@@ -380,7 +381,7 @@
         ['#/library/pointer', '指针与动态内存', '地址与解引用、指针作参数、指针数组、malloc/free'],
         ['#/library/struct', '结构体与「类」的设计', '结构体数组与指针、多关键字排序、封装与信息管理系统'],
         ['#/library/algo', '算法综合', '排序、二分变式、递推、最大子段和、日期与进制'],
-        ['#/exams', '全真模拟', '6 套期末卷 × 6 题 × 120 分钟，按考试节奏完整练一遍']
+        ['#/exams', '期末模拟', '10 套期末卷 × 6 题 × 120 分钟，含四套新增仿真卷']
       ].map(function (x, i) {
         return '<li data-nav-href="' + x[0] + '"><b>' + x[1] + '</b><span>' + x[2] + '</span></li>';
       }).join('') + '</ul></div>' +
@@ -487,7 +488,7 @@
   }
   function viewExams() {
     var intro = '<div class="card" style="padding:16px 20px;margin-bottom:16px;background:var(--panel-2)">' +
-      '<b>模拟考试说明</b><div class="muted small" style="margin-top:4px">「期末全真卷」每套 6 题、限时 120 分钟，题型与北邮计导期末机考一致（5–7 题、覆盖函数/字符串/指针/结构体/算法）；「期中范围热身卷」每套 5 题、限时 90 分钟，用于找回手感。点开始后计时，交卷后显示参考答案；作答自动保存，可随时退出再继续。</div></div>';
+      '<b>模拟考试说明</b><div class="muted small" style="margin-top:4px">期末卷每套 6 题、限时 120 分钟，按本地课程资料覆盖函数、字符串、指针、结构体与算法。FM7–FM10为新增仿真卷，每卷100分；练习卷不代表学校真实命题。「期中范围热身卷」每套 5 题、限时 90 分钟。点开始后计时，交卷后显示参考答案；作答自动保存，可随时退出再继续。</div></div>';
     var fm = EXAMS.filter(function (e) { return /^FM/.test(e.id || ''); });
     var warm = EXAMS.filter(function (e) { return !/^FM/.test(e.id || ''); });
     var blocks = '';
