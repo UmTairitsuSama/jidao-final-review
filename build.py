@@ -16,7 +16,10 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = os.path.dirname(os.path.abspath(__file__))
-CATS = {"basic", "select", "loop", "array1", "array2", "mix"}
+CATS = {"basic", "select", "loop", "array1", "array2", "mix",
+        "string", "func", "pointer", "struct", "algo"}
+CAT_ORDER = ["basic", "select", "loop", "array1", "array2", "mix",
+             "string", "func", "pointer", "struct", "algo"]
 REQ = ["id", "cat", "title", "difficulty", "tags", "source", "desc", "samples", "hint", "solution"]
 
 
@@ -60,14 +63,14 @@ def check_problems(problems, where):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--content", default=os.path.join(ROOT, "content"))
-    ap.add_argument("--out", default=os.path.join(ROOT, "计导期中复习.html"))
+    ap.add_argument("--out", default=os.path.join(ROOT, "计导期末复习.html"))
     args = ap.parse_args()
 
     files = sorted(glob.glob(os.path.join(args.content, "*.json")))
     if not files:
         print("[FATAL] content/ 下没有 JSON 文件")
         return 2
-    problems, exams, sections = [], [], []
+    problems, exams, sections, guide = [], [], [], []
     for f in files:
         data = load_json(f)
         name = os.path.basename(f)
@@ -76,9 +79,11 @@ def main():
         elif "exams" in data:
             exams.extend(data["exams"])
         elif "sections" in data:
-            sections = data["sections"]
+            sections.extend(data["sections"])
+        elif "guide" in data:
+            guide.extend((data.get("guide") or {}).get("sections") or [])
         else:
-            print(f"[FATAL] {name}: 顶层缺少 problems/exams/sections")
+            print(f"[FATAL] {name}: 顶层缺少 problems/exams/sections/guide")
             return 2
 
     errors, warnings = check_problems(problems, "题库")
@@ -86,8 +91,8 @@ def main():
     for e in exams:
         eid = e.get("id", "<无id>")
         ps = e.get("problems") or []
-        if len(ps) != 5:
-            errors.append(f"卷 {eid}: 必须正好 5 题，当前 {len(ps)}")
+        if not 3 <= len(ps) <= 10:
+            errors.append(f"卷 {eid}: 题数必须 3–10，当前 {len(ps)}")
         for i, q in enumerate(ps, 1):
             q["_exam"] = eid
             q["_examTitle"] = e.get("title", eid)
@@ -99,8 +104,8 @@ def main():
             errors.append(f"卷 {eid}: duration 必须是整数")
         if not e.get("title"):
             errors.append(f"卷 {eid}: 缺少 title")
-    if len(exams) != 6:
-        warnings.append(f"模拟卷数量为 {len(exams)}（预期 6）")
+    if len(exams) < 6:
+        warnings.append(f"模拟卷数量为 {len(exams)}（预期 ≥ 6）")
 
     allp = problems + exam_problems
     ids = {}
@@ -116,6 +121,9 @@ def main():
             errors.append("速查手册：每节必须有 title 与 body")
     if not sections:
         warnings.append("速查手册为空")
+    for s in guide:
+        if not s.get("title") or not s.get("body"):
+            errors.append("知识精讲：每节必须有 title 与 body")
 
     # 统计
     by_cat = {}
@@ -139,6 +147,7 @@ def main():
         "problems": problems,
         "exams": exams,
         "cheatsheet": {"sections": sections},
+        "guide": {"sections": guide},
     }
     data_js = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     template = open(os.path.join(ROOT, "app", "template.html"), encoding="utf-8").read()
@@ -152,8 +161,8 @@ def main():
         f.write(html)
     size = os.path.getsize(args.out) / 1024
     print(f"[OK] 已生成 {args.out}  ({size:.0f} KB)")
-    print(f"     精选题 {len(problems)} 道 / 模拟卷 {len(exams)} 套 / 卷内题 {len(exam_problems)} 道 / 速查 {len(sections)} 节")
-    print("     分类:", {k: by_cat.get(k, 0) for k in ["basic", "select", "loop", "array1", "array2", "mix"]})
+    print(f"     精选题 {len(problems)} 道 / 模拟卷 {len(exams)} 套 / 卷内题 {len(exam_problems)} 道 / 速查 {len(sections)} 节 / 精讲 {len(guide)} 节")
+    print("     分类:", {k: by_cat.get(k, 0) for k in CAT_ORDER})
     return 0
 
 

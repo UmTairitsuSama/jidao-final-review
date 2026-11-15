@@ -19,7 +19,8 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GCC = os.environ.get("GCC", "gcc")
-CATS = {"basic", "select", "loop", "array1", "array2", "mix"}
+CATS = {"basic", "select", "loop", "array1", "array2", "mix",
+        "string", "func", "pointer", "struct", "algo"}
 REQUIRED = ["id", "cat", "title", "difficulty", "tags", "source", "desc",
             "samples", "hint", "solution"]
 COMPILE_TIMEOUT = 60
@@ -54,8 +55,11 @@ def collect(paths):
                     problems.append(q)
         if isinstance(data, dict) and "sections" in data:
             print(f"[INFO] {p}: 速查手册 {len(data['sections'])} 节，跳过题目校验")
-        if not isinstance(data, dict) or not ({"problems", "exams", "sections"} & set(data)):
-            print(f"[FATAL] {p}: 顶层缺少 problems/exams/sections")
+        if isinstance(data, dict) and "guide" in data:
+            gs = (data.get("guide") or {}).get("sections") or []
+            print(f"[INFO] {p}: 知识精讲 {len(gs)} 节，跳过题目校验")
+        if not isinstance(data, dict) or not ({"problems", "exams", "sections", "guide"} & set(data)):
+            print(f"[FATAL] {p}: 顶层缺少 problems/exams/sections/guide")
             raise SystemExit(2)
     return problems
 

@@ -358,3 +358,23 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .practice-toolbar .muted{display:none}.home-categories{grid-template-columns:1fr}
 .problem-summary{gap:8px}.problem-summary .stars{display:none}
 }
+
+/* ============ 期末新增：分组 / 精讲 ============ */
+.cat-group{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);margin:14px 0 3px;padding-left:10px}
+.cat-group:first-of-type{margin-top:8px}
+.guide-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media(max-width:900px){.guide-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.guide-mini-grid{grid-template-columns:1fr}}
+.guide-mini{display:flex;align-items:center;gap:8px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.guide-mini:hover{border-color:var(--line-strong);background:var(--panel-2);text-decoration:none}
+.guide-mini b{font-size:13.5px;font-weight:600;color:var(--text)}
+.guide-mini>span{font-size:11.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.guide-mini i.pill{font-style:normal;flex:none}
+.guide-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.guide-head h3{margin:0 0 8px}
+.guide-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
+.guide-links .tag{font-size:12px;padding:4px 10px;color:var(--accent-text);background:var(--accent-weak);border-color:transparent}
+.guide-links .tag:hover{text-decoration:none;filter:brightness(.97)}
+.sheet-nav button{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sheet-nav button>span{min-width:0}
+.sheet-nav button i.pill{font-style:normal;flex:none;font-size:10.5px;padding:0 7px;line-height:1.6}

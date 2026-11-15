@@ -1,0 +1,432 @@
+{
+  "problems": [
+    {
+      "id": "P01",
+      "cat": "pointer",
+      "title": "首尾互换",
+      "difficulty": 1,
+      "tags": [
+        "指针",
+        "函数参数",
+        "数组"
+      ],
+      "source": "新编（指针实现交换）",
+      "desc": "### 题目描述\n\n请编写函数 `void swap(int *pa, int *pb)`，通过指针交换两个整型变量的值（函数体内只能用 `*pa`、`*pb` 读写）。\n\n主函数读入 n 个整数存入数组，然后调用 `swap` 把数组的**第一个**元素与**最后一个**元素交换，再输出整个数组。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 100）。\n\n第二行 n 个用空格分隔的整数，每个整数的绝对值不超过 10^9。\n\n### 输出格式\n\n一行，输出交换后的 n 个整数，数字之间用一个空格分隔，行末无多余空格。\n\n### 样例说明\n\n样例中首元素 1 与末元素 5 交换，中间元素不变，所以输出 `5 2 3 4 1`。",
+      "samples": [
+        {
+          "in": "5\n1 2 3 4 5\n",
+          "out": "5 2 3 4 1\n"
+        },
+        {
+          "in": "1\n7\n",
+          "out": "7\n"
+        }
+      ],
+      "hint": "`swap` 的形参是指针，函数内用 `*pa` / `*pb` 读写所指变量；调用时传地址 `&a[i]`。",
+      "pitfalls": "写成 `swap(a[0], a[n-1])` 是值传递，交换无效；n = 1 时首尾是同一个元素，交换前后不变。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nvoid swap(int *pa, int *pb)\n{\n    int t = *pa;\n    *pa = *pb;\n    *pb = t;\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    swap(&a[0], &a[n - 1]);\n\n    for (i = 0; i < n; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n"
+    },
+    {
+      "id": "P02",
+      "cat": "pointer",
+      "title": "指针扫描找最值",
+      "difficulty": 1,
+      "tags": [
+        "指针",
+        "数组遍历",
+        "最值"
+      ],
+      "source": "新编（指针遍历数组）",
+      "desc": "### 题目描述\n\n要求用**指针**遍历数组（形如 `for (p = a; p < a + n; p++)`，不要写 `a[i]`），找出最大元素以及它**第一次**出现的位置（下标从 0 开始）。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 100）。\n\n第二行 n 个用空格分隔的整数，每个整数的绝对值不超过 10^9。\n\n### 输出格式\n\n一行两个整数：最大值、它第一次出现的下标，两数之间用一个空格分隔。\n\n### 样例说明\n\n样例中最大值是 7，第一次出现在下标 3（下标 4 处的 7 不算），所以输出 `7 3`。",
+      "samples": [
+        {
+          "in": "6\n-3 -9 -3 7 7 2\n",
+          "out": "7 3\n"
+        },
+        {
+          "in": "4\n-5 -2 -8 -1\n",
+          "out": "-1 3\n"
+        }
+      ],
+      "hint": "用 `best` 记录当前最大元素所在地址，遇到更大值就 `best = p`；下标用 `best - a` 算出。",
+      "pitfalls": "比较要用 `>` 而不是 `>=`，否则记录的是最后一次出现；最大值初值取 `*a`，全负数时写 `0` 会错。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int *p, *best;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    best = a;\n    for (p = a + 1; p < a + n; p++) {\n        if (*p > *best)\n            best = p;\n    }\n\n    printf(\"%d %d\\n\", *best, (int)(best - a));\n    return 0;\n}\n"
+    },
+    {
+      "id": "P03",
+      "cat": "pointer",
+      "title": "平均分与超标人数",
+      "difficulty": 2,
+      "tags": [
+        "指针",
+        "数组遍历",
+        "平均值"
+      ],
+      "source": "新编（指针遍历统计）",
+      "desc": "### 题目描述\n\n某班 n 名同学的期中成绩存成一个数组。请用指针遍历数组，输出平均分（保留 2 位小数）和高于平均分的同学人数（严格大于平均分才算）。\n\n要求数组元素的读写都用指针完成。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 100）。\n\n第二行 n 个用空格分隔的整数，每个整数的绝对值不超过 10^6（成绩数据按整数给出，允许为负）。\n\n### 输出格式\n\n第一行：平均分，保留 2 位小数。\n\n第二行：严格高于平均分的人数。\n\n### 样例说明\n\n样例平均分为 (1+2+3+4+5)/5 = 3.00，比 3.00 大的有 4、5 两人，所以第二行输出 2。",
+      "samples": [
+        {
+          "in": "5\n1 2 3 4 5\n",
+          "out": "3.00\n2\n"
+        },
+        {
+          "in": "3\n-2 -2 -2\n",
+          "out": "-2.00\n0\n"
+        }
+      ],
+      "hint": "先遍历一遍把和累加进 `double`，求出平均分；再遍历一遍统计 `*p > avg` 的个数。",
+      "pitfalls": "平均分要用浮点类型保存，`sum / n` 两个整数相除会被截断；判断要用 `>` 不能用 `>=`。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i, cnt = 0;\n    int a[MAXN];\n    int *p;\n    double sum = 0.0, avg;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    for (p = a; p < a + n; p++)\n        sum += *p;\n    avg = sum / n;\n\n    for (p = a; p < a + n; p++) {\n        if ((double)*p > avg)\n            cnt++;\n    }\n\n    printf(\"%.2f\\n\", avg);\n    printf(\"%d\\n\", cnt);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P04",
+      "cat": "pointer",
+      "title": "一次返回四个统计量",
+      "difficulty": 2,
+      "tags": [
+        "指针",
+        "输出参数",
+        "函数设计"
+      ],
+      "source": "新编（指针作输出参数）",
+      "desc": "### 题目描述\n\nC 语言的函数只能 `return` 一个值，但可以把结果写进**指针参数指向的变量**，从而一次返回多个结果。\n\n请实现函数\n\n`void analyze(const int *a, int n, int *psum, int *pmax, int *pmin, int *ppos);`\n\n它接收长度为 n 的整型数组（`const int *` 表示不修改原数组），把和、最大值、最小值、正数个数分别写入 `*psum`、`*pmax`、`*pmin`、`*ppos`（正数指严格大于 0 的元素）。\n\n主函数读入 n 与 n 个整数，调用 `analyze` 后按 `和 最大值 最小值 正数个数` 的顺序输出。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 100）。\n\n第二行 n 个用空格分隔的整数，每个整数的绝对值不超过 10^6（数据保证它们的和不会超出 `int` 的范围）。\n\n### 输出格式\n\n一行四个整数，依次为和、最大值、最小值、正数个数，相邻两个数之间用一个空格分隔。\n\n### 样例说明\n\n样例数组为 4 -2 9 9 0：和为 20，最大值 9，最小值 -2，正数有 4、9、9 共 3 个。",
+      "samples": [
+        {
+          "in": "5\n4 -2 9 9 0\n",
+          "out": "20 9 -2 3\n"
+        },
+        {
+          "in": "4\n-1 -2 -3 -4\n",
+          "out": "-10 -1 -4 0\n"
+        }
+      ],
+      "hint": "最大值、最小值的初值都用 `*a`；循环里 `*psum += *p;`，不要忘记 `(*ppos)++` 的括号。",
+      "pitfalls": "`*ppos++` 是「先把指针地址加 1」，必须写 `(*ppos)++`；最大值初值写成 0 时全负数用例会出错。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nvoid analyze(const int *a, int n, int *psum, int *pmax, int *pmin, int *ppos)\n{\n    const int *p;\n\n    *psum = 0;\n    *ppos = 0;\n    *pmax = *a;\n    *pmin = *a;\n\n    for (p = a; p < a + n; p++) {\n        *psum += *p;\n        if (*p > *pmax)\n            *pmax = *p;\n        if (*p < *pmin)\n            *pmin = *p;\n        if (*p > 0)\n            (*ppos)++;\n    }\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int sum, maxv, minv, pos;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    analyze(a, n, &sum, &maxv, &minv, &pos);\n\n    printf(\"%d %d %d %d\\n\", sum, maxv, minv, pos);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P05",
+      "cat": "pointer",
+      "title": "手写 strlen 与 strcpy",
+      "difficulty": 2,
+      "tags": [
+        "指针",
+        "字符串",
+        "字符统计"
+      ],
+      "source": "新编（指针遍历字符串）",
+      "desc": "### 题目描述\n\n不许调用 `<string.h>`，自己用指针实现下面两个函数：\n\n- `int my_strlen(const char *s)`：让指针一路走到 `'\\0'` 为止，返回字符个数；\n- `void my_strcpy(char *dst, const char *src)`：用指针把 `src`（连结尾的 `'\\0'` 一起）复制到 `dst`。\n\n主函数读入一个字符串，复制一份，然后用指针统计其中大写字母、小写字母、数字的个数，最后输出长度、复制结果和这三项统计。\n\n### 输入格式\n\n一行，一个不含空白字符的字符串，长度不超过 100。\n\n### 输出格式\n\n第一行：字符串长度（整数）。\n\n第二行：复制后的字符串（应与输入完全相同）。\n\n第三行：大写字母个数、小写字母个数、数字个数，三个整数用一个空格分隔。\n\n### 样例说明\n\n`Code2026Pt` 长度为 10；大写字母 C、P 共 2 个，小写字母 o、d、e、t 共 4 个，数字 2、0、2、6 共 4 个。",
+      "samples": [
+        {
+          "in": "Code2026Pt\n",
+          "out": "10\nCode2026Pt\n2 4 4\n"
+        },
+        {
+          "in": "abcdef\n",
+          "out": "6\nabcdef\n0 6 0\n"
+        }
+      ],
+      "hint": "`my_strlen` 里让 `p` 从 `s` 走到 `'\\0'`，返回 `p - s`；`my_strcpy` 循环结束后要补写 `*dst = '\\0'`。",
+      "pitfalls": "复制循环退出时没有给目标串补 `'\\0'`，输出会越界读到垃圾字符；`isupper` 等函数的参数要转成 `unsigned char`。",
+      "solution": "#include <stdio.h>\n#include <ctype.h>\n\n#define MAXLEN 105\n\nint my_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n    return (int)(p - s);\n}\n\nvoid my_strcpy(char *dst, const char *src)\n{\n    while (*src != '\\0') {\n        *dst = *src;\n        dst++;\n        src++;\n    }\n    *dst = '\\0';\n}\n\nint main(void)\n{\n    char s[MAXLEN];\n    char copy[MAXLEN];\n    const char *p;\n    int upper = 0, lower = 0, digit = 0;\n\n    if (scanf(\"%100s\", s) != 1)\n        return 0;\n\n    my_strcpy(copy, s);\n\n    for (p = s; *p != '\\0'; p++) {\n        if (isupper((unsigned char)*p))\n            upper++;\n        else if (islower((unsigned char)*p))\n            lower++;\n        else if (isdigit((unsigned char)*p))\n            digit++;\n    }\n\n    printf(\"%d\\n\", my_strlen(s));\n    printf(\"%s\\n\", copy);\n    printf(\"%d %d %d\\n\", upper, lower, digit);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P06",
+      "cat": "pointer",
+      "title": "手写 strcmp 比较字符串",
+      "difficulty": 2,
+      "tags": [
+        "指针",
+        "字符串比较",
+        "字典序"
+      ],
+      "source": "新编（指针遍历字符串）",
+      "desc": "### 题目描述\n\n不许调用 `<string.h>`，用指针实现函数\n\n`int my_strcmp(const char *s1, const char *s2);`\n\n两个指针同时向前走，直到遇到不同字符或字符串结束：若完全相同返回 0；若 `s1` 在第一个不同位置上的字符更小返回 -1，否则返回 1（按字符编码值比较）。\n\n主函数还要用指针求出两个字符串**第一个不同字符**的位置（下标从 0 开始）；若两串完全相同，该位置输出 -1。\n\n### 输入格式\n\n共两行，每行一个不含空白字符的字符串，长度不超过 100。\n\n### 输出格式\n\n第一行：`my_strcmp` 的返回值（-1、0 或 1）。\n\n第二行：第一个不同字符的下标；两串相同则输出 -1。\n\n### 样例说明\n\n`apple` 与 `apply` 前 4 个字符相同，下标 4 处 'e' < 'y'，所以第一行输出 -1，第二行输出 4。",
+      "samples": [
+        {
+          "in": "apple\napply\n",
+          "out": "-1\n4\n"
+        },
+        {
+          "in": "abc\nabc\n",
+          "out": "0\n-1\n"
+        },
+        {
+          "in": "abc\nab\n",
+          "out": "1\n2\n"
+        }
+      ],
+      "hint": "比较循环的继续条件是 `*p != '\\0' && *p == *q`；循环结束后再判断 `*p == *q` 说明两串相等。",
+      "pitfalls": "「abc」与「ab」比较时，短串先遇到 `'\\0'`，要按编码值判断短串更小，不能漏掉这个分支。",
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 105\n\nint my_strcmp(const char *s1, const char *s2)\n{\n    const unsigned char *p = (const unsigned char *)s1;\n    const unsigned char *q = (const unsigned char *)s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return (*p < *q) ? -1 : 1;\n}\n\nint first_diff(const char *s1, const char *s2)\n{\n    const char *p = s1;\n    const char *q = s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return -1;\n    return (int)(p - s1);\n}\n\nint main(void)\n{\n    char s1[MAXLEN], s2[MAXLEN];\n\n    if (scanf(\"%100s\", s1) != 1)\n        return 0;\n    if (scanf(\"%100s\", s2) != 1)\n        return 0;\n\n    printf(\"%d\\n\", my_strcmp(s1, s2));\n    printf(\"%d\\n\", first_diff(s1, s2));\n    return 0;\n}\n"
+    },
+    {
+      "id": "P07",
+      "cat": "pointer",
+      "title": "指针数组切分单词",
+      "difficulty": 2,
+      "tags": [
+        "指针数组",
+        "字符串切分",
+        "输入处理"
+      ],
+      "source": "PTA 6-32（实验10_5，改编为完整程序）",
+      "desc": "### 题目描述\n\n读入一行英文文本（只含大小写字母和空格，长度不超过 1000，至少有一个单词）。要求：\n\n1. 用 `char *words[505]` 这样的**指针数组**保存每个单词的首地址（不要把单词复制到新数组里）；\n2. 把每个单词后面的空格改成 `'\\0'`，这样每个单词就是一个独立的小字符串；\n3. 先输出单词个数，再把每个单词单独占一行输出。\n\n单词之间可能有多个连续空格，行首、行尾也可能有空格，它们都不算单词的一部分。\n\n### 输入格式\n\n一行文本，用 `fgets` 读入（行末换行符也一并在输入中）。\n\n### 输出格式\n\n第一行：单词个数。\n\n接下来每行一个单词，按它们在原句中出现的先后顺序输出。\n\n### 样例说明\n\n第二个样例行首行尾都有空格，中间还有连续空格，但真正的单词只有 `hello` 和 `world` 两个。",
+      "samples": [
+        {
+          "in": "Pointer is powerful\n",
+          "out": "3\nPointer\nis\npowerful\n"
+        },
+        {
+          "in": "  hello   world  \n",
+          "out": "2\nhello\nworld\n"
+        }
+      ],
+      "hint": "指针走一步判一次：跳过所有空白后若还没到串尾，就记下一个单词首地址，再把该单词后的空白写成 `'\\0'`。",
+      "pitfalls": "`fgets` 会把行末 `'\\n'` 也读进来，要把它当空白处理；连续空格若处理不当会多算单词个数。",
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 1005\n#define MAXW 505\n\nint split(char *s, char *words[])\n{\n    int cnt = 0;\n    char *p = s;\n\n    while (*p != '\\0') {\n        while (*p == ' ' || *p == '\\t' || *p == '\\n' || *p == '\\r')\n            p++;\n        if (*p == '\\0')\n            break;\n        if (cnt < MAXW)\n            words[cnt++] = p;\n        while (*p != '\\0' && *p != ' ' && *p != '\\t' && *p != '\\n' && *p != '\\r')\n            p++;\n        if (*p != '\\0') {\n            *p = '\\0';\n            p++;\n        }\n    }\n    return cnt;\n}\n\nint main(void)\n{\n    char text[MAXLEN];\n    char *words[MAXW];\n    int cnt, i;\n\n    if (fgets(text, sizeof text, stdin) == NULL)\n        return 0;\n\n    cnt = split(text, words);\n\n    printf(\"%d\\n\", cnt);\n    for (i = 0; i < cnt; i++)\n        printf(\"%s\\n\", words[i]);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P08",
+      "cat": "pointer",
+      "title": "指针查找子串首次出现",
+      "difficulty": 3,
+      "tags": [
+        "指针",
+        "字符串匹配",
+        "返回指针"
+      ],
+      "source": "PTA 6-31（实验10_4，改编为完整程序）",
+      "desc": "### 题目描述\n\n请实现函数\n\n`char *locatesubstr(char *str1, char *str2);`\n\n它在 `str1` 中查找 `str2` **第一次**出现的位置，成功时返回指向该位置的指针，找不到返回 `NULL`。要求用指针（`*p`、`p++`）访问字符串，不许使用 `[]` 下标和 `<string.h>` 中的函数。\n\n请写完整程序：读入两行文本，调用函数并按格式输出。\n\n### 输入格式\n\n共两行：第一行是主串 `str1`，第二行是模式串 `str2`。每行长度不超过 500，可以含空格（行末换行符不属于字符串内容）。\n\n### 输出格式\n\n若找到：第一行输出首次出现的下标（从 0 开始），第二行输出从该位置开始一直到 `str1` 末尾的子串。\n\n若找不到：只输出一行 `NULL!`。\n\n### 样例说明\n\n第一个样例中 `abc` 在主串里首次出现在下标 9，所以第二行输出从那里开始的 `abcxxxxxx`。",
+      "samples": [
+        {
+          "in": "didjfsd dabcxxxxxx\nabc\n",
+          "out": "9\nabcxxxxxx\n"
+        },
+        {
+          "in": "hello\nworld\n",
+          "out": "NULL!\n"
+        },
+        {
+          "in": "abcdef\ncde\n",
+          "out": "2\ncdef\n"
+        }
+      ],
+      "hint": "主串每个位置都作为起点试一次：设两个临时指针分别走主串和模式串，若模式串走到 `'\\0'` 就说明匹配成功。",
+      "pitfalls": "用 `fgets` 读入后必须手动去掉行末 `'\\n'`，否则模式串永远匹配不上；下标用 `p - str1` 计算。",
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 510\n\nvoid strip_newline(char *s)\n{\n    char *p = s;\n\n    while (*p != '\\0' && *p != '\\n' && *p != '\\r')\n        p++;\n    *p = '\\0';\n}\n\nchar *locatesubstr(char *str1, char *str2)\n{\n    char *p;\n    char *t;\n\n    if (*str2 == '\\0')\n        return str1;\n\n    for (p = str1; *p != '\\0'; p++) {\n        char *s = p;\n\n        t = str2;\n        while (*t != '\\0' && *s == *t) {\n            s++;\n            t++;\n        }\n        if (*t == '\\0')\n            return p;\n    }\n    return NULL;\n}\n\nint main(void)\n{\n    char str1[MAXLEN];\n    char str2[MAXLEN];\n    char *p;\n\n    if (fgets(str1, sizeof str1, stdin) == NULL)\n        return 0;\n    if (fgets(str2, sizeof str2, stdin) == NULL)\n        return 0;\n    strip_newline(str1);\n    strip_newline(str2);\n\n    p = locatesubstr(str1, str2);\n    if (p == NULL) {\n        printf(\"NULL!\\n\");\n    } else {\n        printf(\"%d\\n\", (int)(p - str1));\n        printf(\"%s\\n\", p);\n    }\n    return 0;\n}\n"
+    },
+    {
+      "id": "P09",
+      "cat": "pointer",
+      "title": "指针就地删除指定字符",
+      "difficulty": 3,
+      "tags": [
+        "指针",
+        "原地删除",
+        "字符串"
+      ],
+      "source": "PTA 6-33（实验10_8，改编为完整程序）",
+      "desc": "### 题目描述\n\n请实现函数\n\n`int delchars(char *str, const char *set);`\n\n把 `str` 中所有**出现在 `set` 里**的字符都删除（同一个字母的大写与小写按不同字符处理），返回值是被删掉的字符个数。\n\n要求**就地**完成：不许申请额外的字符数组，也不许使用 `<string.h>`；请用两个指针（一个读、一个写）把保留下来的字符向前压缩。\n\n### 输入格式\n\n第一行一个不含空白字符的字符串（长度不超过 200）。\n\n第二行一个不含空白字符的字符串 `set`（长度不超过 20），其中出现在同一行里的重复字符不影响结果。\n\n### 输出格式\n\n第一行：删除后的字符串（若全部被删则输出一个空行）。\n\n第二行：被删除的字符个数。\n\n### 样例说明\n\n`abcABCabc#` 中只有小写的 `b` 会被删掉（`B` 保留），共删除 2 个字符，所以输出 `acABCac#` 和 `2`。",
+      "samples": [
+        {
+          "in": "abcABCabc#\nb\n",
+          "out": "acABCac#\n2\n"
+        },
+        {
+          "in": "banana\naenn\n",
+          "out": "b\n5\n"
+        }
+      ],
+      "hint": "`src` 顺序读、`dst` 只写保留下来的字符：`*dst++ = *src;` 全部扫完后别忘了 `*dst = '\\0';`。",
+      "pitfalls": "用 `for (i...) if (str[i] != ch) str[j++] = str[i];` 时下标错位会漏字符；删除后必须在新的末尾补 `'\\0'`。",
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 205\n#define MAXSET 25\n\nint delchars(char *str, const char *set)\n{\n    char *dst = str;\n    char *src;\n    int removed = 0;\n\n    for (src = str; *src != '\\0'; src++) {\n        const char *q = set;\n        int hit = 0;\n\n        while (*q != '\\0') {\n            if (*q == *src) {\n                hit = 1;\n                break;\n            }\n            q++;\n        }\n        if (hit)\n            removed++;\n        else\n            *dst++ = *src;\n    }\n    *dst = '\\0';\n    return removed;\n}\n\nint main(void)\n{\n    char str[MAXLEN];\n    char set[MAXSET];\n    int removed;\n\n    if (scanf(\"%200s\", str) != 1)\n        return 0;\n    if (scanf(\"%20s\", set) != 1)\n        return 0;\n\n    removed = delchars(str, set);\n\n    printf(\"%s\\n\", str);\n    printf(\"%d\\n\", removed);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P10",
+      "cat": "pointer",
+      "title": "指针就地逆序并判回文",
+      "difficulty": 3,
+      "tags": [
+        "指针",
+        "动态内存",
+        "双指针"
+      ],
+      "source": "新编（malloc + 双指针）",
+      "desc": "### 题目描述\n\n先判断读入的整数序列是否为**回文**（首尾对称位置上的值都相等），再用两个指针 `left`、`right` 从两端向中间逐个交换，**就地**把数组逆序（不许另开一个数组存放逆序结果）。\n\n数组长度 n 由输入给定，必须用 `malloc` 动态分配，申请失败时直接结束程序，结束时 `free`。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 1000）。\n\n第二行 n 个用空格分隔的整数，每个整数的绝对值不超过 10^9。\n\n### 输出格式\n\n第一行：逆序后的 n 个整数，数字之间用一个空格分隔，行末无多余空格。\n\n第二行：原序列是回文输出 `yes`，否则输出 `no`。\n\n### 样例说明\n\n第一个样例的序列正读反读都是 1 2 3 2 1，是回文，逆序后不变；第二个样例逆序后变成 4 3 2 1，且不是回文。",
+      "samples": [
+        {
+          "in": "5\n1 2 3 2 1\n",
+          "out": "1 2 3 2 1\nyes\n"
+        },
+        {
+          "in": "4\n1 2 3 4\n",
+          "out": "4 3 2 1\nno\n"
+        }
+      ],
+      "hint": "先做一遍回文判断（不改动数据），再做一遍两端交换；`left < right` 是循环继续的条件，相遇就停。",
+      "pitfalls": "回文判断要和逆序交替进行的话，必须先判后逆序，否则逆序后就永远「是回文」；忘记 `free` 会内存泄漏。",
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, i;\n    int *a;\n    int *left, *right;\n    int pal = 1;\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n\n    a = (int *)malloc(sizeof(int) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    left = a;\n    right = a + n - 1;\n    while (left < right) {\n        if (*left != *right)\n            pal = 0;\n        left++;\n        right--;\n    }\n\n    left = a;\n    right = a + n - 1;\n    while (left < right) {\n        int t = *left;\n\n        *left = *right;\n        *right = t;\n        left++;\n        right--;\n    }\n\n    for (i = 0; i < n; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n    printf(\"%s\\n\", pal ? \"yes\" : \"no\");\n\n    free(a);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P11",
+      "cat": "pointer",
+      "title": "动态数组去重",
+      "difficulty": 3,
+      "tags": [
+        "动态内存",
+        "指针",
+        "去重"
+      ],
+      "source": "新编（malloc 一维动态数组）",
+      "desc": "### 题目描述\n\n用 `malloc` 动态分配长度为 n 的整型数组读入 n 个整数，然后**去掉重复出现的元素**：每个值只保留它第一次出现的位置，其余删除，剩下元素的相对顺序不变。\n\n要求就地压缩（用指针把保留下来的元素向前写），不再申请第二个数组；结束时 `free`。申请内存失败时直接结束程序。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 1000）。\n\n第二行 n 个用空格分隔的整数，每个整数的绝对值不超过 10^9（可以用 `int` 存放）。\n\n### 输出格式\n\n第一行：去重后的元素个数 m。\n\n第二行：去重后的 m 个整数，按原顺序用一个空格分隔，行末无多余空格。\n\n### 样例说明\n\n样例中数字依次为 3 1 3 2 1 4 4 2，只保留第一次出现的 3、1、2、4，共 4 个。",
+      "samples": [
+        {
+          "in": "8\n3 1 3 2 1 4 4 2\n",
+          "out": "4\n3 1 2 4\n"
+        },
+        {
+          "in": "1\n-5\n",
+          "out": "1\n-5\n"
+        }
+      ],
+      "hint": "设 m 为「已经保留的元素个数」，对每个新元素用指针在 `a[0..m-1]` 中比一遍，没出现过才写入 `a[m++]`。",
+      "pitfalls": "一边读一边和「整个数组」比较，会把还没处理的旧值算进来；比较范围只能是已保留的 `a[0..m-1]`。",
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, i, m = 0;\n    int *a;\n    int *p;\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n\n    a = (int *)malloc(sizeof(int) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    for (i = 0; i < n; i++) {\n        int dup = 0;\n\n        for (p = a; p < a + m; p++) {\n            if (*p == a[i]) {\n                dup = 1;\n                break;\n            }\n        }\n        if (!dup)\n            a[m++] = a[i];\n    }\n\n    printf(\"%d\\n\", m);\n    for (i = 0; i < m; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n\n    free(a);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P12",
+      "cat": "pointer",
+      "title": "按长度排序字符串",
+      "difficulty": 3,
+      "tags": [
+        "指针数组",
+        "字符串排序",
+        "比较规则"
+      ],
+      "source": "PTA 7-56（实验10_9，改编为按长度排序）",
+      "desc": "### 题目描述\n\n读入 n 个字符串（都不含空白字符）。用一个字符数组按行存放它们，另开一个**指针数组** `char *p[105]` 保存每个字符串的首地址，排序时**只交换指针**（不要真的搬动字符串）：\n\n- 先按字符串长度升序；\n- 长度相同时按字典序升序（逐字符比较 ASCII 码，短串在前）。\n\n排序后逐行输出。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 100）。\n\n接下来 n 行，每行一个不含空白字符的字符串，长度 1–100。\n\n### 输出格式\n\nn 行，排序后的字符串，每行一个。\n\n### 样例说明\n\n样例中 `fig`(3)、`figs`(4)、`kiwi`(4)、`apple`(5)：长度为 4 的 `figs` 与 `kiwi` 按字典序 `f` < `k`，所以 `figs` 在前。",
+      "samples": [
+        {
+          "in": "4\napple\nfig\nkiwi\nfigs\n",
+          "out": "fig\nfigs\nkiwi\napple\n"
+        },
+        {
+          "in": "3\nbbb\naa\ncc\n",
+          "out": "aa\ncc\nbbb\n"
+        }
+      ],
+      "hint": "比较函数分两级：长度不同比长度，长度相同再逐字符比；交换的是 `p[j]` 与 `p[j+1]` 这两个指针。",
+      "pitfalls": "交换字符串本身（用 `strcpy`）既慢又容易越界；长度相同时如果只比长度，排序结果不稳定。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n#define MAXLEN 105\n\nint my_len(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n    return (int)(p - s);\n}\n\nint my_cmp(const char *s1, const char *s2)\n{\n    const char *p = s1;\n    const char *q = s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return ((unsigned char)*p < (unsigned char)*q) ? -1 : 1;\n}\n\nint main(void)\n{\n    int n, i, j;\n    char store[MAXN][MAXLEN];\n    char *p[MAXN];\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n    for (i = 0; i < n; i++) {\n        if (scanf(\"%100s\", store[i]) != 1)\n            return 0;\n        p[i] = store[i];\n    }\n\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            int la = my_len(p[j]);\n            int lb = my_len(p[j + 1]);\n            int need = 0;\n\n            if (la > lb)\n                need = 1;\n            else if (la == lb && my_cmp(p[j], p[j + 1]) > 0)\n                need = 1;\n\n            if (need) {\n                char *t = p[j];\n\n                p[j] = p[j + 1];\n                p[j + 1] = t;\n            }\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        printf(\"%s\\n\", p[i]);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P13",
+      "cat": "pointer",
+      "title": "出现最多的字母",
+      "difficulty": 3,
+      "tags": [
+        "指针",
+        "字符统计",
+        "计数数组"
+      ],
+      "source": "新编（指针遍历统计）",
+      "desc": "### 题目描述\n\n读入一行文本，统计其中每个英文字母（大写、小写分别计算）出现的次数，找出出现次数**最多**的字母；若有多个字母并列最多，输出其中 ASCII 码最小的那个。\n\n要求用指针对字符串遍历一遍完成统计，不许使用 `strlen` 等库函数。\n\n### 输入格式\n\n一行文本，长度不超过 1000，由可见 ASCII 字符组成（可能包含空格）。\n\n### 输出格式\n\n若文本中至少有一个英文字母：第一行输出出现次数最多的那个字母，第二行输出它的出现次数。\n\n若文本中一个英文字母都没有：只输出一行 `none`。\n\n### 样例说明\n\n`Hello World` 中各字母次数为 H1、e1、l3、o2、W1、r1、d1，最多的是 `l`，出现 3 次。\n\n第二个样例里 a、A、b、B 各 1 次，并列时取 ASCII 最小的 `A`。",
+      "samples": [
+        {
+          "in": "Hello World\n",
+          "out": "l\n3\n"
+        },
+        {
+          "in": "aAbB\n",
+          "out": "A\n1\n"
+        },
+        {
+          "in": "12345 !!\n",
+          "out": "none\n"
+        }
+      ],
+      "hint": "开一个 `int cnt[128]` 计数表，指针从串首扫到 `'\\0'`；最后从下标 0 往 127 扫，用严格大于更新最大值。",
+      "pitfalls": "从 127 往 0 扫、或用 `>=` 更新，并列时拿到的就不是 ASCII 最小的字母；忘记排除数字和空格会统计错。",
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 1005\n\nint main(void)\n{\n    char text[MAXLEN];\n    const char *p;\n    int cnt[128];\n    int c, best = 0, bestc = -1, found = 0;\n\n    for (c = 0; c < 128; c++)\n        cnt[c] = 0;\n\n    if (fgets(text, sizeof text, stdin) == NULL)\n        return 0;\n\n    for (p = text; *p != '\\0'; p++) {\n        unsigned char u = (unsigned char)*p;\n\n        if ((u >= 'A' && u <= 'Z') || (u >= 'a' && u <= 'z'))\n            cnt[u]++;\n    }\n\n    for (c = 0; c < 128; c++) {\n        if (cnt[c] > 0) {\n            found = 1;\n            if (cnt[c] > best) {\n                best = cnt[c];\n                bestc = c;\n            }\n        }\n    }\n\n    if (!found) {\n        printf(\"none\\n\");\n    } else {\n        printf(\"%c\\n\", bestc);\n        printf(\"%d\\n\", best);\n    }\n    return 0;\n}\n"
+    },
+    {
+      "id": "P14",
+      "cat": "pointer",
+      "title": "动态二维数组转置",
+      "difficulty": 4,
+      "tags": [
+        "动态内存",
+        "二维数组",
+        "指针数组"
+      ],
+      "source": "PTA 7-55（实验10_7，改编为转置输出）",
+      "desc": "### 题目描述\n\n用 `malloc` 动态建立一个 n 行 m 列的整型二维数组：先分配 n 个 `int *`（指针数组），再为每一行分配 m 个 `int`。读入 n×m 个整数后，输出这个矩阵的**转置**（m 行 n 列）。\n\n要求：\n\n- 每次 `malloc` 都要判空，任何一次失败都要把已经申请到的内存全部释放后结束程序；\n- 结束时把每一行的内存和指针数组都 `free` 掉（不要漏掉任何一级）。\n\n### 输入格式\n\n第一行两个正整数 n、m（1 ≤ n, m ≤ 100）。\n\n接下来 n 行，每行 m 个用空格分隔的整数，每个整数的绝对值不超过 10^9。\n\n### 输出格式\n\n共 m 行，每行 n 个整数，为转置后的矩阵；数字之间用一个空格分隔，行末无多余空格。\n\n### 样例说明\n\n原矩阵是 2 行 3 列（第一行 1 2 3，第二行 4 5 6），转置后变成 3 行 2 列，所以输出三行、每行两个数。",
+      "samples": [
+        {
+          "in": "2 3\n1 2 3\n4 5 6\n",
+          "out": "1 4\n2 5\n3 6\n"
+        },
+        {
+          "in": "1 3\n7 8 9\n",
+          "out": "7\n8\n9\n"
+        }
+      ],
+      "hint": "分配顺序是「先指针数组、再逐行」；转置输出时用双重循环但先固定列 `j` 再走行 `i`，即 `a[i][j]`。",
+      "pitfalls": "只 `free(a)` 不 `free(a[i])` 会泄漏每一行的内存；中途某行分配失败时要把前面已分配的行先释放。",
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, m, i, j;\n    int **a;\n\n    if (scanf(\"%d %d\", &n, &m) != 2 || n <= 0 || m <= 0)\n        return 0;\n\n    a = (int **)malloc(sizeof(int *) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        a[i] = (int *)malloc(sizeof(int) * (size_t)m);\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++)\n                free(a[j]);\n            free(a);\n            return 1;\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        for (j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n\n    for (j = 0; j < m; j++) {\n        for (i = 0; i < n; i++) {\n            if (i > 0)\n                printf(\" \");\n            printf(\"%d\", a[i][j]);\n        }\n        printf(\"\\n\");\n    }\n\n    for (i = 0; i < n; i++)\n        free(a[i]);\n    free(a);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P15",
+      "cat": "pointer",
+      "title": "函数指针选择排序方向",
+      "difficulty": 4,
+      "tags": [
+        "函数指针",
+        "动态内存",
+        "字符串排序"
+      ],
+      "source": "PTA 7-57（实验10_10，改编为函数指针排序）",
+      "desc": "### 题目描述\n\n读入 n 个字符串（每个可能含空格，长度 1–200），按下述步骤处理：\n\n1. 用一个长度为 210 的字符数组作缓冲，逐行读入；按实际长度 `malloc` 恰好 `长度 + 1` 个字节，把字符串（含结尾 `'\\0'`）复制进去，首地址存进动态的 `char **` 指针数组；\n2. 自己实现冒泡排序 `void sort(char **a, int n, int (*cmp)(const char *, const char *));`，排序时通过**函数指针** `cmp` 决定比较方式：`mode = 0` 按字典序升序，`mode = 1` 按字典序降序；`cmp_asc`、`cmp_desc` 的返回值规则与 `strcmp` 一致（小于、等于、大于分别返回负数、0、正数）；\n3. 排序后逐行输出，最后释放所有动态内存（每个字符串和指针数组）。\n\n不许使用 `<string.h>` 里的字符串函数。\n\n### 输入格式\n\n第一行一个整数 n（1 ≤ n ≤ 100）。\n\n第二行一个整数 mode（0 或 1）。\n\n接下来 n 行，每行一个字符串（长度 1–200，可以含空格）。\n\n### 输出格式\n\nn 行，排序后的字符串，每行一个。\n\n### 样例说明\n\n第二个样例 `mode = 1` 表示降序：`c` > `b a` > `a c`（先比第一个字符 `c`、`b`、`a`），所以按这个顺序输出。",
+      "samples": [
+        {
+          "in": "3\n0\nbanana\napple\ncherry\n",
+          "out": "apple\nbanana\ncherry\n"
+        },
+        {
+          "in": "3\n1\nb a\na c\nc\n",
+          "out": "c\nb a\na c\n"
+        }
+      ],
+      "hint": "函数名本身就是地址，`sort(arr, n, mode ? cmp_desc : cmp_asc)` 直接把比较函数传进去；`sort` 内部只交换 `char *`。",
+      "pitfalls": "`scanf(\"%d\")` 之后行末的 `'\\n'` 会留在缓冲区，必须先吸掉，否则第一个字符串读到空行；`fgets` 读入后要手工去掉 `'\\n'`。",
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\n#define MAXLEN 210\n\nint my_strcmp(const char *s1, const char *s2)\n{\n    const unsigned char *p = (const unsigned char *)s1;\n    const unsigned char *q = (const unsigned char *)s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return (*p < *q) ? -1 : 1;\n}\n\nint cmp_asc(const char *a, const char *b)\n{\n    return my_strcmp(a, b);\n}\n\nint cmp_desc(const char *a, const char *b)\n{\n    return -my_strcmp(a, b);\n}\n\nvoid sort(char **a, int n, int (*cmp)(const char *, const char *))\n{\n    int i, j;\n\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            if (cmp(a[j], a[j + 1]) > 0) {\n                char *t = a[j];\n\n                a[j] = a[j + 1];\n                a[j + 1] = t;\n            }\n        }\n    }\n}\n\nint main(void)\n{\n    int n, mode, i, c;\n    char **arr;\n    char buf[MAXLEN];\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n    if (scanf(\"%d\", &mode) != 1)\n        return 0;\n    while ((c = getchar()) != '\\n' && c != EOF)\n        ;\n\n    arr = (char **)malloc(sizeof(char *) * (size_t)n);\n    if (arr == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        char *t, *dst;\n        const char *src;\n        int len;\n\n        if (fgets(buf, sizeof buf, stdin) == NULL)\n            buf[0] = '\\0';\n        t = buf;\n        while (*t != '\\0' && *t != '\\n' && *t != '\\r')\n            t++;\n        *t = '\\0';\n        len = (int)(t - buf);\n\n        arr[i] = (char *)malloc(sizeof(char) * (size_t)(len + 1));\n        if (arr[i] == NULL) {\n            while (i > 0)\n                free(arr[--i]);\n            free(arr);\n            return 1;\n        }\n        dst = arr[i];\n        for (src = buf; *src != '\\0'; src++)\n            *dst++ = *src;\n        *dst = '\\0';\n    }\n\n    sort(arr, n, (mode == 0) ? cmp_asc : cmp_desc);\n\n    for (i = 0; i < n; i++) {\n        printf(\"%s\\n\", arr[i]);\n        free(arr[i]);\n    }\n    free(arr);\n    return 0;\n}\n"
+    },
+    {
+      "id": "P16",
+      "cat": "pointer",
+      "title": "动态矩阵按行整理",
+      "difficulty": 4,
+      "tags": [
+        "动态内存",
+        "行指针",
+        "就地排序"
+      ],
+      "source": "新编（动态二维数组综合）",
+      "desc": "### 题目描述\n\n某次机考的成绩表是一个 n 行 m 列的整数矩阵。请用 `malloc` 动态建立这个二维数组（先分配 n 个 `int *`，再逐行分配 m 个 `int`），然后用**行指针**的方式访问元素：把每一行看作一个独立的长度为 m 的一维数组 `a[i]`，用 `int *p` 在该行内移动。\n\n对**每一行**单独就地升序排序（可以用选择排序或冒泡排序，不许另开数组），然后输出：\n\n1. 排序后的整个矩阵（每行内部升序，行与行之间的先后顺序不变）；\n2. 每一行排序后最小的元素之和。\n\n注意：最小值之和可能超出 `int` 的范围，请用 `long long` 保存，用 `%lld` 输出。\n\n每次 `malloc` 都要判空，结束时逐级 `free`。\n\n### 输入格式\n\n第一行两个正整数 n、m（1 ≤ n, m ≤ 100）。\n\n接下来 n 行，每行 m 个用空格分隔的整数，每个整数的绝对值不超过 10^9。\n\n### 输出格式\n\n前 n 行：排序后的矩阵，每行 m 个整数，数字之间用一个空格分隔，行末无多余空格。\n\n最后一行：每行最小元素之和（`long long`）。\n\n### 样例说明\n\n第一行 3 1 2 排成 1 2 3，第二行 9 -5 4 排成 -5 4 9；两个最小元素是 1 和 -5，和为 -4。",
+      "samples": [
+        {
+          "in": "2 3\n3 1 2\n9 -5 4\n",
+          "out": "1 2 3\n-5 4 9\n-4\n"
+        },
+        {
+          "in": "1 1\n-7\n",
+          "out": "-7\n-7\n"
+        }
+      ],
+      "hint": "外层循环走行、内层用两个指针 `p`、`q` 在本行内比较交换；累加时写 `total += a[i][0];`，`total` 声明成 `long long`。",
+      "pitfalls": "行内排序的边界是 `a[i] + m`，写成 `a + m` 会串到别的行；和用 `int` 保存时大数据会溢出。",
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, m, i, j;\n    int **a;\n    long long total = 0;\n\n    if (scanf(\"%d %d\", &n, &m) != 2 || n <= 0 || m <= 0)\n        return 0;\n\n    a = (int **)malloc(sizeof(int *) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        a[i] = (int *)malloc(sizeof(int) * (size_t)m);\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++)\n                free(a[j]);\n            free(a);\n            return 1;\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        for (j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n\n    for (i = 0; i < n; i++) {\n        int *p, *q;\n\n        for (p = a[i]; p < a[i] + m - 1; p++) {\n            for (q = p + 1; q < a[i] + m; q++) {\n                if (*q < *p) {\n                    int t = *p;\n\n                    *p = *q;\n                    *q = t;\n                }\n            }\n        }\n        total += a[i][0];\n    }\n\n    for (i = 0; i < n; i++) {\n        for (j = 0; j < m; j++) {\n            if (j > 0)\n                printf(\" \");\n            printf(\"%d\", a[i][j]);\n        }\n        printf(\"\\n\");\n    }\n    printf(\"%lld\\n\", total);\n\n    for (i = 0; i < n; i++)\n        free(a[i]);\n    free(a);\n    return 0;\n}\n"
+    }
+  ]
+}

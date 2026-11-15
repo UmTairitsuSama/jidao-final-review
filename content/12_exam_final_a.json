@@ -1,0 +1,568 @@
+{
+  "exams": [
+    {
+      "id": "FM1",
+      "title": "期末全真模拟卷 1 · 基础综合",
+      "subtitle": "覆盖一维数组、二维数组、字符数组、递归组合数、结构体二分查找与滑动窗口；难度：期末偏易，适合第一套练手",
+      "duration": 120,
+      "problems": [
+        {
+          "id": "FM1-1",
+          "cat": "array1",
+          "title": "社团报名的超员统计",
+          "difficulty": 1,
+          "tags": [
+            "一维数组",
+            "条件统计",
+            "最值"
+          ],
+          "source": "新编",
+          "desc": "### 题目描述\n社团联合会开完招新宣讲会，记录下 n 个社团的报名人数，以及每个社团能接纳的名额上限。报名人数严格大于名额上限的社团叫「超员社团」，需要再加开一场面试。\n\n请统计超员社团的个数，并找出超员最多的那个社团超员了多少人。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 100`）。\n第二行，n 个整数，依次是各社团的报名人数，每个整数在 0 到 500 之间，用空格分隔。\n第三行，n 个整数，依次是各社团的名额上限，每个整数在 0 到 500 之间，用空格分隔。\n\n### 输出格式\n共两行：\n- 第一行 `over: K`，K 为超员社团的个数\n- 第二行 `max extra: X`，X 为这些超员社团中「报名人数 − 名额上限」的最大值；若一个超员社团都没有，输出 `max extra: 0`\n\n### 样例说明\n样例 1 中三个社团的超员数依次是 10、0、5，其中超员的两个是 1 号和 3 号社团，最大超员 10 人。",
+          "samples": [
+            {
+              "in": "3\n30 12 25\n20 15 20\n",
+              "out": "over: 2\nmax extra: 10\n"
+            },
+            {
+              "in": "2\n5 8\n10 10\n",
+              "out": "over: 0\nmax extra: 0\n"
+            },
+            {
+              "in": "4\n50 60 70 10\n20 20 20 20\n",
+              "out": "over: 3\nmax extra: 50\n"
+            }
+          ],
+          "hint": "用两个数组分别存报名人数和名额上限，同一轮循环里比较：`people[i] > cap[i]` 时计数加一，并更新最大超员值。最大值变量初值取 0 即可，因为超员值不会是负数。",
+          "pitfalls": "判断要用严格大于（`>`），人数正好等于上限不算超员；一个超员社团都没有时第二行要输出 0 而不是不输出。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int people[MAXN], cap[MAXN];\n    int over = 0, maxExtra = 0, extra;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &people[i]);\n    }\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &cap[i]);\n    }\n    for (i = 0; i < n; i++) {\n        if (people[i] > cap[i]) {\n            extra = people[i] - cap[i];\n            over++;\n            if (extra > maxExtra) {\n                maxExtra = extra;\n            }\n        }\n    }\n    printf(\"over: %d\\n\", over);\n    printf(\"max extra: %d\\n\", maxExtra);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM1-2",
+          "cat": "string",
+          "title": "班服标语的字母重排判定",
+          "difficulty": 2,
+          "tags": [
+            "字符数组",
+            "排序比较",
+            "字母统计"
+          ],
+          "source": "新编",
+          "desc": "### 题目描述\n班里做了两件班服，正面印的标语分别是两个只由英文字母组成的单词（区分大小写，不含空格）。设计组想知道：把第二条标语里的字母重新排一排，能不能得到第一条标语？\n\n请先把第一条标语的字母按 ASCII 码从小到大排好并输出，再判断两条标语是否互为字母重排。\n\n### 输入格式\n共两行，每行一个只由英文字母组成的单词，长度都不超过 50，且两个单词的长度相同。\n\n### 输出格式\n共两行：\n- 第一行 `sorted: X`，X 是第一条标语的字母按 ASCII 码从小到大排列后的结果\n- 第二行 `rearrange: yes` 表示第二条标语是第一条的字母重排，否则输出 `rearrange: no`\n\n### 样例说明\n样例 1 中 `listen` 排好是 `eilnst`，`silent` 排好也是 `eilnst`，两者重排后相同，所以是 yes。",
+          "samples": [
+            {
+              "in": "listen\nsilent\n",
+              "out": "sorted: eilnst\nrearrange: yes\n"
+            },
+            {
+              "in": "abc\nabd\n",
+              "out": "sorted: abc\nrearrange: no\n"
+            },
+            {
+              "in": "Abc\ncAb\n",
+              "out": "sorted: Abc\nrearrange: yes\n"
+            }
+          ],
+          "hint": "把两个单词各自用冒泡排序把字符按 ASCII 码升序排好，再用 `strcmp` 比较；相同就是互为字母重排。也可以退一步直接调 `qsort`，但考试里手写冒泡就够。",
+          "pitfalls": "比较时区分大小写（`A` 和 `a` 是两个不同的字符）；字符串比较要用 `strcmp` 而不是 `==`；复制到 `sortedA`、`sortedB` 再排序，别把原始串弄丢；读入用 `%63s` 防止越界。",
+          "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXL 64\n\nstatic void sortStr(char *s)\n{\n    int i, j, len = (int)strlen(s);\n    char t;\n\n    for (i = 0; i < len - 1; i++) {\n        for (j = 0; j < len - 1 - i; j++) {\n            if (s[j] > s[j + 1]) {\n                t = s[j];\n                s[j] = s[j + 1];\n                s[j + 1] = t;\n            }\n        }\n    }\n}\n\nint main(void)\n{\n    char a[MAXL], b[MAXL], sortedA[MAXL], sortedB[MAXL];\n\n    if (scanf(\"%63s\", a) != 1) {\n        return 0;\n    }\n    if (scanf(\"%63s\", b) != 1) {\n        return 0;\n    }\n    strcpy(sortedA, a);\n    strcpy(sortedB, b);\n    sortStr(sortedA);\n    sortStr(sortedB);\n    printf(\"sorted: %s\\n\", sortedA);\n    if (strcmp(sortedA, sortedB) == 0) {\n        printf(\"rearrange: yes\\n\");\n    } else {\n        printf(\"rearrange: no\\n\");\n    }\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM1-3",
+          "cat": "array2",
+          "title": "运动会的班级总分榜",
+          "difficulty": 2,
+          "tags": [
+            "二维数组",
+            "行求和",
+            "最值"
+          ],
+          "source": "新编",
+          "desc": "### 题目描述\n秋季运动会结束，组委会手里有一张计分表：m 个班级、n 个项目，表中第 i 行第 j 列的数字，是第 i 班在第 j 个项目上拿到的分数。\n\n请算出每个班的总分，并找出总分最高的班级（总分并列时取班级编号较小的那个）。\n\n### 输入格式\n第一行，两个整数 `m` 和 `n`（`1 ≤ m ≤ 20`，`1 ≤ n ≤ 20`），用空格分隔。\n接下来 m 行，每行 n 个整数，每个整数在 0 到 20 之间，用空格分隔。第 i 行第 j 个数就是第 i 班在第 j 个项目上的得分。\n\n### 输出格式\n共 m + 1 行：\n- 前 m 行，第 i 行输出 `class i: T`，其中 i 从 1 开始是班级编号，T 是该班总分\n- 最后一行输出 `champion: C`，C 是总分最高的班级编号\n\n### 样例说明\n样例 1 中三个班的总分依次是 10、1、16，所以冠军是 3 班。",
+          "samples": [
+            {
+              "in": "3 4\n5 3 2 0\n1 0 0 0\n4 4 4 4\n",
+              "out": "class 1: 10\nclass 2: 1\nclass 3: 16\nchampion: 3\n"
+            },
+            {
+              "in": "2 2\n1 1\n1 1\n",
+              "out": "class 1: 2\nclass 2: 2\nchampion: 1\n"
+            },
+            {
+              "in": "1 3\n0 5 7\n",
+              "out": "class 1: 12\nchampion: 1\n"
+            }
+          ],
+          "hint": "读入时就把每行的分数累加到 `total[i]` 里，读完之后再从 1 到 m 扫一遍找最大总分；更新冠军用严格大于，并列时自然保留编号小的班。",
+          "pitfalls": "班级编号从 1 开始，数组下标习惯从 0 或 1 开始都可以，但输出编号别偏移；并列冠军必须输出编号小的那个，用 `>` 而不是 `>=` 更新才能做到。",
+          "solution": "#include <stdio.h>\n\n#define MAXM 25\n#define MAXN 25\n\nint main(void)\n{\n    int m, n, i, j, v;\n    int total[MAXM] = {0};\n    int best = 0, champ = 1;\n\n    scanf(\"%d%d\", &m, &n);\n    for (i = 1; i <= m; i++) {\n        for (j = 1; j <= n; j++) {\n            scanf(\"%d\", &v);\n            total[i] += v;\n        }\n    }\n    for (i = 1; i <= m; i++) {\n        printf(\"class %d: %d\\n\", i, total[i]);\n        if (i == 1 || total[i] > best) {\n            best = total[i];\n            champ = i;\n        }\n    }\n    printf(\"champion: %d\\n\", champ);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM1-4",
+          "cat": "func",
+          "title": "食堂自选套餐的搭配数",
+          "difficulty": 3,
+          "tags": [
+            "递归",
+            "组合数",
+            "函数设计"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n食堂推出了「自选套餐」：午餐的 n 种菜里可以任选 k 种，其中 1 号菜是招牌菜。\n\n请写一个递归函数计算从 n 种菜里选 k 种的方案数，再写完整程序，输出总方案数，以及其中一定包含 1 号菜的方案数。\n\n### 输入格式\n一行，两个整数 `n` 和 `k`（`1 ≤ n ≤ 20`，`0 ≤ k ≤ n`），用空格分隔。\n\n### 输出格式\n共两行：\n- 第一行 `ways: X`，X 为从 n 种里选 k 种的总方案数\n- 第二行 `fixed: Y`，Y 为其中一定包含 1 号菜的方案数（`k` 为 0 时输出 0）\n\n### 样例说明\n样例 1 中从 5 种选 2 种共 10 种；一定含 1 号菜，就是剩下 4 种里再选 1 种，共 4 种。",
+          "samples": [
+            {
+              "in": "5 2\n",
+              "out": "ways: 10\nfixed: 4\n"
+            },
+            {
+              "in": "1 0\n",
+              "out": "ways: 1\nfixed: 0\n"
+            },
+            {
+              "in": "3 3\n",
+              "out": "ways: 1\nfixed: 1\n"
+            }
+          ],
+          "hint": "组合数满足递推关系 `C(n, k) = C(n - 1, k - 1) + C(n - 1, k)`，递归出口是 `k == 0` 或 `k == n` 时返回 1。含 1 号菜的方案数就是 `C(n - 1, k - 1)`，可以再调一次同一个函数。",
+          "pitfalls": "递归出口要写在前面，否则 `n - 1` 会递归到负数；返回值用 `long long` 并用 `%lld` 输出更稳妥（`C(20, 10)` 是 184756，再大就该用记忆化或递推了）；`k == 0` 时第二行按要求输出 0。",
+          "solution": "#include <stdio.h>\n\nstatic long long comb(int n, int k)\n{\n    if (k < 0 || k > n) {\n        return 0;\n    }\n    if (k == 0 || k == n) {\n        return 1;\n    }\n    return comb(n - 1, k - 1) + comb(n - 1, k);\n}\n\nint main(void)\n{\n    int n, k;\n\n    if (scanf(\"%d%d\", &n, &k) != 2) {\n        return 0;\n    }\n    printf(\"ways: %lld\\n\", comb(n, k));\n    printf(\"fixed: %lld\\n\", k == 0 ? 0LL : comb(n - 1, k - 1));\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM1-5",
+          "cat": "struct",
+          "title": "快递柜格口的取件查询",
+          "difficulty": 3,
+          "tags": [
+            "结构体数组",
+            "二分查找",
+            "字符串输出"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n快递驿站的柜格登记表按格口号从小到大排好了，每条记录是「格口号 + 收件人姓名」。现在有 m 次取件查询，每次给出一个格口号，请用二分查找输出对应的收件人姓名。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 1000`）。\n接下来 n 行，每行一个格口号（1 到 `10^9` 的整数）和一个姓名（由英文字母组成，不含空格，长度不超过 20），格口号严格递增。\n接着一行，一个整数 `m`（`1 ≤ m ≤ 100`）。\n接下来 m 行，每行一个查询用的格口号（1 到 `10^9` 的整数）。\n\n### 输出格式\n共 m 行，第 i 行输出第 i 次查询对应的收件人姓名；若该格口号没有登记，输出 `not found`。\n\n### 样例说明\n样例 1 中 205 号格口登记的是 Bob，999 号格口没有登记，所以输出 `not found`。",
+          "samples": [
+            {
+              "in": "3\n101 Amy\n205 Bob\n310 Cindy\n2\n205\n999\n",
+              "out": "Bob\nnot found\n"
+            },
+            {
+              "in": "1\n7 Zoe\n1\n7\n",
+              "out": "Zoe\n"
+            },
+            {
+              "in": "4\n10 Liu\n20 Sun\n30 Zhou\n40 Wu\n3\n10\n30\n25\n",
+              "out": "Liu\nZhou\nnot found\n"
+            }
+          ],
+          "hint": "把记录存进结构体数组，格口号本来就升序，直接在 `[0, n-1]` 上做二分：`mid = lo + (hi - lo) / 2`，比较 `a[mid].id` 与查询值，相等就输出 `a[mid].name`；找不到时循环结束，输出 `not found`。",
+          "pitfalls": "二分循环条件用 `lo <= hi`；`mid` 用 `lo + (hi - lo) / 2` 可以避免加法溢出（格口号最大 `10^9`）；姓名要用字符数组存，别存指针；没找到的分支容易漏掉。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 1005\n#define MAXL 24\n\ntypedef struct {\n    int id;\n    char name[MAXL];\n} Cell;\n\nstatic Cell a[MAXN];\n\nint main(void)\n{\n    int n, m, i, q;\n    int lo, hi, mid;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%23s\", &a[i].id, a[i].name);\n    }\n    scanf(\"%d\", &m);\n    for (i = 0; i < m; i++) {\n        scanf(\"%d\", &q);\n        lo = 0;\n        hi = n - 1;\n        mid = -1;\n        while (lo <= hi) {\n            mid = lo + (hi - lo) / 2;\n            if (a[mid].id == q) {\n                break;\n            } else if (a[mid].id < q) {\n                lo = mid + 1;\n            } else {\n                hi = mid - 1;\n            }\n        }\n        if (lo <= hi) {\n            printf(\"%s\\n\", a[mid].name);\n        } else {\n            printf(\"not found\\n\");\n        }\n    }\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM1-6",
+          "cat": "algo",
+          "title": "食堂电子屏的最长标语片段",
+          "difficulty": 4,
+          "tags": [
+            "滑动窗口",
+            "字符串",
+            "双指针"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n食堂门口的电子屏要滚动播放今天推荐菜的一句英文标语（只含小写字母）。屏幕宽度有限，运营同学想截取其中最长的一段连续字符，要求这一段里每个字母**最多出现一次**。\n\n请找出这样的一段中长度最大的那一段；若有多段同样长，取最先出现的那一段。\n\n### 输入格式\n一行，一个只由小写英文字母组成的字符串，长度不超过 1000，以换行结束。\n\n### 输出格式\n共两行：\n- 第一行 `longest: K`，K 为满足「字母互不重复」的连续片段的最大长度\n- 第二行 `segment: X`，X 为这一段内容（取最先出现的那一段）\n\n### 样例说明\n样例 1 中 `abcabcf` 的最长无重复片段是末尾的 `abcf`，长度 4；前面几段都只有 3 个字符。",
+          "samples": [
+            {
+              "in": "abcabcf\n",
+              "out": "longest: 4\nsegment: abcf\n"
+            },
+            {
+              "in": "aaaa\n",
+              "out": "longest: 1\nsegment: a\n"
+            },
+            {
+              "in": "abcdef\n",
+              "out": "longest: 6\nsegment: abcdef\n"
+            }
+          ],
+          "hint": "用滑动窗口：`left`、`right` 两个指针表示当前窗口，`last[c]` 记录字符 c 上一次出现的下标。`right` 往右移时若 `last[s[right]] >= left` 就把 `left` 挪到 `last[s[right]] + 1`，再用 `right - left + 1` 更新最长长度和起点。窗口里每个字符最多出现一次，所以是 O(n)。",
+          "pitfalls": "更新最长值时用严格大于，才能保证并列时保留最先出现的那一段；`last` 数组要初始化成 -1，否则第 0 个字符会被误判成「已经出现过」；输出片段时别越界，`left` 的更新要按 `last + 1` 而不是 `right`。",
+          "solution": "#include <stdio.h>\n\n#define MAXL 1005\n\nint main(void)\n{\n    char s[MAXL];\n    int last[26];\n    int i, left = 0, bestLen = 0, bestStart = 0;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    for (i = 0; i < 26; i++) {\n        last[i] = -1;\n    }\n    for (i = 0; s[i] != '\\0' && s[i] != '\\n' && s[i] != '\\r'; i++) {\n        int c = s[i] - 'a';\n        if (last[c] >= left) {\n            left = last[c] + 1;\n        }\n        last[c] = i;\n        if (i - left + 1 > bestLen) {\n            bestLen = i - left + 1;\n            bestStart = left;\n        }\n    }\n    printf(\"longest: %d\\n\", bestLen);\n    printf(\"segment: %.*s\\n\", bestLen, s + bestStart);\n    return 0;\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "FM2",
+      "title": "期末全真模拟卷 2 · 结构与指针",
+      "subtitle": "覆盖数组求均值、字符串归一化、结构体稳定排序、指针返回多值、字符指针扫串与排队贪心；难度：期末中等",
+      "duration": 120,
+      "problems": [
+        {
+          "id": "FM2-1",
+          "cat": "array1",
+          "title": "宿舍用电的节电统计",
+          "difficulty": 1,
+          "tags": [
+            "一维数组",
+            "平均值",
+            "计数"
+          ],
+          "source": "新编",
+          "desc": "### 题目描述\n宿舍楼管理员要评选本月的「节电小卫士」：统计用电量严格低于全楼平均用电量的宿舍个数，并找出全楼最低的一个月用电量。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 100`）。\n第二行，n 个整数，依次是每个宿舍本月的用电量（单位：度），每个整数在 0 到 1000 之间，用空格分隔。\n\n### 输出格式\n共两行：\n- 第一行 `below: K`，K 为用电量严格小于全楼平均值的宿舍个数\n- 第二行 `min: M`，M 为全楼最低用电量\n\n### 样例说明\n样例 1 的总用电量是 400 度，平均 80 度，严格低于 80 度的有 60 和 40 两个宿舍。",
+          "samples": [
+            {
+              "in": "5\n120 80 60 100 40\n",
+              "out": "below: 2\nmin: 40\n"
+            },
+            {
+              "in": "3\n30 30 30\n",
+              "out": "below: 0\nmin: 30\n"
+            },
+            {
+              "in": "1\n42\n",
+              "out": "below: 0\nmin: 42\n"
+            }
+          ],
+          "hint": "先求和，再把每个数乘上 n 与总和比较：`a[i] * n < sum` 等价于 `a[i] < 平均值`，用整数比较可以完全避开浮点误差。最小值在读入或单独扫描时维护即可。",
+          "pitfalls": "「严格低于」不能用 `<=`；用 `a[i] < sum / n` 做整数除法会丢精度（样例 1 中 80 度会被误判），所以要比 `a[i] * n < sum`。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    long long sum = 0;\n    int mn, below = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n        sum += a[i];\n    }\n    mn = a[0];\n    for (i = 0; i < n; i++) {\n        if (a[i] < mn) {\n            mn = a[i];\n        }\n        if ((long long)a[i] * n < sum) {\n            below++;\n        }\n    }\n    printf(\"below: %d\\n\", below);\n    printf(\"min: %d\\n\", mn);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM2-2",
+          "cat": "string",
+          "title": "食堂菜名的字母归一化",
+          "difficulty": 2,
+          "tags": [
+            "字符串处理",
+            "大小写转换",
+            "去重计数"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n食堂把一周的菜单发到了公众号上。请把这份菜单里的英文字母统一转成小写、丢掉其它所有字符，得到一串纯小写字母的「字母指纹」，再统计这串指纹里出现了多少种不同的字母。\n\n### 输入格式\n一行文本，长度不超过 200，可能包含英文字母、空格、数字和标点，以换行结束。\n\n### 输出格式\n共两行：\n- 第一行 `letters: S`，S 是只保留字母并全部转成小写后的串（保持原顺序）；若原文中一个字母都没有，`letters:` 后面为空\n- 第二行 `distinct: D`，D 是 S 中不同小写字母的种数\n\n### 样例说明\n样例 1 原文 `Hello, CS World 2024` 的字母指纹是 `hellocsworld`，其中 h、e、l、o、c、s、w、r、d 共 9 种字母。",
+          "samples": [
+            {
+              "in": "Hello, CS World 2024\n",
+              "out": "letters: hellocsworld\ndistinct: 9\n"
+            },
+            {
+              "in": "ECE 101\n",
+              "out": "letters: ece\ndistinct: 2\n"
+            },
+            {
+              "in": "2024\n",
+              "out": "letters:\ndistinct: 0\n"
+            }
+          ],
+          "hint": "用 `fgets` 读整行，逐字符判断：大写字母用 `ch - 'A' + 'a'` 转小写；是字母就追加到结果串，同时用 `int seen[26]` 标记它是否第一次出现，第一次出现就让种数加一。",
+          "pitfalls": "只处理英文字母，空格、数字、标点都要跳过；大小写要合并统计（`E` 和 `e` 算同一种）；结果串末尾要补 `'\\0'`，行末的换行符不能被当成字母。",
+          "solution": "#include <stdio.h>\n\n#define MAXL 205\n\nint main(void)\n{\n    char s[MAXL];\n    char out[MAXL];\n    int i, k = 0;\n    int seen[26] = {0};\n    int distinct = 0;\n    char ch;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    for (i = 0; s[i] != '\\0' && s[i] != '\\n' && s[i] != '\\r'; i++) {\n        ch = s[i];\n        if (ch >= 'A' && ch <= 'Z') {\n            ch = (char)(ch - 'A' + 'a');\n        }\n        if (ch >= 'a' && ch <= 'z') {\n            out[k] = ch;\n            k++;\n            if (seen[ch - 'a'] == 0) {\n                seen[ch - 'a'] = 1;\n                distinct++;\n            }\n        }\n    }\n    out[k] = '\\0';\n    printf(\"letters: %s\\n\", out);\n    printf(\"distinct: %d\\n\", distinct);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM2-3",
+          "cat": "struct",
+          "title": "快递代取点的签收排行",
+          "difficulty": 2,
+          "tags": [
+            "结构体数组",
+            "稳定排序",
+            "排序"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n宿舍楼下的快递代取点按「谁帮大家代取了多少件」做了一个排行。请用结构体数组存下 n 条记录（代取人姓名 + 件数），按件数从多到少输出；件数相同的，保持输入中先出现的排在前面。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 50`）。\n接下来 n 行，每行一个姓名（由英文字母组成，不含空格，长度不超过 20）和一个整数（件数，0 到 1000 之间），用空格分隔。\n\n### 输出格式\n共 n 行，按排名从高到低每行输出 `姓名 件数`，姓名与件数之间用一个空格分隔。\n\n### 样例说明\n样例 1 中 Bob 8 件排第一，Amy 和 Cindy 都是 5 件，因为 Amy 在输入中先出现所以排在前面。",
+          "samples": [
+            {
+              "in": "4\nAmy 5\nBob 8\nCindy 5\nDan 3\n",
+              "out": "Bob 8\nAmy 5\nCindy 5\nDan 3\n"
+            },
+            {
+              "in": "1\nKelly 0\n",
+              "out": "Kelly 0\n"
+            },
+            {
+              "in": "3\nZed 2\nYan 2\nXu 2\n",
+              "out": "Zed 2\nYan 2\nXu 2\n"
+            }
+          ],
+          "hint": "定义 `struct` 把姓名和件数绑在一起，读入后用冒泡排序：只有 `r[j].cnt < r[j + 1].cnt` 时才交换，相等的记录不动，这样自然保持输入顺序（稳定）。交换时整条结构体一起交换。",
+          "pitfalls": "比较条件用严格小于，用 `<=` 会破坏稳定性（样例 1 的 Amy 和 Cindy 例）；姓名要用 `char` 数组存，不能只存指针。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 55\n#define MAXL 32\n\ntypedef struct {\n    char name[MAXL];\n    int cnt;\n} Rec;\n\nint main(void)\n{\n    int n, i, j;\n    Rec r[MAXN];\n    Rec tmp;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%31s%d\", r[i].name, &r[i].cnt);\n    }\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            if (r[j].cnt < r[j + 1].cnt) {\n                tmp = r[j];\n                r[j] = r[j + 1];\n                r[j + 1] = tmp;\n            }\n        }\n    }\n    for (i = 0; i < n; i++) {\n        printf(\"%s %d\\n\", r[i].name, r[i].cnt);\n    }\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM2-4",
+          "cat": "func",
+          "title": "篮球联赛的裁判打分统计",
+          "difficulty": 3,
+          "tags": [
+            "函数设计",
+            "指针返回多个值",
+            "数组作参数"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n篮球联赛的裁判组要给一支球队的 n 名球员打分（0 到 100 的整数），再按常见规则去掉一个最高分、一个最低分，用剩下的分数算平均分。\n\n请实现函数\n\n```c\nvoid stat(const int a[], int n, int *maxv, int *minv, double *avg);\n```\n\n在函数里一次算出最高分、最低分和剩下的平均分，然后写完整的程序读入数据、调用该函数并输出结果。\n\n### 输入格式\n第一行，一个整数 `n`（`3 ≤ n ≤ 100`）。\n第二行，n 个整数，每个在 0 到 100 之间，用空格分隔。\n\n### 输出格式\n共三行：\n- 第一行 `max: A`\n- 第二行 `min: B`\n- 第三行 `final: C`，C 是去掉一个最高分和一个最低分后剩下 n-2 个分数的平均值，保留 2 位小数\n\n### 样例说明\n样例 1 的总分是 400，去掉 100 和 60 之后剩下 90、80、70，平均 80.00。",
+          "samples": [
+            {
+              "in": "5\n90 80 100 70 60\n",
+              "out": "max: 100\nmin: 60\nfinal: 80.00\n"
+            },
+            {
+              "in": "3\n85 85 85\n",
+              "out": "max: 85\nmin: 85\nfinal: 85.00\n"
+            },
+            {
+              "in": "4\n100 100 60 60\n",
+              "out": "max: 100\nmin: 60\nfinal: 80.00\n"
+            }
+          ],
+          "hint": "数组作参数时长度要一起传；想「返回多个值」就用指针参数：`*maxv`、`*minv` 在函数里赋值，主函数调用时传 `&mx`、`&mn` 的地址。平均值用 `(sum - max - min) / (double)(n - 2)` 计算。",
+          "pitfalls": "最高分或最低分有多个时只去掉一个（样例 3 的 100 和 60 各有两个，只各去掉一个）；平均值必须转成 double 再除，否则整数除法会把小数丢掉，输出还得用 `%.2f`。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nstatic void stat(const int a[], int n, int *maxv, int *minv, double *avg)\n{\n    int i, sum = 0;\n\n    *maxv = a[0];\n    *minv = a[0];\n    for (i = 0; i < n; i++) {\n        sum += a[i];\n        if (a[i] > *maxv) {\n            *maxv = a[i];\n        }\n        if (a[i] < *minv) {\n            *minv = a[i];\n        }\n    }\n    *avg = (double)(sum - *maxv - *minv) / (double)(n - 2);\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int mx, mn;\n    double avg;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    stat(a, n, &mx, &mn, &avg);\n    printf(\"max: %d\\n\", mx);\n    printf(\"min: %d\\n\", mn);\n    printf(\"final: %.2f\\n\", avg);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM2-5",
+          "cat": "pointer",
+          "title": "取件短信里的最长取件码",
+          "difficulty": 3,
+          "tags": [
+            "字符指针",
+            "指针遍历",
+            "字符串扫描"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n室友收到一条快递柜取件短信，里面混着字母、标点和好几个数字串，真正的取件码是其中最长的那段连续数字串（并列时取最先出现的）。\n\n请用一个字符指针从头扫一遍这条短信，找出这个取件码，并输出它的长度。\n\n### 输入格式\n一行文本，长度不超过 200，以换行结束。\n\n### 输出格式\n若短信中存在数字串：\n- 第一行 `code: X`，X 为最长的连续数字串\n- 第二行 `len: L`，L 为它的长度\n\n若一个数字都没有，只输出一行 `none`。\n\n### 样例说明\n样例 1 里的数字串依次是 12、860138、12，最长的是 860138，长度 6。",
+          "samples": [
+            {
+              "in": "Pick up at gate 12, code 860138, cabinet A12\n",
+              "out": "code: 860138\nlen: 6\n"
+            },
+            {
+              "in": "cabinet B\n",
+              "out": "none\n"
+            },
+            {
+              "in": "12345 abc\n",
+              "out": "code: 12345\nlen: 5\n"
+            }
+          ],
+          "hint": "`char *p` 指向字符串开头，遇到数字就记下起点 `start`，然后一直 `p++` 直到不是数字，用 `p - start` 得到这一段的长度，比当前最长还长就更新起点和长度；遇到非数字直接 `p++`。",
+          "pitfalls": "并列时取最先出现的，所以只在「严格更长」时更新；指针差值 `p - start` 是 `ptrdiff_t`，用 `%.*s` 输出或转成 `int` 再输出长度；结尾的换行符不能让循环越过界。",
+          "solution": "#include <stdio.h>\n\n#define MAXL 205\n\nint main(void)\n{\n    char s[MAXL];\n    char *p;\n    const char *best = NULL;\n    int bestLen = 0;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    p = s;\n    while (*p != '\\0' && *p != '\\n' && *p != '\\r') {\n        if (*p >= '0' && *p <= '9') {\n            char *start = p;\n            while (*p >= '0' && *p <= '9') {\n                p++;\n            }\n            if ((int)(p - start) > bestLen) {\n                bestLen = (int)(p - start);\n                best = start;\n            }\n        } else {\n            p++;\n        }\n    }\n    if (bestLen == 0) {\n        printf(\"none\\n\");\n    } else {\n        printf(\"code: %.*s\\n\", bestLen, best);\n        printf(\"len: %d\\n\", bestLen);\n    }\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM2-6",
+          "cat": "algo",
+          "title": "食堂窗口的最短总等待",
+          "difficulty": 4,
+          "tags": [
+            "贪心",
+            "排序",
+            "long long"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n午饭高峰，食堂窗口前排着 n 个人，第 i 个人打饭需要 `t[i]` 秒。为了让所有人等待时间之和最小，窗口应该按打饭时长从短到长安排（时长相同的按原来的编号从小到大）。\n\n请输出这个最小的等待时间之和，以及最优的服务顺序。每个人等待的时间，是在他前面打饭的所有人打饭时长之和。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 1000`）。\n第二行，n 个整数，依次是第 1 到第 n 个人打饭需要的秒数，每个整数在 1 到 1000 之间，用空格分隔。\n\n### 输出格式\n共两行：\n- 第一行 `minwait: W`，W 为最小等待时间之和\n- 第二行 `order:` 后面依次输出最优顺序中每个人的编号（编号就是输入中的第几个人，从 1 开始），每个编号前有一个空格\n\n### 样例说明\n样例 1 中按 2、3、1 的顺序打饭：2 号不用等，3 号等 1 秒，1 号等 1+3=4 秒，等待时间之和 0+1+4=5。",
+          "samples": [
+            {
+              "in": "3\n5 1 3\n",
+              "out": "minwait: 5\norder: 2 3 1\n"
+            },
+            {
+              "in": "4\n2 2 3 1\n",
+              "out": "minwait: 9\norder: 4 1 2 3\n"
+            },
+            {
+              "in": "1\n7\n",
+              "out": "minwait: 0\norder: 1\n"
+            }
+          ],
+          "hint": "最优顺序就是把时长升序排好。排完序后，第 i 个人（从 0 开始数）的时长会被后面 n-1-i 个人各等一次，所以总等待时间等于 `sum(t[i] * (n-1-i))`，一趟循环即可。用 `long long` 存答案。",
+          "pitfalls": "总等待时间的最大值约为 5 亿秒，`int` 虽然勉强放得下但很容易踩边界，习惯上用 `long long` 保存并用 `%lld` 输出；排序时同一时长要按原编号升序，才能得到唯一的顺序。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 1005\n\nint main(void)\n{\n    int n, i, j, t;\n    int a[MAXN], idx[MAXN];\n    long long total = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 1; i <= n; i++) {\n        scanf(\"%d\", &a[i]);\n        idx[i] = i;\n    }\n    for (i = 1; i < n; i++) {\n        for (j = 1; j <= n - i; j++) {\n            if (a[idx[j]] > a[idx[j + 1]] ||\n                (a[idx[j]] == a[idx[j + 1]] && idx[j] > idx[j + 1])) {\n                t = idx[j];\n                idx[j] = idx[j + 1];\n                idx[j + 1] = t;\n            }\n        }\n    }\n    for (i = 1; i <= n; i++) {\n        total += (long long)a[idx[i]] * (long long)(n - i);\n    }\n    printf(\"minwait: %lld\\n\", total);\n    printf(\"order:\");\n    for (i = 1; i <= n; i++) {\n        printf(\" %d\", idx[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "FM3",
+      "title": "期末全真模拟卷 3 · 压轴冲刺",
+      "subtitle": "覆盖学分汇总、单词去重、结构体筛选汇总、动态二维表、递归回溯与完全背包；两题 4★压轴，难度：期末偏难",
+      "duration": 120,
+      "problems": [
+        {
+          "id": "FM3-1",
+          "cat": "array1",
+          "title": "选课学分的汇总核对",
+          "difficulty": 1,
+          "tags": [
+            "一维数组",
+            "求和",
+            "条件判断"
+          ],
+          "source": "新编",
+          "desc": "### 题目描述\n选课系统结算时要把这学期已选课程的学分汇总，并检查总学分是否超过上限 30 学分。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 20`）。\n第二行，n 个整数，依次是每门课的学分，每个整数在 0 到 10 之间，用空格分隔。\n\n### 输出格式\n共三行：\n- 第一行 `credits: T`，T 为总学分\n- 第二行 `max course: M`，M 为单门课的最高学分\n- 第三行 `overflow: yes` 表示总学分严格大于 30，否则输出 `overflow: no`\n\n### 样例说明\n样例 2 的学分总和是 36，超过 30，所以输出 `overflow: yes`。",
+          "samples": [
+            {
+              "in": "5\n3 4 2 3 1\n",
+              "out": "credits: 13\nmax course: 4\noverflow: no\n"
+            },
+            {
+              "in": "6\n6 6 6 6 6 6\n",
+              "out": "credits: 36\nmax course: 6\noverflow: yes\n"
+            },
+            {
+              "in": "5\n8 8 8 6 1\n",
+              "out": "credits: 31\nmax course: 8\noverflow: yes\n"
+            }
+          ],
+          "hint": "边读入边累加总学分、边更新最大学分，最后用 `sum > 30` 决定输出 `yes` 还是 `no`。",
+          "pitfalls": "「超过上限」要用严格大于，正好 30 学分不算超；三行输出都要有，别漏掉 `max course` 一行。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 25\n#define LIMIT 30\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int sum = 0, mx = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n        sum += a[i];\n        if (a[i] > mx) {\n            mx = a[i];\n        }\n    }\n    printf(\"credits: %d\\n\", sum);\n    printf(\"max course: %d\\n\", mx);\n    printf(\"overflow: %s\\n\", sum > LIMIT ? \"yes\" : \"no\");\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM3-2",
+          "cat": "string",
+          "title": "辩论赛队伍名的去重统计",
+          "difficulty": 2,
+          "tags": [
+            "字符串数组",
+            "去重",
+            "词频统计"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n辩论赛的报名表是一行用空格分隔的队伍名。请统计一共有多少支不同的队伍，并按队伍名第一次出现的先后顺序，输出每个队伍名和它出现的次数。\n\n### 输入格式\n一行，若干个由空格分隔的字符串，每个字符串由英文字母组成、长度不超过 15，整行长度不超过 200，以换行或文件结束结束。\n\n### 输出格式\n共 k + 1 行（k 为不同队伍名的个数）：\n- 第一行 `teams: k`\n- 接下来 k 行，按第一次出现的先后顺序，每行输出 `队伍名 次数`，中间用一个空格分隔\n\n### 样例说明\n样例 1 中 Alpha 出现 3 次、Beta 2 次、Gamma 1 次，Alpha 最先出现，所以排第一行。",
+          "samples": [
+            {
+              "in": "Alpha Beta Alpha Gamma Beta Alpha\n",
+              "out": "teams: 3\nAlpha 3\nBeta 2\nGamma 1\n"
+            },
+            {
+              "in": "Solo\n",
+              "out": "teams: 1\nSolo 1\n"
+            },
+            {
+              "in": "A B C B A\n",
+              "out": "teams: 3\nA 2\nB 2\nC 1\n"
+            }
+          ],
+          "hint": "用二维字符数组（每个名字长度不超过 15）按首次出现顺序存不同的队伍名，另用 `int cnt[]` 记次数；每读入一个词，就在已存的 `n` 个名字里用 `strcmp` 查一遍，找到就次数加一，找不到就追加到末尾。",
+          "pitfalls": "只能用 `strcmp` 比较字符串，`name[i] == buf` 比较的是地址永远不等；读入用循环 `scanf(\"%15s\", buf)`，读到文件结束 `scanf` 返回 EOF 时停止。",
+          "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXN 120\n#define MAXL 16\n\nint main(void)\n{\n    char name[MAXN][MAXL];\n    char buf[MAXL];\n    int cnt[MAXN];\n    int n = 0, i;\n\n    while (n < MAXN && scanf(\"%15s\", buf) == 1) {\n        for (i = 0; i < n; i++) {\n            if (strcmp(name[i], buf) == 0) {\n                cnt[i]++;\n                break;\n            }\n        }\n        if (i == n) {\n            strcpy(name[n], buf);\n            cnt[n] = 1;\n            n++;\n        }\n    }\n    printf(\"teams: %d\\n\", n);\n    for (i = 0; i < n; i++) {\n        printf(\"%s %d\\n\", name[i], cnt[i]);\n    }\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM3-3",
+          "cat": "struct",
+          "title": "图书馆借阅的逾期罚金",
+          "difficulty": 2,
+          "tags": [
+            "结构体数组",
+            "条件筛选",
+            "浮点输出"
+          ],
+          "source": "新编",
+          "desc": "### 题目描述\n图书馆规定：本科生借期 30 天，超过 30 天的部分每天罚 0.5 元。请读入 n 条借阅记录（学号、书名、已借天数），统计逾期记录，并给出罚金总额与罚金最高的学号。\n\n### 输入格式\n第一行，一个整数 `n`（`1 ≤ n ≤ 100`）。\n接下来 n 行，每行一个学号（1 到 `10^9` 的整数）、一个不含空格的书名（长度不超过 20）和已借天数（1 到 365 的整数），用空格分隔。\n\n### 输出格式\n共三行：\n- 第一行 `overdue: k`，k 为逾期记录条数\n- 第二行 `total: F`，F 为所有逾期记录的罚金总和，保留 2 位小数\n- 第三行 `worst: S`，S 为罚金最高的那条记录的学号；若有多条并列最高，取学号最小的；没有逾期记录时输出 `worst: 0`\n\n### 样例说明\n样例 1 中 2021002 只借了 30 天不算逾期，其余三人罚金分别是 7.50、4.00、10.00 元，总计 21.50 元，罚金最高的是 2021004。",
+          "samples": [
+            {
+              "in": "4\n2021001 Math 45\n2021002 Physics 30\n2021003 C_Programming 38\n2021004 English 50\n",
+              "out": "overdue: 3\ntotal: 21.50\nworst: 2021004\n"
+            },
+            {
+              "in": "2\n1001 Algebra 10\n1002 History 20\n",
+              "out": "overdue: 0\ntotal: 0.00\nworst: 0\n"
+            },
+            {
+              "in": "2\n1003 X 40\n1001 Y 40\n",
+              "out": "overdue: 2\ntotal: 10.00\nworst: 1001\n"
+            }
+          ],
+          "hint": "用结构体数组把记录整条读进来，再一趟遍历：`days > 30` 就计入逾期，同时把罚金累加到总额，并用「严格大于」更新最高罚金与对应学号。罚金的每一笔都是 0.5 的整数倍，误差不会累积。",
+          "pitfalls": "到期日正好 30 天不算逾期；学号最大到 `10^9` 要用 `int` 或 `long long`；并列最高时取学号最小的（用严格大于更新，且要额外比较学号）；没有逾期时三行都要输出，罚金总额输出 `0.00`。",
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n#define LIMIT 30\n\ntypedef struct {\n    int id;\n    char book[24];\n    int days;\n} Rec;\n\nstatic Rec r[MAXN];\n\nint main(void)\n{\n    int n, i, k = 0;\n    int worst = 0, hasWorst = 0;\n    double total = 0.0, best = 0.0, fine;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%23s%d\", &r[i].id, r[i].book, &r[i].days);\n    }\n    for (i = 0; i < n; i++) {\n        if (r[i].days > LIMIT) {\n            fine = (double)(r[i].days - LIMIT) * 0.5;\n            k++;\n            total += fine;\n            if (!hasWorst || fine > best || (fine == best && r[i].id < worst)) {\n                best = fine;\n                worst = r[i].id;\n                hasWorst = 1;\n            }\n        }\n    }\n    printf(\"overdue: %d\\n\", k);\n    printf(\"total: %.2f\\n\", total);\n    printf(\"worst: %d\\n\", worst);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM3-4",
+          "cat": "pointer",
+          "title": "快递驿站的货架到件表",
+          "difficulty": 3,
+          "tags": [
+            "动态内存",
+            "指针数组",
+            "二维数组"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n快递驿站有 m 排货架，每排 n 个格子，格子里放着不同数量的包裹。请用动态内存分配建一张二维表（`int **`，每排单独分配）存下每个格子的包裹数，然后算出「每排最大包裹数之和」，并找出所有格子里包裹数最多的那一个（并列时取行号最小的，行号相同取列号最小的）。\n\n### 输入格式\n第一行，两个整数 `m` 和 `n`（`1 ≤ m ≤ 100`，`1 ≤ n ≤ 100`），用空格分隔。\n接下来 m 行，每行 n 个整数，每个整数的绝对值不超过 1000，用空格分隔。\n\n### 输出格式\n共两行：\n- 第一行 `rowmax sum: S`，S 为每排最大值之和\n- 第二行 `global max: V at row R col C`，V 为全局最大包裹数，R、C 为它的行号和列号（都从 1 开始）\n\n### 样例说明\n样例 1 中每排最大值分别是 4、9、7，和为 20；全局最大值 9 在第 2 排第 1 列。",
+          "samples": [
+            {
+              "in": "3 4\n1 2 3 4\n9 2 5 1\n0 7 7 2\n",
+              "out": "rowmax sum: 20\nglobal max: 9 at row 2 col 1\n"
+            },
+            {
+              "in": "1 1\n5\n",
+              "out": "rowmax sum: 5\nglobal max: 5 at row 1 col 1\n"
+            },
+            {
+              "in": "2 3\n-1 -5 -3\n-2 -8 -4\n",
+              "out": "rowmax sum: -3\nglobal max: -1 at row 1 col 1\n"
+            }
+          ],
+          "hint": "先 `malloc` 一个 `int *` 数组当行指针表，再为每一行 `malloc` 一个长度为 n 的数组；填数时顺便求每行最大值，全部填完后定全局最大。用完要把每一行和行表都 `free` 掉（考试时哪怕不 free 也要会写）。",
+          "pitfalls": "行表要分配 `m * sizeof(int *)`，每行分配 `n * sizeof(int)`，两者别搞混；元素可能是负数，全局最大值的初值不能写 0，要用「是否第一个元素」的标志。",
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int m, n, i, j;\n    int **a;\n    int rowsum = 0;\n    int best = 0, bestR = 1, bestC = 1;\n    int first = 1;\n\n    if (scanf(\"%d%d\", &m, &n) != 2) {\n        return 0;\n    }\n    a = (int **)malloc((size_t)m * sizeof(int *));\n    if (a == NULL) {\n        return 0;\n    }\n    for (i = 0; i < m; i++) {\n        a[i] = (int *)malloc((size_t)n * sizeof(int));\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++) {\n                free(a[j]);\n            }\n            free(a);\n            return 0;\n        }\n    }\n    for (i = 0; i < m; i++) {\n        int rmax = 0;\n        for (j = 0; j < n; j++) {\n            scanf(\"%d\", &a[i][j]);\n            if (j == 0 || a[i][j] > rmax) {\n                rmax = a[i][j];\n            }\n            if (first || a[i][j] > best) {\n                best = a[i][j];\n                bestR = i + 1;\n                bestC = j + 1;\n                first = 0;\n            }\n        }\n        rowsum += rmax;\n    }\n    printf(\"rowmax sum: %d\\n\", rowsum);\n    printf(\"global max: %d at row %d col %d\\n\", best, bestR, bestC);\n    for (i = 0; i < m; i++) {\n        free(a[i]);\n    }\n    free(a);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM3-5",
+          "cat": "func",
+          "title": "辩论赛开辩结辩的记录",
+          "difficulty": 4,
+          "tags": [
+            "递归",
+            "回溯",
+            "括号序列"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n辩论赛每轮有「开辩」和「结辩」各一次，用 `(` 表示开辩、`)` 表示结辩。一场比赛共 n 轮，所以记录里恰好有 n 个 `(` 和 n 个 `)`。\n\n合法的记录要求：任意一个前缀里，`)` 的个数都不能超过 `(` 的个数（也就是结辩不能早于开辩）。请用递归（回溯）按字典序输出 n 轮所有合法的记录。\n\n### 输入格式\n一行，一个整数 `n`（`1 ≤ n ≤ 6`）。\n\n### 输出格式\n每一行输出一种合法记录（只由 `(` 和 `)` 组成，长度 2n）。\n最后一行输出 `total: K`，K 为合法记录的总数。\n\n### 样例说明\n样例 1 中 n = 2 时只有 `(())` 和 `()()` 两种；字典序下 `(` 排在 `)` 前面，所以先输出 `(())`。",
+          "samples": [
+            {
+              "in": "2\n",
+              "out": "(())\n()()\ntotal: 2\n"
+            },
+            {
+              "in": "1\n",
+              "out": "()\ntotal: 1\n"
+            },
+            {
+              "in": "3\n",
+              "out": "((()))\n(()())\n(())()\n()(())\n()()()\ntotal: 5\n"
+            }
+          ],
+          "hint": "递归函数带两个计数：已用的 `left` 和已用的 `right`。当 `left < n` 时可以放 `(`；当 `right < left` 时可以放 `)`。放到 `left + right == 2n` 时整串完成，输出并计数。先试 `(` 后试 `)` 就自然得到字典序。",
+          "pitfalls": "剪枝条件必须保证「先有足够的 `(`」：只有 `right < left` 时才能放 `)`；回溯时字符本身不必擦掉（下一位会覆盖），但每一层的 `pos` 必须正确回退，不能用全局下标死记；n 最大 6，合法记录共 132 种，输出量不大。",
+          "solution": "#include <stdio.h>\n\n#define MAXL 32\n\nstatic int n;\nstatic char buf[MAXL];\nstatic int total = 0;\n\nstatic void dfs(int pos, int left, int right)\n{\n    if (pos == 2 * n) {\n        buf[pos] = '\\0';\n        printf(\"%s\\n\", buf);\n        total++;\n        return;\n    }\n    if (left < n) {\n        buf[pos] = '(';\n        dfs(pos + 1, left + 1, right);\n    }\n    if (right < left) {\n        buf[pos] = ')';\n        dfs(pos + 1, left, right + 1);\n    }\n}\n\nint main(void)\n{\n    if (scanf(\"%d\", &n) != 1) {\n        return 0;\n    }\n    dfs(0, 0, 0);\n    printf(\"total: %d\\n\", total);\n    return 0;\n}\n"
+        },
+        {
+          "id": "FM3-6",
+          "cat": "algo",
+          "title": "食堂消费券的最少张数",
+          "difficulty": 4,
+          "tags": [
+            "动态规划",
+            "完全背包",
+            "最优化"
+          ],
+          "source": "新编（参考期末机考风格）",
+          "desc": "### 题目描述\n食堂推出了 n 种面额的消费券，每种券都可以无限次使用。室友想恰好凑出 S 元，问最少需要多少张券。\n\n### 输入格式\n第一行，两个整数 `n` 和 `S`（`1 ≤ n ≤ 10`，`1 ≤ S ≤ 10000`），用空格分隔。\n第二行，n 个互不相同的整数，每个整数在 1 到 1000 之间，用空格分隔，表示各种券的面额。\n\n### 输出格式\n一行：若能恰好凑出 S 元，输出 `min coupons: K`（K 为最少张数）；否则输出 `impossible`。\n\n### 样例说明\n样例 1 用 5 + 5 + 1 三张凑出 11 元；样例 2 的面额都是偶数，凑不出 7 元。",
+          "samples": [
+            {
+              "in": "3 11\n1 3 5\n",
+              "out": "min coupons: 3\n"
+            },
+            {
+              "in": "2 7\n2 4\n",
+              "out": "impossible\n"
+            },
+            {
+              "in": "4 12\n1 5 7 10\n",
+              "out": "min coupons: 2\n"
+            }
+          ],
+          "hint": "设 `dp[j]` 为凑出 j 元最少要几张券，`dp[0] = 0`，其余初始化为一个大数（表示凑不出）；每种面额 a 做一次「正序」遍历 `dp[j] = min(dp[j], dp[j - a] + 1)`（j 从 a 到 S），正序是允许同一种券重复用的关键。最后看 `dp[S]` 是否还是无穷大。",
+          "pitfalls": "内层循环必须从小到大（正序），倒序就变成每种券只能取一次（0/1 背包）；`dp` 初值要用足够大的数，判断「凑不出」时别去比较溢出后的值。",
+          "solution": "#include <stdio.h>\n\n#define MAXS 10005\n#define MAXN 15\n#define INF 100000000\n\nint main(void)\n{\n    int n, s, i, j;\n    int a[MAXN];\n    int dp[MAXS];\n\n    if (scanf(\"%d%d\", &n, &s) != 2) {\n        return 0;\n    }\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    for (j = 0; j <= s; j++) {\n        dp[j] = INF;\n    }\n    dp[0] = 0;\n    for (i = 0; i < n; i++) {\n        for (j = a[i]; j <= s; j++) {\n            if (dp[j - a[i]] + 1 < dp[j]) {\n                dp[j] = dp[j - a[i]] + 1;\n            }\n        }\n    }\n    if (dp[s] >= INF) {\n        printf(\"impossible\\n\");\n    } else {\n        printf(\"min coupons: %d\\n\", dp[s]);\n    }\n    return 0;\n}\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,436 @@
+{
+  "problems": [
+    {
+      "id": "G01",
+      "cat": "func",
+      "title": "设计函数求分段函数值",
+      "difficulty": 1,
+      "tags": [
+        "函数设计",
+        "分段函数",
+        "if链"
+      ],
+      "source": "PTA 6-1（实验5_1，改编为完整程序）",
+      "desc": "### 题目描述\n已知一个分段函数：\n\n- 当 x < 1 时，y = x\n- 当 1 <= x <= 10 时，y = 2*x - 1\n- 当 10 < x <= 100 时，y = 3*x - 11\n- 当 x > 100 时，y = x*x - 24\n\n请设计函数 `int fun(int x)`，根据输入的 x 计算并返回 y。然后写一个**完整程序**：从标准输入读入 x，调用 `fun`，按指定格式输出 y。\n\n### 输入格式\n一行，一个整数 x，满足 -10000 <= x <= 10000。\n\n### 输出格式\n一行，格式为 `The result is:y=结果`，行末换行。",
+      "samples": [
+        {
+          "in": "-99\n",
+          "out": "The result is:y=-99\n"
+        },
+        {
+          "in": "50\n",
+          "out": "The result is:y=139\n"
+        }
+      ],
+      "hint": "按 x 所在区间从小到大的顺序写 if / else if 链，一旦命中就 `return`，后面的区间不必再判断。",
+      "pitfalls": "边界值 1、10、100 分别属于哪个区间要看准；x > 100 这一支不要漏判，否则会掉进上一个分支。",
+      "solution": "#include <stdio.h>\n\n/* 分段函数求值 */\nint fun(int x)\n{\n    if (x < 1) {\n        return x;\n    }\n    if (x <= 10) {\n        return 2 * x - 1;\n    }\n    if (x <= 100) {\n        return 3 * x - 11;\n    }\n    return x * x - 24;\n}\n\nint main(void)\n{\n    int x;\n\n    scanf(\"%d\", &x);\n    printf(\"The result is:y=%d\\n\", fun(x));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G02",
+      "cat": "func",
+      "title": "自实现整数幂函数",
+      "difficulty": 1,
+      "tags": [
+        "函数设计",
+        "循环",
+        "累乘"
+      ],
+      "source": "PTA 6-5（实验5_6，改编为完整程序）",
+      "desc": "### 题目描述\n请设计函数 `int mypow(int x, int n)`，返回非负整数 x 的 n 次幂（即 x 连乘 n 次）。特别注意 n = 0 时结果是 1。\n\n请再写一个**完整程序**：读入 x 和 n，调用 `mypow`，输出计算结果。\n\n### 输入格式\n一行，两个非负整数 x 和 n，用空格分隔，满足 0 <= x <= 100，0 <= n <= 20，且 x 的 n 次幂不超过 int 范围。\n\n### 输出格式\n一行，一个整数，即 x 的 n 次幂，行末换行。",
+      "samples": [
+        {
+          "in": "2 10\n",
+          "out": "1024\n"
+        },
+        {
+          "in": "5 0\n",
+          "out": "1\n"
+        },
+        {
+          "in": "3 5\n",
+          "out": "243\n"
+        }
+      ],
+      "hint": "结果初值取 1，然后循环 n 次、每轮乘一次 x；因为 n = 0 时循环一次都不执行，初值 1 正好是正确答案。",
+      "pitfalls": "初值写成 0 会让结果永远是 0；n = 0 时要能直接返回 1；本题保证幂不超过 int 范围，更大的数据要换 long long。",
+      "solution": "#include <stdio.h>\n\n/* 返回 x 的 n 次幂（n >= 0） */\nint mypow(int x, int n)\n{\n    int result = 1;\n\n    while (n > 0) {\n        result *= x;\n        n--;\n    }\n    return result;\n}\n\nint main(void)\n{\n    int x, n;\n\n    scanf(\"%d%d\", &x, &n);\n    printf(\"%d\\n\", mypow(x, n));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G03",
+      "cat": "func",
+      "title": "统计正整数的位数",
+      "difficulty": 2,
+      "tags": [
+        "函数设计",
+        "long long",
+        "循环"
+      ],
+      "source": "PTA 6-3（实验5_4，改编为完整程序）",
+      "desc": "### 题目描述\n请设计函数 `int getDigit(long long n)`，计算并返回正整数 n 的十进制位数。\n\n请再写一个**完整程序**：读入正整数 n，调用 `getDigit`，根据位数按指定格式输出。注意英语中 digit 的单复数形式。\n\n### 输入格式\n一行，一个正整数 n，满足 1 <= n <= 10^18。\n\n### 输出格式\n一行。若位数为 1，输出 `The integer n has 1 digit.`；否则输出 `The integer n has L digits.`（其中 L 为位数，注意 digit 和 digits 的单复数区别），行末换行。",
+      "samples": [
+        {
+          "in": "1234567890\n",
+          "out": "The integer 1234567890 has 10 digits.\n"
+        },
+        {
+          "in": "7\n",
+          "out": "The integer 7 has 1 digit.\n"
+        }
+      ],
+      "hint": "每做一次 `n /= 10` 位数就加一，直到 n 变成 0；n 最长可达 19 位，必须用 `long long` 存储。",
+      "pitfalls": "读入 `long long` 要用 `%lld`，用 `%d` 会截断；遍历用 while (n > 0) 或 do-while，注意别把 0 算成 0 位。",
+      "solution": "#include <stdio.h>\n\n/* 返回正整数 n 的十进制位数 */\nint getDigit(long long n)\n{\n    int len = 0;\n\n    do {\n        len++;\n        n /= 10;\n    } while (n > 0);\n    return len;\n}\n\nint main(void)\n{\n    long long n;\n    int len;\n\n    scanf(\"%lld\", &n);\n    len = getDigit(n);\n    if (len > 1) {\n        printf(\"The integer %lld has %d digits.\\n\", n, len);\n    } else {\n        printf(\"The integer %lld has %d digit.\\n\", n, len);\n    }\n    return 0;\n}\n"
+    },
+    {
+      "id": "G04",
+      "cat": "func",
+      "title": "整数的反转形式",
+      "difficulty": 2,
+      "tags": [
+        "函数设计",
+        "数位分离",
+        "循环"
+      ],
+      "source": "PTA 6-4（实验5_5，改编为完整程序）",
+      "desc": "### 题目描述\n请设计函数 `int reverseNum(int n)`，返回正整数 n 的各位数字反转后得到的整数。例如 reverseNum(12345) 的值为 54321。\n\n请再写一个**完整程序**：读入正整数 n，调用 `reverseNum`，按指定格式输出反转结果。\n\n### 输入格式\n一行，一个正整数 n，满足 1 <= n <= 10^9，n 没有前导 0，末位也不是 0。\n\n### 输出格式\n一行，格式为 `The reverse form of number N is R.`，其中 N 为输入的数，R 为反转后的数，行末换行。",
+      "samples": [
+        {
+          "in": "12345\n",
+          "out": "The reverse form of number 12345 is 54321.\n"
+        },
+        {
+          "in": "70001\n",
+          "out": "The reverse form of number 70001 is 10007.\n"
+        }
+      ],
+      "hint": "一边取末位一边拼结果：`r = r * 10 + n % 10;`，再 `n /= 10;`，循环到 n 为 0 结束。",
+      "pitfalls": "不要借字符串或数组实现（本题考的是数位分离）；累乘时要保证反转结果仍在 int 范围内。",
+      "solution": "#include <stdio.h>\n\n/* 返回正整数 n 反转后的数 */\nint reverseNum(int n)\n{\n    int r = 0;\n\n    while (n > 0) {\n        r = r * 10 + n % 10;\n        n /= 10;\n    }\n    return r;\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"The reverse form of number %d is %d.\\n\", n, reverseNum(n));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G05",
+      "cat": "func",
+      "title": "三角形类型判定",
+      "difficulty": 2,
+      "tags": [
+        "函数设计",
+        "排序",
+        "勾股定理"
+      ],
+      "source": "PTA 6-6（实验5_10，改编为完整程序）",
+      "desc": "### 题目描述\n请设计函数 `int judgeTriangle(int a, int b, int c)`，判断三条边长 a、b、c 能否构成三角形；如果能，再判断它属于哪一种三角形。三条边的大小顺序任意，判断前请自己先排序，让最长边放在最后。\n\n函数返回值约定：\n\n- 不能构成三角形，返回 -1\n- 能构成一般（不规则）三角形，返回 0\n- 能构成直角三角形，返回 1\n- 能构成等腰三角形，返回 2\n- 能构成等边三角形，返回 3\n\n注意：等边三角形同时也满足等腰的条件，所以要先判断等边。\n\n请再写一个**完整程序**：读入三条边，调用 `judgeTriangle`，用 switch 按返回值输出对应的句子。\n\n### 输入格式\n一行，三个正整数 a、b、c，用空格分隔，满足 1 <= a, b, c <= 10000。\n\n### 输出格式\n只输出一行，按返回值不同分别为：\n\n- 返回 -1：`It is not a triangle.`\n- 返回 0：`It is a scalenous triangle.`\n- 返回 1：`It is a right-angled triangle.`\n- 返回 2：`It is an isosceles triangle.`\n- 返回 3：`It is a equilateral triangle.`",
+      "samples": [
+        {
+          "in": "13 5 12\n",
+          "out": "It is a right-angled triangle.\n"
+        },
+        {
+          "in": "7 7 10\n",
+          "out": "It is an isosceles triangle.\n"
+        },
+        {
+          "in": "1 2 3\n",
+          "out": "It is not a triangle.\n"
+        }
+      ],
+      "hint": "先把三边升序排好，让 c 最大；再依次判断：任意两边之和不大于第三边（不是三角形）→ 三边相等 → a*a + b*b == c*c（直角）→ 有一对边相等（等腰）→ 否则一般三角形。",
+      "pitfalls": "不排序就写 `a + b > c` 会误判；先判等腰会把等边判成等腰；边长不超过 10000，平方用 int 也不会溢出。",
+      "solution": "#include <stdio.h>\n\n/* 把三个整数按升序整理（通过指针修改调用者的变量） */\nstatic void sort3(int *a, int *b, int *c)\n{\n    int t;\n\n    if (*a > *b) {\n        t = *a;\n        *a = *b;\n        *b = t;\n    }\n    if (*b > *c) {\n        t = *b;\n        *b = *c;\n        *c = t;\n    }\n    if (*a > *b) {\n        t = *a;\n        *a = *b;\n        *b = t;\n    }\n}\n\n/* -1：不是三角形；0：一般三角形；1：直角；2：等腰；3：等边 */\nint judgeTriangle(int a, int b, int c)\n{\n    sort3(&a, &b, &c);\n    if (a <= 0 || a + b <= c) {\n        return -1;\n    }\n    if (a == c) {\n        return 3;\n    }\n    if (a * a + b * b == c * c) {\n        return 1;\n    }\n    if (a == b || b == c) {\n        return 2;\n    }\n    return 0;\n}\n\nint main(void)\n{\n    int a, b, c;\n\n    scanf(\"%d%d%d\", &a, &b, &c);\n    switch (judgeTriangle(a, b, c)) {\n    case -1:\n        printf(\"It is not a triangle.\\n\");\n        break;\n    case 0:\n        printf(\"It is a scalenous triangle.\\n\");\n        break;\n    case 1:\n        printf(\"It is a right-angled triangle.\\n\");\n        break;\n    case 2:\n        printf(\"It is an isosceles triangle.\\n\");\n        break;\n    case 3:\n        printf(\"It is a equilateral triangle.\\n\");\n        break;\n    default:\n        break;\n    }\n    return 0;\n}\n"
+    },
+    {
+      "id": "G06",
+      "cat": "func",
+      "title": "值传递与地址传递对比",
+      "difficulty": 2,
+      "tags": [
+        "值传递",
+        "地址传递",
+        "指针参数"
+      ],
+      "source": "新编",
+      "desc": "### 题目描述\nC 语言的函数调用是「值传递」：形参只是实参的一份副本，函数内部修改形参不会影响调用者的变量。如果希望函数真正改变调用者的变量，就必须把变量的地址传进去，在函数里用 `*p` 解引用。\n\n本题目要求你写出两个交换函数，并对照它们的效果：\n\n- `void swapByValue(int a, int b)`：只用值传递，在函数内部交换这两个形参（不会影响 main 里的变量）\n- `void swapByPtr(int *a, int *b)`：通过指针交换两个 int 变量（会真正改变 main 里的变量）\n\n然后写完整的 `main`：读入两个整数 x、y，先输出初始值，调用 `swapByValue` 后输出一次，再调用 `swapByPtr`（注意传地址）后输出一次。\n\n### 输入格式\n一行，两个整数 x 和 y，用空格分隔，满足 -10^9 <= x, y <= 10^9。\n\n### 输出格式\n共三行，依次为：\n\n1. `before: x=X y=Y`\n2. `after swapByValue: x=X y=Y`（这里 x、y 应该还是原来的值）\n3. `after swapByPtr: x=X y=Y`（这里 x、y 已经交换）",
+      "samples": [
+        {
+          "in": "3 8\n",
+          "out": "before: x=3 y=8\nafter swapByValue: x=3 y=8\nafter swapByPtr: x=8 y=3\n"
+        },
+        {
+          "in": "0 -5\n",
+          "out": "before: x=0 y=-5\nafter swapByValue: x=0 y=-5\nafter swapByPtr: x=-5 y=0\n"
+        }
+      ],
+      "hint": "`swapByValue` 里怎么换都不会影响实参；`swapByPtr` 里要用 `*a`、`*b` 交换它们指向的内容，调用时写 `swapByPtr(&x, &y)`。",
+      "pitfalls": "`swapByPtr` 里写成 `int t = a;` 交换的是两个地址的值，形参类型是 int*，改成 int 会编译报错；调用时别漏掉 `&`。",
+      "solution": "#include <stdio.h>\n\n/* 值传递：交换的只是形参副本，不影响调用者 */\nvoid swapByValue(int a, int b)\n{\n    int t;\n\n    t = a;\n    a = b;\n    b = t;\n}\n\n/* 地址传递：通过指针交换调用者的两个变量 */\nvoid swapByPtr(int *a, int *b)\n{\n    int t;\n\n    t = *a;\n    *a = *b;\n    *b = t;\n}\n\nint main(void)\n{\n    int x, y;\n\n    scanf(\"%d%d\", &x, &y);\n    printf(\"before: x=%d y=%d\\n\", x, y);\n\n    swapByValue(x, y);\n    printf(\"after swapByValue: x=%d y=%d\\n\", x, y);\n\n    swapByPtr(&x, &y);\n    printf(\"after swapByPtr: x=%d y=%d\\n\", x, y);\n    return 0;\n}\n"
+    },
+    {
+      "id": "G07",
+      "cat": "func",
+      "title": "数组最值及其下标",
+      "difficulty": 2,
+      "tags": [
+        "数组作参数",
+        "指针返回多值",
+        "遍历"
+      ],
+      "source": "新编",
+      "desc": "### 题目描述\n数组作函数参数时，实际传递的是数组首元素的地址，函数内部可以直接访问原数组；而 C 函数只能有一个返回值，想「返回多个结果」通常靠指针参数实现。\n\n请设计函数\n\n`void findExtremes(const int a[], int n, int *maxVal, int *maxIdx, int *minVal, int *minIdx)`\n\n一次性求出数组中的最大值、最小值，以及它们**首次出现**的下标（下标从 0 开始），并通过这 4 个指针参数带回结果。\n\n然后写完整程序：读入 n 和 n 个整数，调用 `findExtremes`，按格式输出。\n\n### 输入格式\n第一行一个整数 n，满足 1 <= n <= 100。\n第二行 n 个用空格分隔的整数 a[i]，满足 -10^9 <= a[i] <= 10^9。\n\n### 输出格式\n两行：\n\n1. `max=V index=I`\n2. `min=V index=I`\n\n其中 V 为极值，I 为该极值首次出现的下标，行末换行。",
+      "samples": [
+        {
+          "in": "6\n15 30 34 10 89 5\n",
+          "out": "max=89 index=4\nmin=5 index=5\n"
+        },
+        {
+          "in": "1\n42\n",
+          "out": "max=42 index=0\nmin=42 index=0\n"
+        }
+      ],
+      "hint": "先令 `*maxVal = *minVal = a[0]`、两个下标都置 0，再从下标 1 开始扫；只有严格大于 / 严格小于时才更新，所以留下的就是首次出现的位置。",
+      "pitfalls": "用 `>=`、`<=` 更新会取到最后一个极值的下标；调用时忘记传 `&` 会让程序崩溃；`const int a[]` 与 `int a[]` 等价传递。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\n/* 求最大值、最小值及其首次出现的下标（下标从 0 开始） */\nvoid findExtremes(const int a[], int n, int *maxVal, int *maxIdx,\n                  int *minVal, int *minIdx)\n{\n    int i;\n\n    *maxVal = a[0];\n    *minVal = a[0];\n    *maxIdx = 0;\n    *minIdx = 0;\n    for (i = 1; i < n; i++) {\n        if (a[i] > *maxVal) {\n            *maxVal = a[i];\n            *maxIdx = i;\n        }\n        if (a[i] < *minVal) {\n            *minVal = a[i];\n            *minIdx = i;\n        }\n    }\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int maxVal, minVal, maxIdx, minIdx;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    findExtremes(a, n, &maxVal, &maxIdx, &minVal, &minIdx);\n    printf(\"max=%d index=%d\\n\", maxVal, maxIdx);\n    printf(\"min=%d index=%d\\n\", minVal, minIdx);\n    return 0;\n}\n"
+    },
+    {
+      "id": "G08",
+      "cat": "func",
+      "title": "数字的加密与解密",
+      "difficulty": 2,
+      "tags": [
+        "函数设计",
+        "数位分离",
+        "互逆运算"
+      ],
+      "source": "新编",
+      "desc": "### 题目描述\n某系统要把一个 4 位数的门禁密码加密后传输，加密规则如下：\n\n1. 每位数字先加 5，再对 10 取余；\n2. 然后把第 1 位与第 3 位交换，第 2 位与第 4 位交换。\n\n解密是加密的逆过程：先把第 1 位与第 3 位、第 2 位与第 4 位换回来，再把每位数字加 5 后对 10 取余（因为「加 5 再取余」这个操作做两次就还原了）。\n\n请设计两个函数：\n\n- `int encrypt(int n)`：把 4 位正整数 n 加密后返回\n- `int decrypt(int n)`：把加密结果还原成原来的 4 位整数返回\n\n再写完整程序：读入一个 4 位正整数 n，输出它的加密结果，再输出解密结果，用来验证两个函数互为逆运算。测试数据保证加密结果仍然是 4 位数（也就是说 n 的第 3 位数字不是 5）。\n\n### 输入格式\n一行，一个 4 位正整数 n，满足 1000 <= n <= 9999，且测试数据保证加密结果仍是 4 位数。\n\n### 输出格式\n两行：\n\n1. `encrypted=加密结果`\n2. `decrypted=解密结果`（应该正好等于输入的 n）",
+      "samples": [
+        {
+          "in": "1234\n",
+          "out": "encrypted=8967\ndecrypted=1234\n"
+        },
+        {
+          "in": "9876\n",
+          "out": "encrypted=2143\ndecrypted=9876\n"
+        }
+      ],
+      "hint": "先用 `/` 和 `%` 把 4 位整数拆成 4 个数字，再拼回去；加密分两步：先每位加 5 取余，再交换第 1/3 位和第 2/4 位。解密就把这两步按相反顺序做一遍。",
+      "pitfalls": "加 5 取余与交换位置的先后顺序不能乱，解密必须严格反过来；拼回整数时权值别搞混（千位是乘 1000）；直接数位分离比按字符串处理更稳。",
+      "solution": "#include <stdio.h>\n\n/* 把 4 位整数拆成 4 个数字，下标 0 为千位 */\nstatic void split4(int n, int d[4])\n{\n    d[0] = n / 1000 % 10;\n    d[1] = n / 100 % 10;\n    d[2] = n / 10 % 10;\n    d[3] = n % 10;\n}\n\n/* 把 4 个数字拼回 4 位整数 */\nstatic int join4(const int d[4])\n{\n    return d[0] * 1000 + d[1] * 100 + d[2] * 10 + d[3];\n}\n\n/* 每位加 5 再对 10 取余 */\nstatic void addFive(const int in[4], int out[4])\n{\n    int i;\n\n    for (i = 0; i < 4; i++) {\n        out[i] = (in[i] + 5) % 10;\n    }\n}\n\n/* 第 1、3 位交换，第 2、4 位交换 */\nstatic void swapPlaces(const int in[4], int out[4])\n{\n    out[0] = in[2];\n    out[1] = in[3];\n    out[2] = in[0];\n    out[3] = in[1];\n}\n\n/* 加密：先每位加 5 取余，再交换位置 */\nint encrypt(int n)\n{\n    int d[4], e[4], s[4];\n\n    split4(n, d);\n    addFive(d, e);\n    swapPlaces(e, s);\n    return join4(s);\n}\n\n/* 解密：先把位置换回来，再每位加 5 取余 */\nint decrypt(int n)\n{\n    int d[4], s[4], e[4];\n\n    split4(n, d);\n    swapPlaces(d, s);\n    addFive(s, e);\n    return join4(e);\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"encrypted=%d\\n\", encrypt(n));\n    printf(\"decrypted=%d\\n\", decrypt(encrypt(n)));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G09",
+      "cat": "func",
+      "title": "递归计算立方累加和",
+      "difficulty": 2,
+      "tags": [
+        "递归",
+        "递归出口",
+        "累加"
+      ],
+      "source": "PTA 6-8（实验6_1，改编为完整程序）",
+      "desc": "### 题目描述\n已知函数 f(n)（n 为非负整数）：\n\n- f(0) = 0\n- f(n) = f(n-1) + n*n*n（n > 0）\n\n本题要求**用递归实现**函数 `long long fuc(int n)`，**不允许使用全局变量**。请再写一个完整程序：读入 n，调用 `fuc`，输出 f(n)。\n\n### 输入格式\n一行，一个整数 n，满足 0 <= n <= 200。\n\n### 输出格式\n一行，一个整数 f(n)，行末换行。",
+      "samples": [
+        {
+          "in": "2\n",
+          "out": "9\n"
+        },
+        {
+          "in": "10\n",
+          "out": "3025\n"
+        }
+      ],
+      "hint": "把定义式直接翻译成代码：`n <= 0` 时返回 0，否则 `return fuc(n - 1) + (long long)n * n * n;`，递归出口就是 n = 0。",
+      "pitfalls": "出口写成 n == 1 会让 n = 0 的情况无限递归；不要在递归里用全局变量累加（题目明确禁止）；`n*n*n` 在 n = 200 时是 8*10^6，注意用 long long 返回。",
+      "solution": "#include <stdio.h>\n\n/* f(0) = 0，f(n) = f(n-1) + n 的三次方 */\nlong long fuc(int n)\n{\n    if (n <= 0) {\n        return 0;\n    }\n    return fuc(n - 1) + (long long)n * n * n;\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"%lld\\n\", fuc(n));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G10",
+      "cat": "func",
+      "title": "最大公约数与最小公倍数",
+      "difficulty": 2,
+      "tags": [
+        "递归",
+        "辗转相除",
+        "long long"
+      ],
+      "source": "PTA 6-14（实验6_7，改编为完整程序并增加最小公倍数）",
+      "desc": "### 题目描述\n两个正整数的最大公约数可以用辗转相除法递归求得：\n\n- 当 b = 0 时，GCD(a, b) = a\n- 当 b 不等于 0 时，GCD(a, b) = GCD(b, a MOD b)，其中 MOD 表示取余\n\n请**用递归实现** `long long gcd(long long a, long long b)`（不允许使用全局变量），再利用公式\n\na * b = gcd(a, b) * lcm(a, b)\n\n求出最小公倍数。注意代码里要写成 `a / g * b`，先除后乘，避免中间结果溢出（两个数都可能达到 10^9）。\n\n再写完整程序读入两个正整数并输出两个结果。\n\n### 输入格式\n一行，两个正整数 a 和 b，用空格分隔，满足 1 <= a, b <= 10^9。\n\n### 输出格式\n两行：第一行是 a 和 b 的最大公约数，第二行是它们的最小公倍数，行末换行。",
+      "samples": [
+        {
+          "in": "32 48\n",
+          "out": "16\n96\n"
+        },
+        {
+          "in": "17 5\n",
+          "out": "1\n85\n"
+        }
+      ],
+      "hint": "递归体只有两行：`if (b == 0) return a; return gcd(b, a % b);`；最小公倍数 = a / gcd * b。",
+      "pitfalls": "先乘后除在 a、b 接近 10^9 时结果可达 10^18，用 int 一定溢出；gcd 的出口是 b == 0，不是 a == b。",
+      "solution": "#include <stdio.h>\n\n/* 辗转相除递归求最大公约数 */\nlong long gcd(long long a, long long b)\n{\n    if (b == 0) {\n        return a;\n    }\n    return gcd(b, a % b);\n}\n\nint main(void)\n{\n    long long a, b, g;\n\n    scanf(\"%lld%lld\", &a, &b);\n    g = gcd(a, b);\n    printf(\"%lld\\n\", g);\n    printf(\"%lld\\n\", a / g * b);\n    return 0;\n}\n"
+    },
+    {
+      "id": "G11",
+      "cat": "func",
+      "title": "n 进制转 m 进制",
+      "difficulty": 2,
+      "tags": [
+        "函数设计",
+        "进制转换",
+        "累乘累加"
+      ],
+      "source": "PTA 6-39（实验5_13，改编为完整程序）",
+      "desc": "### 题目描述\n请设计函数 `int numConvert(int number, int n, int m)`，把 n 进制的数 number 转换成 m 进制的数并返回，其中 2 <= n <= 10，2 <= m <= 10。\n\n因为进制都在 10 以内，number 和返回值都可以直接用十进制整数来表示「各位数字的序列」。例如把二进制数 110 转换成三进制：110（二进制）= 6（十进制）= 20（三进制），所以 numConvert(110, 2, 3) 返回 20。\n\n思路分两步：先把 number 按 n 进制累加成十进制值，再把十进制值不断对 m 取余、除以 m，把余数依次拼成 m 进制的数字序列。请再写完整程序读入 number、n、m 并输出转换结果。\n\n### 输入格式\n一行，三个正整数 number、n、m，用空格分隔，满足 2 <= n <= 10、2 <= m <= 10，number 的每一位数字都小于 n，且转换结果不超过 int 范围。\n\n### 输出格式\n一行，一个整数，即转换后的 m 进制数（用十进制数字序列表示），行末换行。",
+      "samples": [
+        {
+          "in": "110 2 3\n",
+          "out": "20\n"
+        },
+        {
+          "in": "666666 9 10\n",
+          "out": "398580\n"
+        },
+        {
+          "in": "255 10 2\n",
+          "out": "11111111\n"
+        }
+      ],
+      "hint": "第一步从左到右累加：`value = value * n + (number % 10)` 需要从最高位开始，所以也可以从右往左用 `digit * n 的幂` 累加；第二步用 `result += (value % m) * place; value /= m; place *= 10;`。",
+      "pitfalls": "第一步乘的是 n（源进制），第二步拼结果时权值每次乘 10（因为结果是用十进制数字序列表示的）；number 是「数字序列」而不是十进制数，不要当成十进制直接转换。",
+      "solution": "#include <stdio.h>\n\n/* 把 n 进制的 number 转换成 m 进制并返回（2 <= n, m <= 10） */\nint numConvert(int number, int n, int m)\n{\n    int decimal = 0;\n    int base = 1;\n    int result = 0;\n    int place = 1;\n    int digit;\n\n    while (number > 0) {\n        digit = number % 10;\n        decimal += digit * base;\n        base *= n;\n        number /= 10;\n    }\n    while (decimal > 0) {\n        result += (decimal % m) * place;\n        place *= 10;\n        decimal /= m;\n    }\n    return result;\n}\n\nint main(void)\n{\n    int number, n, m;\n\n    scanf(\"%d%d%d\", &number, &n, &m);\n    printf(\"%d\\n\", numConvert(number, n, m));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G12",
+      "cat": "func",
+      "title": "递归求数列之和",
+      "difficulty": 3,
+      "tags": [
+        "递归",
+        "递归出口",
+        "幂运算"
+      ],
+      "source": "PTA 6-13（实验6_6，改编为完整程序）",
+      "desc": "### 题目描述\n现有求和式：\n\ns = 1 + a + a 的平方 + a 的立方 + ... + a 的 (n+1) 次方\n\n其中 a > 1、n > 0，且都是整数。\n\n请**用递归**实现 `int evaluation(int n, int a)` 求 s，**不允许使用全局变量**。提示：可以从前缀和的角度递推——\n\n- 当 n = 0 时，S(0) = 1 + a（此时最高项是 a 的 1 次方）\n- 当 k > 0 时，S(k) = S(k-1) + a 的 (k+1) 次方\n\n也就是说 evaluation(n, a) 在 n = 0 时返回 1 + a，否则返回 evaluation(n-1, a) 再加上 a 的 (n+1) 次方；其中「求幂」可以再写一个递归辅助函数。\n\n请再写完整程序：读入 n 和 a，调用 `evaluation` 并输出结果。\n\n### 输入格式\n一行，两个整数 n 和 a，用空格分隔，满足 1 <= n <= 12、2 <= a <= 4。测试数据保证结果不超过 int 范围。\n\n### 输出格式\n一行，一个整数，即 s 的值，行末换行。",
+      "samples": [
+        {
+          "in": "1 2\n",
+          "out": "7\n"
+        },
+        {
+          "in": "2 3\n",
+          "out": "40\n"
+        }
+      ],
+      "hint": "先写出递归定义式 S(0) = 1 + a、S(k) = S(k-1) + a^(k+1)，再写一个递归的求幂函数 a^e（出口 e = 0 返回 1）；两个递归都要有明确的出口。",
+      "pitfalls": "出口写成 n == 1 会漏掉 n = 0 的情况；最高次是 n+1 次而不是 n 次，别多数或少数一项；a = 4、n = 12 时结果接近 9*10^7，仍在 int 范围内。",
+      "solution": "#include <stdio.h>\n\n/* 递归求 a 的 e 次幂 */\nstatic int powerRec(int a, int e)\n{\n    if (e == 0) {\n        return 1;\n    }\n    return a * powerRec(a, e - 1);\n}\n\n/* 递归求 s = 1 + a + a^2 + ... + a^(n+1) */\nint evaluation(int n, int a)\n{\n    if (n == 0) {\n        return 1 + a;\n    }\n    return evaluation(n - 1, a) + powerRec(a, n + 1);\n}\n\nint main(void)\n{\n    int n, a;\n\n    scanf(\"%d%d\", &n, &a);\n    printf(\"%d\\n\", evaluation(n, a));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G13",
+      "cat": "func",
+      "title": "素因子分解",
+      "difficulty": 3,
+      "tags": [
+        "递归",
+        "素数分解",
+        "试除法"
+      ],
+      "source": "PTA 6-16（实验6_9，改编为完整程序）",
+      "desc": "### 题目描述\n请**用递归**设计函数 `void printFactor(int n, int p)`，把整数 n 分解成若干素因子相乘的形式并打印。第二个参数 p 由你自己设计，提示：它表示「从哪个数开始试除」。\n\n举例：\n\n- printFactor(60, 1) 应打印 `60=2*2*3*5`\n- 素数本身也要输出，例如 101 打印 `101=101`\n- n = 1 时约定打印 `1=1`\n\n再写完整程序：读入区间 [a, b]，对区间内每个整数输出一行分解式。\n\n### 输入格式\n一行，两个正整数 a 和 b，用空格分隔，满足 1 <= a <= b <= 100000 且 b - a <= 100。\n\n### 输出格式\n输出 b - a + 1 行，每行一个分解式，格式为 `n=f1*f2*...*fk`：先输出被分解的数，再接一个等号，然后按从小到大输出各个素因子，因子之间用 `*` 连接，行末换行。",
+      "samples": [
+        {
+          "in": "100 105\n",
+          "out": "100=2*2*5*5\n101=101\n102=2*3*17\n103=103\n104=2*2*2*13\n105=3*5*7\n"
+        },
+        {
+          "in": "7 10\n",
+          "out": "7=7\n8=2*2*2\n9=3*3\n10=2*5\n"
+        }
+      ],
+      "hint": "从 d = p 开始往上找能整除 n 的最小数 d（它一定是素数）；如果一直找到 d*d > n，说明剩下的 n 自己就是素数，可以直接输出。输出 d 之后，只要 n/d > 1 就先输出 `*` 再递归调用 printFactor(n/d, d)；顶层调用（p 传 1）负责输出 `n=` 和行末换行。",
+      "pitfalls": "等号后面每个因子之间都要有 `*`，第一个因子前面不能有；n = 1 要特判输出 `1=1`，否则会打出空等号；判断 `d*d > n` 时 d 最大到 n 的平方根，注意别写成 `d > n` 导致漏掉因子。",
+      "solution": "#include <stdio.h>\n\n/* 打印 n 的素数分解式。\n   参数 p 表示起始试除因子：主程序调用时传 1（此时由本层输出 \"n=\" 和行末换行），\n   递归调用时传刚找到的素因子 d（此后不再重复输出 \"n=\"）。 */\nvoid printFactor(int n, int p)\n{\n    int d;\n\n    if (n == 1 && p < 2) {\n        printf(\"1=1\\n\");\n        return;\n    }\n    d = (p < 2) ? 2 : p;\n    while ((long long)d * d <= n && n % d != 0) {\n        d++;\n    }\n    if ((long long)d * d > n) {\n        d = n;            /* 剩下的 n 本身就是素数 */\n    }\n    if (p < 2) {\n        printf(\"%d=\", n);\n    }\n    printf(\"%d\", d);\n    if (n / d > 1) {\n        printf(\"*\");\n        printFactor(n / d, d);\n    }\n    if (p < 2) {\n        printf(\"\\n\");\n    }\n}\n\nint main(void)\n{\n    int a, b, i;\n\n    scanf(\"%d%d\", &a, &b);\n    for (i = a; i <= b; i++) {\n        printFactor(i, 1);\n    }\n    return 0;\n}\n"
+    },
+    {
+      "id": "G14",
+      "cat": "func",
+      "title": "汉诺塔移动次数与过程",
+      "difficulty": 3,
+      "tags": [
+        "递归",
+        "汉诺塔",
+        "递推关系"
+      ],
+      "source": "新编",
+      "desc": "### 题目描述\n汉诺塔问题：有 A、B、C 三根柱子，n 个大小互不相同的圆盘开始时按「大盘在下、小盘在上」全部套在 A 柱上。要求把所有圆盘移到 C 柱，规则是：\n\n- 每次只能移动一个圆盘\n- 任何时刻都不能把大盘压在小盘上面\n\n请用递归解决，并输出两部分内容：第一行是最少移动次数，之后每行输出一步移动。\n\n移动顺序按下面的递归规则执行（记 hanoi(n, 源, 目标, 辅助)）：当 n = 1 时，直接把唯一的盘子从源柱移到目标柱；当 n > 1 时，依次执行\n\n1. hanoi(n-1, 源, 辅助, 目标)\n2. 把剩下的最大盘从源柱移到目标柱\n3. hanoi(n-1, 辅助, 目标, 源)\n\n本题固定 源 = A、目标 = C、辅助 = B。\n\n### 输入格式\n一行，一个整数 n，满足 1 <= n <= 10。\n\n### 输出格式\n第一行为 `Total moves: K`，K 为最少移动次数（可以用递归 h(n) = 2*h(n-1) + 1、h(0) = 0 求出）。\n随后输出 K 行，每行一次移动，格式为 `X->Y`，其中 X、Y 取 A、B、C，最后换行。",
+      "samples": [
+        {
+          "in": "3\n",
+          "out": "Total moves: 7\nA->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\n"
+        },
+        {
+          "in": "1\n",
+          "out": "Total moves: 1\nA->C\n"
+        }
+      ],
+      "hint": "移动次数就是 2 的 n 次方减 1，用递归 h(n) = 2*h(n-1) + 1 求；步骤打印只需要在两次递归调用之间输出一次 `源->目标`。",
+      "pitfalls": "三个参数的「源、目标、辅助」顺序在两次递归里是交换的，写反会导致步骤顺序不对；必须先输出 Total moves 这一行再输出步骤。",
+      "solution": "#include <stdio.h>\n\n/* 递归统计 n 个盘子的最少移动次数：h(0)=0, h(n)=2*h(n-1)+1 */\nstatic long long moveCount(int n)\n{\n    if (n == 0) {\n        return 0;\n    }\n    return 2 * moveCount(n - 1) + 1;\n}\n\n/* 把 n 个盘子从 from 经 via 移到 to，并打印每一步 */\nstatic void hanoi(int n, char from, char to, char via)\n{\n    if (n == 0) {\n        return;\n    }\n    hanoi(n - 1, from, via, to);\n    printf(\"%c->%c\\n\", from, to);\n    hanoi(n - 1, via, to, from);\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"Total moves: %lld\\n\", moveCount(n));\n    hanoi(n, 'A', 'C', 'B');\n    return 0;\n}\n"
+    },
+    {
+      "id": "G15",
+      "cat": "func",
+      "title": "递归快速幂取模",
+      "difficulty": 4,
+      "tags": [
+        "递归",
+        "快速幂",
+        "取模运算"
+      ],
+      "source": "新编（快速幂，PTA 6-5 mypow 的进阶版）",
+      "desc": "### 题目描述\n计算 b 的 e 次方对 m 取模的结果，即 R = (b^e) mod m。\n\n指数 e 可能大到 10^18，逐次相乘会超时，请**用递归实现快速幂**：\n\n- 当 e = 0 时，返回 1 mod m\n- 当 e 为偶数时，b^e = (b^(e/2))^2\n- 当 e 为奇数时，b^e = (b^(e/2))^2 * b\n\n要求设计函数 `long long powerMod(long long b, long long e, long long m)`，并写完整程序读入 b、e、m 后输出 R。每一步乘法后都要对 m 取模；由于 m <= 10^9，参与相乘的两个因子都小于 10^9，乘积落在 long long 范围内。\n\n### 输入格式\n一行，三个整数 b、e、m，用空格分隔，满足 0 <= b <= 10^9，0 <= e <= 10^18，1 <= m <= 10^9。\n\n### 输出格式\n一行，一个整数 R，满足 0 <= R < m，行末换行。",
+      "samples": [
+        {
+          "in": "2 10 1000\n",
+          "out": "24\n"
+        },
+        {
+          "in": "123456789 987654321 1000000007\n",
+          "out": "652541198\n"
+        },
+        {
+          "in": "0 5 7\n",
+          "out": "0\n"
+        }
+      ],
+      "hint": "递归算出 `b^(e/2) mod m` 后平方再 `% m`，若 e 是奇数再乘一个 `b % m`；指数每层减半，递归深度只有 60 左右。",
+      "pitfalls": "`half * half` 两个因子都小于 10^9，乘积能到 10^18，必须用 long long；e = 0 时返回 `1 % m`（m = 1 的答案是 0），不要直接写 return 1。",
+      "solution": "#include <stdio.h>\n\n/* 递归快速幂：返回 (b^e) mod m */\nlong long powerMod(long long b, long long e, long long m)\n{\n    long long half, r;\n\n    if (e == 0) {\n        return 1 % m;\n    }\n    half = powerMod(b, e / 2, m);\n    r = half * half % m;\n    if (e % 2 == 1) {\n        r = r * (b % m) % m;\n    }\n    return r;\n}\n\nint main(void)\n{\n    long long b, e, m;\n\n    scanf(\"%lld%lld%lld\", &b, &e, &m);\n    printf(\"%lld\\n\", powerMod(b, e, m));\n    return 0;\n}\n"
+    },
+    {
+      "id": "G16",
+      "cat": "func",
+      "title": "递归输出全排列",
+      "difficulty": 5,
+      "tags": [
+        "递归",
+        "回溯",
+        "全排列"
+      ],
+      "source": "新编",
+      "desc": "### 题目描述\n请**用递归（回溯）**输出 1 到 n 的所有全排列，并且要求按字典序从小到大逐行输出。\n\n思路提示：用一个 used 数组标记哪些数字已经被使用过。递归时，依次尝试把「还没用过」的数字放到当前位置，放好后把 used 置 1，递归处理下一个位置，返回后再把 used 清 0。因为每一层都从 1 到 n 顺序尝试，所以得到的顺序天然就是字典序。\n\n### 输入格式\n一行，一个整数 n，满足 1 <= n <= 8。\n\n### 输出格式\n共 n! 行，每行一个排列：n 个数字，数字之间用一个空格分隔，行末不能有多余空格，每行最后换行。",
+      "samples": [
+        {
+          "in": "3\n",
+          "out": "1 2 3\n1 3 2\n2 1 3\n2 3 1\n3 1 2\n3 2 1\n"
+        },
+        {
+          "in": "2\n",
+          "out": "1 2\n2 1\n"
+        }
+      ],
+      "hint": "递归函数只带一个参数 depth（当前填到第几个位置）：depth == n 时输出整个排列并 return；否则 for 循环从 1 到 n，遇到没用过的数字就占位、递归、再回溯清标记。",
+      "pitfalls": "递归返回后一定要把 used 清 0，否则后面的分支会少数字；输出时最后一个数字后不要多打空格；n = 8 有 40320 行，别用字符串拼接再输出。",
+      "solution": "#include <stdio.h>\n\n#define MAXN 10\n\nstatic int n;\nstatic int used[MAXN];\nstatic int perm[MAXN];\n\n/* 递归按字典序输出 1..n 的全排列 */\nstatic void dfs(int depth)\n{\n    int i;\n\n    if (depth == n) {\n        for (i = 0; i < n; i++) {\n            printf(\"%d\", perm[i]);\n            if (i != n - 1) {\n                printf(\" \");\n            }\n        }\n        printf(\"\\n\");\n        return;\n    }\n    for (i = 1; i <= n; i++) {\n        if (!used[i]) {\n            used[i] = 1;\n            perm[depth] = i;\n            dfs(depth + 1);\n            used[i] = 0;\n        }\n    }\n}\n\nint main(void)\n{\n    scanf(\"%d\", &n);\n    dfs(0);\n    return 0;\n}\n"
+    }
+  ]
+}

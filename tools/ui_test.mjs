@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const HTML = path.resolve(process.argv[2] || path.join(ROOT, '计导期中复习.html'));
+const HTML = path.resolve(process.argv[2] || path.join(ROOT, '计导期末复习.html'));
 const PORT = 9333;
 const PROFILE = path.join(ROOT, 'tmp', 'ui-profile');
 const SHOT_DIR = path.join(ROOT, 'tmp', 'shots');
@@ -111,7 +111,7 @@ try {
   test('页面加载与数据注入', !!site && site.problems > 0, JSON.stringify(site));
   const errBox = await evaluate(`!!Array.from(document.querySelectorAll('div')).find(d=>d.textContent.includes('页面脚本错误'))`);
   test('无脚本错误提示', !errBox);
-  test('桌面首页一屏显示', await evaluate('document.documentElement.scrollHeight <= innerHeight'));
+  test('首页 hero 与考点卡片', await evaluate('!!document.querySelector(".hero h1") && document.querySelectorAll(".progress-card").length >= 6'));
   await shot('01-home');
 
   // 2. 本地存储可用（file:// 下的 localStorage）
@@ -120,6 +120,8 @@ try {
 
   // 3. 题库：分类过滤 + 搜索 + 作答保存 + 状态 + 错题
   await nav('#/library');
+  const catBtns = await evaluate(`document.querySelectorAll('[data-cat]').length`);
+  test('考点分类齐全', catBtns >= 12, `${catBtns} 个分类按钮`);
   await click('[data-cat="array1"]');
   const count1 = await evaluate(`document.querySelectorAll('#problemList .problem-summary').length`);
   const rc = await evaluate(`document.getElementById('resultCount').textContent`);
@@ -161,6 +163,17 @@ try {
   const sheet = await evaluate(`document.querySelectorAll('.sheet-section').length`);
   test('速查手册渲染', sheet > 0, `${sheet} 节`);
 
+  // 6.5 知识精讲
+  await nav('#/guide');
+  const guideSecs = await evaluate(`document.querySelectorAll('.sheet-section').length`);
+  const guideNav = await evaluate(`document.querySelectorAll('.sheet-nav button').length`);
+  test('知识精讲渲染', guideSecs > 0 && guideSecs === guideNav, `${guideSecs} 节`);
+  await nav('#/guide/g-pointer');
+  await sleep(700);
+  const atPointer = await evaluate(`(()=>{const el=document.getElementById('sheet-0');const h=document.querySelector('.sheet-body h3');return (h&&h.textContent)||'';})()`);
+  test('精讲章节跳转', typeof atPointer === 'string' && atPointer.length > 0, atPointer);
+  await shot('03b-guide');
+
   // 7. 模拟考试：开始 → 计时 → 作答 → 交卷 → 答案
   await nav('#/exams');
   const examCards = await evaluate(`document.querySelectorAll('[data-start-exam]').length`);
@@ -170,7 +183,7 @@ try {
   const inRoom = await evaluate(`!!document.querySelector('.exam-room')`);
   test('进入考场', inRoom);
   const timerTxt = await evaluate(`(document.getElementById('examTimer')||{}).textContent`);
-  test('倒计时运行', /^\d{2}:\d{2}$/.test(timerTxt || ''), timerTxt);
+  test('倒计时运行', /^\d{2,3}:\d{2}$/.test(timerTxt || ''), timerTxt);
   const examQid = await evaluate(`document.querySelector('.exam-main .p-id').textContent.trim()`);
   await type(`[data-answer="${examQid}"]`, '/* 模考作答 */');
   await click('[data-exam-no="2"]');
@@ -199,7 +212,7 @@ try {
 
   // 10. 汇总
   const kpi = await evaluate(`document.querySelectorAll('.hero .kpi b').length`);
-  test('首页统计渲染', kpi === 3, `${kpi} 项`);
+  test('首页统计渲染', kpi >= 3, `${kpi} 项`);
 
 } catch (e) {
   test('测试框架异常', false, e.message);

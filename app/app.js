@@ -1,4 +1,4 @@
-/* 计导期中复习 · 前端应用（无依赖，离线可用） */
+/* 计导期末复习 · 前端应用（无依赖，离线可用） */
 (function () {
   'use strict';
 
@@ -7,17 +7,27 @@
   var PROBLEMS = (DATA.problems || []).slice();
   var EXAMS = (DATA.exams || []).slice();
   var SECTIONS = (DATA.cheatsheet && DATA.cheatsheet.sections) || [];
+  var GUIDE = (DATA.guide && DATA.guide.sections) || [];
 
   var CATS = [
-    { id: 'basic', name: '基础语法与数据类型', ch: 'Ch1–Ch2', short: '基础', desc: '数据类型、常量与变量、运算符与表达式、格式化输入输出' },
-    { id: 'select', name: '选择结构', ch: 'Ch3.2', short: '选择', desc: 'if / 多分支 / switch / 嵌套判断与边界处理' },
-    { id: 'loop', name: '循环结构', ch: 'Ch3.3–3.4', short: '循环', desc: 'while / do-while / for / 嵌套循环 / 穷举 / 递推' },
-    { id: 'array1', name: '一维数组', ch: 'Ch4.1–4.2', short: '一维数组', desc: '定义与初始化、遍历、最值、查找、排序、前缀和' },
-    { id: 'array2', name: '二维数组', ch: 'Ch4.3–4.4', short: '二维数组', desc: '矩阵遍历、转置、行列操作、鞍点、蛇形矩阵' },
-    { id: 'mix', name: '数组 + 控制流综合', ch: 'Ch4 进阶', short: '数组+控制', desc: '递推、模拟、前缀和、排序查找与数组结合' }
+    { id: 'basic', name: '基础语法与数据类型', ch: 'Ch1–Ch2', short: '基础', group: 'base', desc: '数据类型、常量与变量、运算符与表达式、格式化输入输出' },
+    { id: 'select', name: '选择结构', ch: 'Ch3.2', short: '选择', group: 'base', desc: 'if / 多分支 / switch / 嵌套判断与边界处理' },
+    { id: 'loop', name: '循环结构', ch: 'Ch3.3–3.4', short: '循环', group: 'base', desc: 'while / do-while / for / 嵌套循环 / 穷举 / 递推' },
+    { id: 'array1', name: '一维数组', ch: 'Ch4.1–4.2', short: '一维数组', group: 'base', desc: '定义与初始化、遍历、最值、查找、排序、前缀和' },
+    { id: 'array2', name: '二维数组', ch: 'Ch4.3–4.4', short: '二维数组', group: 'base', desc: '矩阵遍历、转置、行列操作、鞍点、蛇形矩阵' },
+    { id: 'mix', name: '数组 + 控制流综合', ch: 'Ch4 进阶', short: '数组+控制', group: 'base', desc: '递推、模拟、前缀和、排序查找与数组结合' },
+    { id: 'string', name: '字符串与字符数组', ch: '实验9 · Ch5', short: '字符串', group: 'final', guide: 'g-string', desc: '字符数组与 \'\\0\'、字符串库函数、单词与句子处理、字符分类统计、子串查找与替换' },
+    { id: 'func', name: '函数与递归', ch: '实验5–6 · Ch6', short: '函数递归', group: 'final', guide: 'g-func', desc: '函数定义与调用、值传递、数组作参数、返回多个值、递归与分治、作用域' },
+    { id: 'pointer', name: '指针与动态内存', ch: '实验10 · Ch7', short: '指针', group: 'final', guide: 'g-pointer', desc: '地址与指针、指针与数组、指针作参数、指针数组、malloc/free、二维动态数组' },
+    { id: 'struct', name: '结构体与自定义类型', ch: '实验11 · Ch8', short: '结构体', group: 'final', guide: 'g-struct', desc: 'struct/typedef/枚举、结构体数组与指针、多关键字排序、封装与「类」的设计' },
+    { id: 'algo', name: '算法与综合应用', ch: '实验7 + 综合', short: '算法综合', group: 'final', guide: 'g-algo', desc: '排序、二分查找变式、递推、最大子段和、日期与进制、高精度与位运算' }
   ];
   var CAT_MAP = {};
   CATS.forEach(function (c) { CAT_MAP[c.id] = c; });
+  var CAT_GROUPS = [
+    { id: 'base', name: '基础回顾（期中范围）', sub: 'Ch1–Ch4' },
+    { id: 'final', name: '期末新增重点', sub: '数组 → 类的设计' }
+  ];
   var PAGE = 10;
 
   PROBLEMS.forEach(function (p, i) { p._i = i; });
@@ -28,16 +38,18 @@
   });
 
   var TIPS = [
-    'scanf("%c") 会读到上一行残留的换行符 —— 在 %c 前加一个空格（" %c"）或先用 getchar() 吸收。',
-    '整型除法 5/2 得 2；求平均值前要先转 double，例如 (double)sum / n。',
-    '浮点数不要用 == 比较，用 fabs(a-b) < 1e-6（需要 #include <math.h>）。',
-    '循环边界最易错：for (i = 1; i <= n; i++) 与数组 a[0..n-1] 的下标要对应清楚。',
-    '数组下标越界不会报错，但会悄悄改掉其他变量的值 —— 上机时最隐蔽的 bug。',
-    '多组输出注意行末空格：最后一个数后不要多打空格，否则 OJ 判格式错误。',
-    '字符串以 \'\\0\' 结尾，字符数组容量要 +1；用 %s 读入时不需要 &。',
-    '递推注意初始项（f[0]、f[1]）与递推方向，先算前两项再循环。',
-    'switch 的 case 忘记 break 会导致贯穿；default 别漏。',
-    '输出 long long 用 %lld；double 用 %lf 输入、%f 输出；保留 k 位小数用 %.kf。'
+    '字符数组的容量要比字符串长度多 1，\'\\0\' 也算一个字节；忘了它 printf("%s") 会一直读到内存里的随机 0。',
+    '字符串读入三选一：scanf("%s") 遇空格停；fgets(s, n, stdin) 连空格读一行（带 \\n，要手动去掉）；getchar() 逐个字符读。',
+    'scanf("%d", &n) 之后马上读字符/字符串，先 getchar() 吃掉行尾换行 —— 机考最经典的坑。',
+    '数组作函数参数会「退化成指针」，函数里用 sizeof(a) 得到的是指针大小，不是数组长度；长度必须单独传。',
+    'C 只有值传递。想在函数里改变外面的变量，就传地址：swap(&a, &b)，形参写 int *。',
+    '递归三要素：出口、规模递减、每层用下一层的结果。写完先想「n=1 会不会无限递归」。',
+    '指针声明后是野指针，用之前必须指向有效内存；malloc 之后要判空、用完 free。',
+    '结构体指针访问成员用 p->x；结构体变量用 s.x；typedef struct {...} X; 之后直接用 X 定义变量。',
+    '字符串比较不能用 ==，要用 strcmp(a, b) == 0；字符串赋值不能用 =，要用 strcpy。',
+    '输出 long long 用 %lld；double 用 %lf 输入、%f 输出；保留 k 位小数用 %.kf。',
+    '结构体排序时用 struct 整体赋值交换（tmp = a[i]; a[i] = a[j]; a[j] = tmp;），比逐字段交换更稳。',
+    '机考先写 I/O 框架+样例，再补算法；每写完一题立刻自测样例，别攒到最后一起调。'
   ];
 
   /* ================= 存储 ================= */
@@ -219,6 +231,9 @@
     } else if (v === 'exam') {
       state.view = 'exam';
       state.examId = parts[1] || (EXAMS[0] && EXAMS[0].id);
+    } else if (v === 'guide') {
+      state.view = 'guide';
+      state.guideId = parts[1] || null;
     } else if (['home', 'exams', 'wrong', 'cheatsheet', 'data'].indexOf(v) >= 0) {
       state.view = v;
     } else {
@@ -289,8 +304,10 @@
       '</div></details>';
   }
   function metaHtml(p) {
-    return '<div class="p-meta"><span>' + esc(catName(p.cat)) + '</span><span class="src">' + esc(p.source || '') + '</span>' +
-      '<span class="tagrow">' + (p.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</span></div>';
+    var cn = catName(p.cat);
+    var tags = (p.tags || []).filter(function (t) { return t !== cn; });
+    return '<div class="p-meta"><span>' + esc(cn) + '</span><span class="src">' + esc(p.source || '') + '</span>' +
+      '<span class="tagrow">' + tags.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</span></div>';
   }
   function cardHtml(p) {
     return '<article class="problem card" id="p-' + p.id + '">' +
@@ -316,6 +333,7 @@
     document.body.classList.toggle('practice-mode', v === 'library' && !!state.problemId);
     if (v === 'home') app.innerHTML = viewHome();
     else if (v === 'library') { app.innerHTML = viewLibrary(); renderList(); }
+    else if (v === 'guide') { app.innerHTML = viewGuide(); if (state.guideId) scrollToGuideSection(state.guideId); }
     else if (v === 'exams') app.innerHTML = viewExams();
     else if (v === 'exam') app.innerHTML = viewExamRoom();
     else if (v === 'wrong') app.innerHTML = viewWrong();
@@ -325,14 +343,50 @@
   }
 
   /* ================= 总览 ================= */
+  function catCard(c) {
+    var cs = catStats(c.id);
+    return '<a class="card progress-card" href="#/library/' + c.id + '"><div class="top"><span class="name">' + c.name + '</span><span class="pill">' + c.ch + '</span></div>' +
+      '<p class="category-desc">' + c.desc + '</p>' +
+      '<div class="bar thin"><i style="width:' + pct(cs.done, cs.total) + '%"></i></div>' +
+      '<div class="counts">已作答 ' + cs.answered + '/' + cs.total + ' · 已掌握 ' + cs.done + '<span>进入练习 →</span></div></a>';
+  }
   function viewHome() {
     var s = stats();
-    var next = PROBLEMS.find(function(p) { return statusOf(p.id) !== 'done'; }) || PROBLEMS[0];
-    return '<div class="home-dashboard"><section class="hero"><div><span class="pill accent">Ch1–Ch4 · 期中复习</span> <span class="muted small">创作者：UmTairitsuSama（songqi）</span><h1>今天，再掌握一个考点。</h1><p class="lead">从 C 语言基础到数组，按考点练习，用限时模考检验学习成果。</p><div class="actions"><a class="btn primary" href="#/library/' + next.id + '">开始练习 →</a><a class="btn" href="#/exams">限时模考</a><a class="btn" href="#/cheatsheet">速查手册</a></div></div><div class="kpi"><div><b>' + s.answered + '<small> / ' + s.total + '</small></b><span>已作答</span></div><div><b>' + s.done + '</b><span>已掌握</span></div><div><b>' + s.wrong + '</b><span>错题待复习</span></div></div></section>' +
-      '<div class="section-title"><h2>按考点练习</h2><a class="sub" href="#/library">全部 ' + s.total + ' 道题 →</a></div><div class="grid cols-3 home-categories">' + CATS.map(function(c) {
-        var cs = catStats(c.id);
-        return '<a class="card progress-card" href="#/library/' + c.id + '"><div class="top"><span class="name">' + c.name + '</span><span class="pill">' + c.ch + '</span></div><p class="category-desc">' + c.desc + '</p><div class="bar thin"><i style="width:' + pct(cs.done,cs.total) + '%"></i></div><div class="counts">已作答 ' + cs.answered + '/' + cs.total + ' · 已掌握 ' + cs.done + '<span>进入练习 →</span></div></a>';
-      }).join('') + '</div><div class="home-bottom"><a class="card" href="#/wrong"><b>错题本</b><span>回顾 ' + s.wrong + ' 道错题，巩固薄弱点 →</span></a><a class="card" href="#/exams"><b>模拟考试</b><span>6 套试卷 · 每套 90 分钟 →</span></a><a class="card" href="#/data"><b>学习数据</b><span>导出备份，保存复习进度 →</span></a></div></div>';
+    var next = PROBLEMS.find(function (p) { return statusOf(p.id) !== 'done'; }) || PROBLEMS[0];
+    var finalProblems = PROBLEMS.filter(function (p) { return CAT_MAP[p.cat] && CAT_MAP[p.cat].group === 'final'; }).length;
+    var fmCount = EXAMS.filter(function (e) { return /^FM/.test(e.id || ''); }).length;
+    var guideCards = GUIDE.slice(0, 9).map(function (g) {
+      return '<a class="guide-mini" href="#/guide/' + g.id + '"><b>' + esc(g.title) + '</b><span>' + esc(g.ch || '') + '</span>' + (g.weight ? '<i class="pill ' + (g.weight === '必考' ? 'danger' : g.weight === '高频' ? 'warn' : '') + '">' + esc(g.weight) + '</i>' : '') + '</a>';
+    }).join('');
+    var catBlocks = CAT_GROUPS.map(function (grp) {
+      var list = CATS.filter(function (c) { return c.group === grp.id; });
+      if (!list.length) return '';
+      return '<div class="section-title"><h2>' + grp.name + '<span class="muted small" style="font-weight:400;margin-left:8px">' + grp.sub + ' · ' + list.length + ' 个考点</span></h2></div>' +
+        '<div class="grid cols-3 home-categories">' + list.map(catCard).join('') + '</div>';
+    }).join('');
+    return '<div class="home-dashboard">' +
+      '<section class="hero"><div><span class="pill accent">期末复习 · 数组 → 类的设计</span> <span class="muted small">考试语言：C（实验5–11）</span>' +
+      '<h1>期末冲刺，把每个考点练成肌肉记忆。</h1>' +
+      '<p class="lead">从数组（含字符串数组）一路到函数、递归、指针、动态内存、结构体与「类」的设计思想：<b>' + PROBLEMS.length + '</b> 道精选题 + <b>' + EXAMS.length + '</b> 套限时模拟卷（其中 ' + fmCount + ' 套期末全真卷）+ 知识精讲与速查手册。答题区只做记录，不联网、不上传。</p>' +
+      '<div class="actions"><a class="btn primary" href="#/library/' + next.id + '">开始练习 →</a><a class="btn" href="#/guide">知识精讲</a><a class="btn" href="#/exams">限时模考</a><a class="btn" href="#/cheatsheet">速查手册</a></div></div>' +
+      '<div class="kpi"><div><b>' + s.answered + '<small> / ' + s.total + '</small></b><span>已作答</span></div><div><b>' + s.done + '</b><span>已掌握</span></div><div><b>' + s.wrong + '</b><span>错题待复习</span></div><div><b>' + finalProblems + '</b><span>期末新增题</span></div></div></section>' +
+      catBlocks +
+      (GUIDE.length ? '<div class="section-title"><h2>知识精讲</h2><a class="sub" href="#/guide">全部 ' + GUIDE.length + ' 节 →</a></div><div class="guide-mini-grid">' + guideCards + '</div>' : '') +
+      '<div class="grid cols-2" style="margin-top:20px"><div class="card" style="padding:18px 20px"><h2 style="font-size:15px;margin-bottom:10px">期末复习路线（建议顺序）</h2>' +
+      '<ul class="roadmap">' + [
+        ['#/library/array1', '数组进阶', '一维/二维复习 + 遍历、最值、前缀和、矩阵操作（Ch4，期末仍考）'],
+        ['#/library/func', '函数与递归', '值传递、数组作参数、返回多个值；递归三要素与经典递归题'],
+        ['#/library/string', '字符串与字符数组', '\\0、strlen/strcpy/strcmp、整行读入、单词与句子处理'],
+        ['#/library/pointer', '指针与动态内存', '地址与解引用、指针作参数、指针数组、malloc/free'],
+        ['#/library/struct', '结构体与「类」的设计', '结构体数组与指针、多关键字排序、封装与信息管理系统'],
+        ['#/library/algo', '算法综合', '排序、二分变式、递推、最大子段和、日期与进制'],
+        ['#/exams', '全真模拟', '6 套期末卷 × 6 题 × 120 分钟，按考试节奏完整练一遍']
+      ].map(function (x, i) {
+        return '<li data-nav-href="' + x[0] + '"><b>' + x[1] + '</b><span>' + x[2] + '</span></li>';
+      }).join('') + '</ul></div>' +
+      '<div class="card" style="padding:18px 20px"><h2 style="font-size:15px;margin-bottom:10px">机考高频坑（先背下来）</h2><ul class="tips">' +
+      TIPS.slice(0, 8).map(function (t, i) { return '<li><span class="n">' + (i + 1) + '</span><span>' + esc(t) + '</span></li>'; }).join('') + '</ul></div></div>' +
+      '<div class="home-bottom"><a class="card" href="#/wrong"><b>错题本</b><span>回顾 ' + s.wrong + ' 道错题，巩固薄弱点 →</span></a><a class="card" href="#/exams"><b>模拟考试</b><span>' + EXAMS.length + ' 套试卷 · 期末卷 120 分钟 →</span></a><a class="card" href="#/data"><b>学习数据</b><span>导出备份，保存复习进度 →</span></a></div></div>';
   }
 
   /* ================= 题库 ================= */
@@ -340,9 +394,13 @@
     if (state.problemId) return viewPractice();
     if (state.cat !== 'all' && !CAT_MAP[state.cat]) state.cat = 'all';
     var catBtns = '<button class="' + (state.cat === 'all' ? 'active' : '') + '" data-cat="all"><span>全部题目</span><span class="n">' + PROBLEMS.length + '</span></button>' +
-      CATS.map(function (c) {
-        var n = PROBLEMS.filter(function (p) { return p.cat === c.id; }).length;
-        return '<button class="' + (state.cat === c.id ? 'active' : '') + '" data-cat="' + c.id + '"><span>' + c.short + '</span><span class="n">' + n + '</span></button>';
+      CAT_GROUPS.map(function (grp) {
+        var list = CATS.filter(function (c) { return c.group === grp.id; });
+        if (!list.length) return '';
+        return '<p class="cat-group">' + grp.name + '</p>' + list.map(function (c) {
+          var n = PROBLEMS.filter(function (p) { return p.cat === c.id; }).length;
+          return '<button class="' + (state.cat === c.id ? 'active' : '') + '" data-cat="' + c.id + '"><span>' + c.short + '</span><span class="n">' + n + '</span></button>';
+        }).join('');
       }).join('');
     var diffBtns = [0, 1, 2, 3, 4, 5].map(function (d) {
       return '<button class="' + (state.diff === d ? 'active' : '') + '" data-diff="' + d + '">' + (d === 0 ? '全部' : d + '★') + '</button>';
@@ -408,29 +466,35 @@
   }
 
   /* ================= 模拟考试列表 ================= */
+  function examCard(e) {
+    var ses = examSession(e);
+    var submitted = ses && ses.submittedAt;
+    var total = (e.problems || []).length;
+    var answered = 0;
+    (e.problems || []).forEach(function (p) { var a = store.answers[p.id]; if (a && a.text && a.text.trim()) answered++; });
+    var topics = {};
+    (e.problems || []).forEach(function (p) { topics[p.cat] = true; });
+    var topicHtml = Object.keys(topics).map(function (c) { return '<span class="tag">' + catName(c) + '</span>'; }).join('');
+    var status = submitted ? '<span class="pill ok">已完成</span>' : (ses ? '<span class="pill warn">进行中</span>' : '<span class="pill">未开始</span>');
+    var btn = submitted
+      ? '<a class="btn" href="#/exam/' + e.id + '">查看试卷与答案</a>'
+      : (ses ? '<a class="btn primary" href="#/exam/' + e.id + '">继续答题</a>' : '<button class="btn primary" data-start-exam="' + e.id + '">开始模考</button>');
+    return '<div class="card exam-card"><div class="top"><div><h3>' + esc(e.title) + '</h3><div class="sub">' + esc(e.subtitle || '') + '</div></div>' + status + '</div>' +
+      '<div class="meta"><span>' + total + ' 题</span><span>' + (e.duration || 120) + ' 分钟</span><span>已作答 ' + answered + '/' + total + '</span>' + (submitted ? '<span>交卷时间 ' + fmtTime(submitted) + '</span>' : '') + '</div>' +
+      '<div class="topics">' + topicHtml + '</div>' +
+      '<div class="exam-progress"><div class="cap"><span>作答进度</span><span>' + answered + '/' + total + '</span></div><div class="bar thin"><i style="width:' + pct(answered, total) + '%"></i></div></div>' +
+      '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">' + btn + (submitted ? '<button class="btn small" data-start-exam="' + e.id + '" data-reset="1">重新模考</button>' : '') + '</div></div>';
+  }
   function viewExams() {
     var intro = '<div class="card" style="padding:16px 20px;margin-bottom:16px;background:var(--panel-2)">' +
-      '<b>模拟考试说明</b><div class="muted small" style="margin-top:4px">每套 5 题、限时 90 分钟，从基础语法覆盖到数组。点击开始后计时，交卷后显示参考答案；作答会自动保存，可随时退出再继续。建议先做完精选题库再模考。</div></div>';
-    var cards = EXAMS.map(function (e) {
-      var ses = examSession(e);
-      var submitted = ses && ses.submittedAt;
-      var answered = 0;
-      (e.problems || []).forEach(function (p) { var a = store.answers[p.id]; if (a && a.text && a.text.trim()) answered++; });
-      var topics = {};
-      (e.problems || []).forEach(function (p) { topics[p.cat] = true; });
-      var topicHtml = Object.keys(topics).map(function (c) { return '<span class="tag">' + catName(c) + '</span>'; }).join('');
-      var status = submitted ? '<span class="pill ok">已完成</span>' : (ses ? '<span class="pill warn">进行中</span>' : '<span class="pill">未开始</span>');
-      var btn = submitted
-        ? '<a class="btn" href="#/exam/' + e.id + '">查看试卷与答案</a>'
-        : (ses ? '<a class="btn primary" href="#/exam/' + e.id + '">继续答题</a>' : '<button class="btn primary" data-start-exam="' + e.id + '">开始模考</button>');
-      return '<div class="card exam-card"><div class="top"><div><h3>' + esc(e.title) + '</h3><div class="sub">' + esc(e.subtitle || '') + '</div></div>' + status + '</div>' +
-        '<div class="meta"><span>5 题</span><span>' + (e.duration || 90) + ' 分钟</span><span>已作答 ' + answered + '/5</span>' + (submitted ? '<span>交卷时间 ' + fmtTime(submitted) + '</span>' : '') + '</div>' +
-        '<div class="topics">' + topicHtml + '</div>' +
-        '<div class="exam-progress"><div class="cap"><span>作答进度</span><span>' + answered + '/5</span></div><div class="bar thin"><i style="width:' + pct(answered, 5) + '%"></i></div></div>' +
-        '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">' + btn + (submitted ? '<button class="btn small" data-start-exam="' + e.id + '" data-reset="1">重新模考</button>' : '') + '</div></div>';
-    }).join('');
-    return '<div class="page-head"><div><h1>模拟考试</h1><p>6 套限时训练 · 每套 5 题 · 90 分钟。覆盖 Ch1–Ch4，重点训练「数组 + 控制流」综合题。</p></div></div>' +
-      intro + '<div class="grid cols-2">' + cards + '</div>';
+      '<b>模拟考试说明</b><div class="muted small" style="margin-top:4px">「期末全真卷」每套 6 题、限时 120 分钟，题型与北邮计导期末机考一致（5–7 题、覆盖函数/字符串/指针/结构体/算法）；「期中范围热身卷」每套 5 题、限时 90 分钟，用于找回手感。点开始后计时，交卷后显示参考答案；作答自动保存，可随时退出再继续。</div></div>';
+    var fm = EXAMS.filter(function (e) { return /^FM/.test(e.id || ''); });
+    var warm = EXAMS.filter(function (e) { return !/^FM/.test(e.id || ''); });
+    var blocks = '';
+    if (fm.length) blocks += '<div class="section-title"><h2>期末全真模拟卷</h2><span class="sub">6 题 / 120 分钟 · 覆盖实验 5–11</span></div><div class="grid cols-2">' + fm.map(examCard).join('') + '</div>';
+    if (warm.length) blocks += '<div class="section-title"><h2>期中范围热身卷</h2><span class="sub">5 题 / 90 分钟 · Ch1–Ch4</span></div><div class="grid cols-2">' + warm.map(examCard).join('') + '</div>';
+    return '<div class="page-head"><div><h1>模拟考试</h1><p>共 ' + EXAMS.length + ' 套限时训练，其中 ' + fm.length + ' 套期末全真卷。建议先按考点练熟新增内容，再用全真卷检验。</p></div></div>' +
+      intro + blocks;
   }
 
   /* ================= 考场 ================= */
@@ -452,7 +516,8 @@
     if (!e) return '<div class="empty">未找到该试卷。<a href="#/exams">返回模拟考试</a></div>';
     var ses = sessionOf(e);
     var submitted = !!ses.submittedAt;
-    var no = Math.max(1, Math.min(5, ses.current || 1));
+    var total = e.problems.length;
+    var no = Math.max(1, Math.min(total, ses.current || 1));
     var q = e.problems[no - 1];
     var answeredN = 0;
     e.problems.forEach(function (p) { var a = store.answers[p.id]; if (a && a.text && a.text.trim()) answeredN++; });
@@ -464,17 +529,17 @@
     var banner = submitted ? '<div class="exam-submitted">✅ 已交卷（' + fmtTime(ses.submittedAt) + '）。下面显示参考答案，可对照答案把错题加入错题本，再点「重新模考」再练一轮。</div>' : '';
     var timerHtml = submitted ? '<span class="exam-timer" id="examTimer">已交卷</span>' : '<span class="exam-timer" id="examTimer">--:--</span>';
     return '<div class="exam-room">' +
-      '<div class="exam-head"><div><div class="title">' + esc(e.title) + '</div><div class="sub">' + esc(e.subtitle || '') + ' · 共 5 题 · ' + (e.duration || 90) + ' 分钟</div></div>' + timerHtml +
+      '<div class="exam-head"><div><div class="title">' + esc(e.title) + '</div><div class="sub">' + esc(e.subtitle || '') + ' · 共 ' + total + ' 题 · ' + (e.duration || 120) + ' 分钟</div></div>' + timerHtml +
       '<button class="btn small" data-exam-exit="1">退出考场</button></div>' +
       '<div class="exam-body"><aside class="exam-nav"><div class="legend">题号颜色：<b style="color:var(--teal)">绿</b>=已作答，蓝=当前题</div>' + navBtns +
-      '<div style="margin-top:14px"><div class="muted small">已作答 ' + answeredN + '/5</div><div class="bar thin" style="margin-top:6px"><i style="width:' + pct(answeredN, 5) + '%"></i></div></div></aside>' +
+      '<div style="margin-top:14px"><div class="muted small">已作答 ' + answeredN + '/' + total + '</div><div class="bar thin" style="margin-top:6px"><i style="width:' + pct(answeredN, total) + '%"></i></div></div></aside>' +
       '<div class="exam-main"><div class="q-wrap">' + banner +
       '<div class="q-head"><span class="p-id">' + esc(q.id) + '</span><h2>' + esc(q.title) + '</h2><span class="stars">' + stars(q.difficulty) + '</span></div>' +
       metaHtml(q) + '<div class="q-desc md">' + md(q.desc) + '</div>' + samplesHtml(q) + answerHtml(q) +
       (submitted ? solutionHtml(q) : '<div class="muted small" style="margin-top:12px">交卷后可查看参考答案。</div>') +
       '</div></div></div>' +
       '<div class="exam-foot"><button class="btn" data-exam-prev="1"' + (no <= 1 ? ' disabled' : '') + '>← 上一题</button>' +
-      '<button class="btn" data-exam-next="1"' + (no >= 5 ? ' disabled' : '') + '>下一题 →</button><span class="spacer"></span>' +
+      '<button class="btn" data-exam-next="1"' + (no >= total ? ' disabled' : '') + '>下一题 →</button><span class="spacer"></span>' +
       (submitted ? '<span class="muted small">已交卷，可继续查看解析</span>' : '<button class="btn teal" data-exam-submit="1">交卷并查看参考答案</button>') +
       '</div></div>';
   }
@@ -535,7 +600,7 @@
       }).join('');
       return '<div class="section-title" style="margin-top:18px"><h2 style="font-size:15px">' + c.name + '<span class="muted small" style="font-weight:400"> · ' + byCat[c.id].length + ' 题</span></h2><span class="sub">' + c.ch + '</span></div><div class="wrong-list">' + items + '</div>';
     }).join('');
-    var md = '# 错题本（计导期中复习）\n\n收录 ' + list.length + ' 题\n\n' + list.map(function (it) {
+    var md = '# 错题本（计导期末复习）\n\n收录 ' + list.length + ' 题\n\n' + list.map(function (it) {
       return '- ' + it.id + ' ' + it.p.title + '（' + catName(it.p.cat) + '）' + (it.w.reason ? '\n  - 错误原因：' + it.w.reason : '');
     }).join('\n');
     return '<div class="page-head"><div><h1>错题本</h1><p>按题号记录你的错题与错误原因，复习时优先重做。数据保存在本机浏览器，可导出。</p></div>' +
@@ -559,7 +624,35 @@
       '<div class="sheet-layout"><aside class="sheet-nav card">' + nav + '</aside><div class="card sheet-body">' + body + '</div></div>';
   }
 
-  /* ================= 数据 ================= */
+  /* ================= 知识精讲 ================= */
+  function viewGuide() {
+    if (!GUIDE.length) return '<div class="card empty">知识精讲内容生成中…（请重新构建网页）</div>';
+    var cur = state.guideId;
+    var nav = GUIDE.map(function (g, i) {
+      return '<button class="' + (cur === g.id ? 'active' : '') + '" data-sheet="' + i + '"><span>' + esc(g.title) + '</span>' + (g.weight ? '<i class="pill ' + (g.weight === '必考' ? 'danger' : g.weight === '高频' ? 'warn' : '') + '">' + esc(g.weight) + '</i>' : '') + '</button>';
+    }).join('');
+    var body = GUIDE.map(function (g, i) {
+      var catLinks = CATS.filter(function (c) { return c.guide === g.id; }).map(function (c) {
+        return '<a class="tag" href="#/library/' + c.id + '">' + c.name + ' → 练 ' + PROBLEMS.filter(function (p) { return p.cat === c.id; }).length + ' 题</a>';
+      }).join('');
+      return '<section class="sheet-section" id="sheet-' + i + '"><div class="guide-head"><h3>' + esc(g.title) + '</h3>' + (g.ch ? '<span class="pill">' + esc(g.ch) + '</span>' : '') + '</div><div class="md">' + md(g.body) + '</div>' + (catLinks ? '<div class="guide-links">' + catLinks + '</div>' : '') + '</section>';
+    }).join('');
+    var totalFinal = CATS.filter(function (c) { return c.group === 'final'; }).reduce(function (a, c) { return a + catStats(c.id).total; }, 0);
+    return '<div class="page-head"><div><h1>知识精讲</h1><p>期末新增考点的系统讲解：概念 → 语法 → 代码模板 → 常见错误 → 对应练习。期末新增题库共 ' + totalFinal + ' 道题，讲完一节就去练那一组。</p></div>' +
+      '<div class="muted small">' + GUIDE.length + ' 节</div></div>' +
+      '<div class="sheet-layout"><aside class="sheet-nav card">' + nav + '</aside><div class="card sheet-body">' + body + '</div></div>';
+  }
+  function scrollToGuideSection(id) {
+    for (var i = 0; i < GUIDE.length; i++) {
+      if (GUIDE[i].id === id) {
+        var sec = document.getElementById('sheet-' + i);
+        if (sec) setTimeout(function () { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
+        return;
+      }
+    }
+  }
+
+  /* ================= 数据管理 ================= */
   function viewData() {
     var s = stats();
     var size = 0;
@@ -630,7 +723,9 @@
     var list = filtered();
     if (!list.some(function(x) { return x.id === p.id; })) list = PROBLEMS;
     var idx = list.indexOf(p);
-    return '<div class="practice-toolbar"><a class="btn small" href="#/library">← 返回题库</a><button class="btn small" data-toggle-list aria-expanded="true">收起题目列表</button><span class="muted small">作答自动保存 · ' + (idx+1) + ' / ' + list.length + '</span><span class="spacer"></span><button class="btn small" data-goto-problem="' + (list[idx-1] || p).id + '" ' + (idx === 0 ? 'disabled' : '') + '>上一题</button><button class="btn small" data-goto-problem="' + (list[idx+1] || p).id + '" ' + (idx === list.length-1 ? 'disabled' : '') + '>下一题</button></div><div class="practice-layout"><aside class="practice-nav card" aria-label="题目列表"><div class="practice-nav-title">题目列表 <span class="muted small">' + list.length + ' 题</span></div>' + list.map(function(x) { return '<a href="#/library/' + x.id + '" class="practice-link ' + (x.id === p.id ? 'active' : '') + '" ' + (x.id === p.id ? 'aria-current="page"' : '') + '><span class="mono">' + x.id + '</span><span>' + esc(x.title) + '</span></a>'; }).join('') + '</aside><section class="practice-main">' + cardHtml(p) + '</section></div>';
+    var cat = CAT_MAP[p.cat];
+    var guideBtn = (cat && cat.guide) ? '<a class="btn small" href="#/guide/' + cat.guide + '">看考点精讲</a>' : '';
+    return '<div class="practice-toolbar"><a class="btn small" href="#/library">← 返回题库</a><button class="btn small" data-toggle-list aria-expanded="true">收起题目列表</button>' + guideBtn + '<span class="muted small">作答自动保存 · ' + (idx+1) + ' / ' + list.length + '</span><span class="spacer"></span><button class="btn small" data-goto-problem="' + (list[idx-1] || p).id + '" ' + (idx === 0 ? 'disabled' : '') + '>上一题</button><button class="btn small" data-goto-problem="' + (list[idx+1] || p).id + '" ' + (idx === list.length-1 ? 'disabled' : '') + '>下一题</button></div><div class="practice-layout"><aside class="practice-nav card" aria-label="题目列表"><div class="practice-nav-title">题目列表 <span class="muted small">' + list.length + ' 题</span></div>' + list.map(function(x) { return '<a href="#/library/' + x.id + '" class="practice-link ' + (x.id === p.id ? 'active' : '') + '" ' + (x.id === p.id ? 'aria-current="page"' : '') + '><span class="mono">' + x.id + '</span><span>' + esc(x.title) + '</span></a>'; }).join('') + '</aside><section class="practice-main">' + cardHtml(p) + '</section></div>';
   }
   function download(name, text, type) {
     var blob = new Blob([text], { type: type || 'application/json;charset=utf-8' });
@@ -645,11 +740,11 @@
   }
   function exportAll() {
     saveNow();
-    download('计导期中复习-记录备份-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(store, null, 2));
+    download('计导期末复习-记录备份-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(store, null, 2));
     toast('已导出 JSON 备份');
   }
   function exportAnswersMd() {
-    var lines = ['# 计导期中复习 · 作答记录', '', '导出时间：' + new Date().toLocaleString(), ''];
+    var lines = ['# 计导期末复习 · 作答记录', '', '导出时间：' + new Date().toLocaleString(), ''];
     var n = 0;
     PROBLEMS.forEach(function (p) {
       var a = answerOf(p.id);
@@ -662,17 +757,17 @@
       if (a.note) lines.push('> 备注：' + a.note, '');
     });
     if (!n) { toast('还没有作答记录'); return; }
-    download('计导期中复习-作答记录.md', lines.join('\n'), 'text/markdown;charset=utf-8');
+    download('计导期末复习-作答记录.md', lines.join('\n'), 'text/markdown;charset=utf-8');
     toast('已导出 ' + n + ' 道题的作答');
   }
   function exportWrongMd() {
     var list = wrongList();
     if (!list.length) { toast('错题本还是空的'); return; }
-    var lines = ['# 错题本（计导期中复习）', '', '共 ' + list.length + ' 题', ''];
+    var lines = ['# 错题本（计导期末复习）', '', '共 ' + list.length + ' 题', ''];
     list.forEach(function (it) {
       lines.push('- **' + it.id + '** ' + it.p.title + '（' + catName(it.p.cat) + '）' + (it.w.reason ? '　错误原因：' + it.w.reason : ''));
     });
-    download('计导期中复习-错题本.md', lines.join('\n'), 'text/markdown;charset=utf-8');
+    download('计导期末复习-错题本.md', lines.join('\n'), 'text/markdown;charset=utf-8');
     toast('已导出错题本');
   }
   function startExam(id, reset) {
@@ -796,7 +891,7 @@
     if ((el = t.closest('[data-exam-next]'))) {
       var e2 = examById(state.examId); if (!e2) return;
       var s2 = store.exams[e2.id]; if (!s2) return;
-      s2.current = Math.min(5, (s2.current || 1) + 1); saveNow(); render(); return;
+      s2.current = Math.min(e2.problems.length, (s2.current || 1) + 1); saveNow(); render(); return;
     }
     if ((el = t.closest('[data-exam-submit]'))) {
       var e3 = examById(state.examId); if (!e3) return;
@@ -807,6 +902,14 @@
     }
     if ((el = t.closest('[data-sheet]'))) {
       var idx = Number(el.dataset.sheet);
+      if (state.view === 'guide') {
+        var g = GUIDE[idx];
+        if (!g) return;
+        state.guideId = g.id;
+        var target = '#/guide/' + g.id;
+        if (location.hash === target) { render(); } else { location.hash = target; }
+        return;
+      }
       var sec = document.getElementById('sheet-' + idx);
       if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
