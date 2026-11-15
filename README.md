@@ -8,7 +8,7 @@
 
 北京邮电大学 大一上《计算导论与程序设计》**期末机考（C 语言）**离线复习网站的单文件网页版。
 
-- 在线预览：<https://umtairitsusama.github.io/jidao-midterm-review/>
+- 在线预览：<https://umtairitsusama.github.io/jidao-final-review/>
 - 直接打开仓库里的 `index.html` 也可以离线使用（无需联网、无外部依赖）。
 
 ## 内容
