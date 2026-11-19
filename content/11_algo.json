@@ -428,7 +428,7 @@
       "id": "R11",
       "cat": "algo",
       "title": "手写快速排序与第 k 矮",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "快速排序",
         "分区",
@@ -464,7 +464,7 @@
       "id": "R12",
       "cat": "algo",
       "title": "身高队列的相邻交换次数",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "归并排序",
         "逆序对",
@@ -528,7 +528,7 @@
       "id": "R13",
       "cat": "algo",
       "title": "带路障棋盘的通行方案数",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "递推",
         "动态规划",
@@ -568,7 +568,7 @@
       "id": "R14",
       "cat": "algo",
       "title": "超大下标兔子数列取模",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "矩阵快速幂",
         "递推",

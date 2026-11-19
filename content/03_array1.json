@@ -592,7 +592,7 @@
       "id": "D14",
       "cat": "array1",
       "title": "前缀和求区间和",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "一维数组",
         "前缀和",
@@ -624,7 +624,7 @@
       "id": "D15",
       "cat": "array1",
       "title": "二分查找",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "一维数组",
         "二分查找",
@@ -656,7 +656,7 @@
       "id": "D16",
       "cat": "array1",
       "title": "合并两个有序数组",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "一维数组",
         "归并",

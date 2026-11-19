@@ -1127,7 +1127,7 @@
       "id": "V-A11",
       "cat": "basic",
       "title": "双十一满减与会员折扣·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "浮点比较",
         "分段计费",
@@ -1307,7 +1307,7 @@
       "id": "V-B08",
       "cat": "select",
       "title": "三对三篮球赛胜负判定·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "多分支",
         "规则判断",
@@ -1330,7 +1330,7 @@
       "id": "V-B09",
       "cat": "select",
       "title": "出租车分段计费·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "多分支",
         "分段计费",
@@ -1675,7 +1675,7 @@
       "id": "V-C15",
       "cat": "loop",
       "title": "打印方格图案·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "嵌套循环",
         "图形打印",
@@ -1698,7 +1698,7 @@
       "id": "V-C16",
       "cat": "loop",
       "title": "百钱买百鸡·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "穷举",
         "枚举优化",
@@ -2020,7 +2020,7 @@
       "id": "V-D14",
       "cat": "array1",
       "title": "前缀和求区间和·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "一维数组",
         "前缀和",
@@ -2043,7 +2043,7 @@
       "id": "V-D15",
       "cat": "array1",
       "title": "二分查找·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "一维数组",
         "二分查找",
@@ -2066,7 +2066,7 @@
       "id": "V-D16",
       "cat": "array1",
       "title": "合并两个有序数组·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "一维数组",
         "归并",
@@ -2158,7 +2158,7 @@
       "id": "V-E04",
       "cat": "array2",
       "title": "寻找矩阵的鞍点·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "最值",
@@ -2204,7 +2204,7 @@
       "id": "V-E06",
       "cat": "array2",
       "title": "蛇形矩阵·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "蛇形填充",
@@ -2250,7 +2250,7 @@
       "id": "V-E08",
       "cat": "array2",
       "title": "方阵顺时针旋转 90 度·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "旋转",
@@ -2480,7 +2480,7 @@
       "id": "V-F09",
       "cat": "mix",
       "title": "发子弹（环形同时调整）·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "数组模拟",
         "环形",
@@ -2503,7 +2503,7 @@
       "id": "V-F10",
       "cat": "mix",
       "title": "斐波那契数列的前缀和·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "斐波那契",
         "递推",
@@ -2526,7 +2526,7 @@
       "id": "V-F11",
       "cat": "mix",
       "title": "约瑟夫环（报数出圈）·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "数组模拟",
         "循环",
@@ -2549,7 +2549,7 @@
       "id": "V-F12",
       "cat": "mix",
       "title": "长度不超过 k 的最大子段和·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "前缀和",
         "枚举",
@@ -2572,7 +2572,7 @@
       "id": "V-F13",
       "cat": "mix",
       "title": "螺旋矩阵的填充与输出·代码分析",
-      "difficulty": 5,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "边界控制",
@@ -2848,7 +2848,7 @@
       "id": "V-S12",
       "cat": "string",
       "title": "身份证号码末位校验·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "加权求和",
@@ -2871,7 +2871,7 @@
       "id": "V-S13",
       "cat": "string",
       "title": "子串查找与全部替换·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "子串替换",
@@ -2894,7 +2894,7 @@
       "id": "V-S14",
       "cat": "string",
       "title": "字符串行程编码压缩·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "行程编码",
@@ -2917,7 +2917,7 @@
       "id": "V-S15",
       "cat": "string",
       "title": "字符串循环左移·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "循环移位",
@@ -2940,7 +2940,7 @@
       "id": "V-S16",
       "cat": "string",
       "title": "字符串多关键字排序·代码分析",
-      "difficulty": 5,
+      "difficulty": 3,
       "tags": [
         "二维字符数组",
         "strcmp",
@@ -3285,7 +3285,7 @@
       "id": "V-G15",
       "cat": "func",
       "title": "递归快速幂取模·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "递归",
         "快速幂",
@@ -3308,7 +3308,7 @@
       "id": "V-G16",
       "cat": "func",
       "title": "递归输出全排列·代码分析",
-      "difficulty": 5,
+      "difficulty": 3,
       "tags": [
         "递归",
         "回溯",
@@ -3630,7 +3630,7 @@
       "id": "V-P14",
       "cat": "pointer",
       "title": "动态二维数组转置·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "动态内存",
         "二维数组",
@@ -3653,7 +3653,7 @@
       "id": "V-P15",
       "cat": "pointer",
       "title": "函数指针选择排序方向·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "函数指针",
         "动态内存",
@@ -3676,7 +3676,7 @@
       "id": "V-P16",
       "cat": "pointer",
       "title": "动态矩阵按行整理·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "动态内存",
         "行指针",
@@ -3975,7 +3975,7 @@
       "id": "V-T13",
       "cat": "struct",
       "title": "学生信息管理系统·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "结构体数组",
         "增删改查",
@@ -3998,7 +3998,7 @@
       "id": "V-T14",
       "cat": "struct",
       "title": "动态数组选前k名·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "动态内存",
         "malloc",
@@ -4252,7 +4252,7 @@
       "id": "V-R11",
       "cat": "algo",
       "title": "手写快速排序与第 k 矮·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "快速排序",
         "分区",
@@ -4275,7 +4275,7 @@
       "id": "V-R12",
       "cat": "algo",
       "title": "身高队列的相邻交换次数·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "归并排序",
         "逆序对",
@@ -4298,7 +4298,7 @@
       "id": "V-R13",
       "cat": "algo",
       "title": "带路障棋盘的通行方案数·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "递推",
         "动态规划",
@@ -4321,7 +4321,7 @@
       "id": "V-R14",
       "cat": "algo",
       "title": "超大下标兔子数列取模·代码分析",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "矩阵快速幂",
         "递推",

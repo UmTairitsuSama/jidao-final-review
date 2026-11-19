@@ -1,4 +1,4 @@
-"""Serve the review site on loopback and run trusted C code with a local GCC or Clang."""
+"""Serve the review site on loopback and run trusted C/C++ code with GCC or Clang."""
 
 import argparse
 import hmac
@@ -16,6 +16,7 @@ import webbrowser
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_LIMIT = 65536
+INPUT_LIMIT = 480000
 
 
 def capture(command, directory, input_text, timeout):
@@ -50,18 +51,21 @@ def capture(command, directory, input_text, timeout):
 
 
 class LocalJudge:
-    def __init__(self, directory, compiler, flags):
+    def __init__(self, directory, compilers):
         self.directory = directory
-        self.compiler = compiler
-        self.flags = flags
+        self.compilers = compilers
         self.executable = directory / "main.exe"
         self.ticket = None
 
-    def compile(self, source):
+    def compile(self, source, language):
+        if not isinstance(language, str) or language not in self.compilers:
+            raise ValueError("本机未配置所选语言的编译器。请使用 --cc 或 --cxx 指定路径。")
+        compiler, flags = self.compilers[language]
+        filename = "main.cpp" if language == "cpp" else "main.c"
         self.ticket = None
         self.executable.unlink(missing_ok=True)
-        (self.directory / "main.c").write_bytes(source.encode("utf-8"))
-        result = capture([self.compiler, *self.flags, "main.c", "-o", "main.exe"], self.directory, "", 60)
+        (self.directory / filename).write_bytes(source.encode("utf-8"))
+        result = capture([compiler, *flags, filename, "-o", "main.exe"], self.directory, "", 60)
         diagnostics = result["out"] + result["err"]
         if result["status"] in ("timeout", "output"):
             raise ValueError("本机编译超时或编译输出超限。")
@@ -76,12 +80,11 @@ class LocalJudge:
             return capture([str(self.executable)], running, input_text, 2)
 
 
-def serve(port, html, compiler, flags, open_browser):
+def serve(port, html, compilers, open_browser):
     host = f"127.0.0.1:{port}"
     origin = f"http://{host}"
     token = secrets.token_urlsafe(32)
-    version = subprocess.check_output([compiler, "--version"], stderr=subprocess.STDOUT, timeout=10)
-    config = json.dumps({"token": token, "compiler": version.decode("utf-8", errors="replace").splitlines()[0]})
+    config = json.dumps({"token": token})
     page = html.read_text(encoding="utf-8")
     page = page.replace("<head>", "<head><script>window.__NATIVE_JUDGE__=" + config.replace("<", "\u003c") + ";</script>", 1)
 
@@ -128,8 +131,8 @@ def serve(port, html, compiler, flags, open_browser):
                     raise ValueError("评测请求格式无效。")
                 source = data.get("source")
                 if isinstance(source, str) and len(source) <= OUTPUT_LIMIT:
-                    result = judge.compile(source)
-                elif isinstance(data.get("module"), str) and isinstance(data.get("input"), str) and len(data["input"]) <= OUTPUT_LIMIT:
+                    result = judge.compile(source, data.get("language", "c"))
+                elif isinstance(data.get("module"), str) and isinstance(data.get("input"), str) and len(data["input"]) <= INPUT_LIMIT:
                     result = judge.run(data["module"], data["input"])
                 else:
                     raise ValueError("评测请求格式无效。")
@@ -139,9 +142,9 @@ def serve(port, html, compiler, flags, open_browser):
             self.send(status, json.dumps(result, ensure_ascii=False).encode("utf-8"), "application/json; charset=utf-8")
 
     with tempfile.TemporaryDirectory(prefix="review-local-c-") as workspace:
-        judge = LocalJudge(Path(workspace), compiler, flags)
+        judge = LocalJudge(Path(workspace), compilers)
         with HTTPServer(("127.0.0.1", port), Handler) as server:
-            print(f"本机 C 评测已启动。仅运行你信任的代码。\n{origin}/", flush=True)
+            print(f"本机 C/C++ 评测已启动。仅运行你信任的代码。\n{origin}/", flush=True)
             if open_browser:
                 webbrowser.open(origin + "/")
             try:
@@ -156,12 +159,21 @@ if __name__ == "__main__":
     local_page = ROOT / "计导期末复习.html"
     parser.add_argument("--html", type=Path, default=local_page if local_page.is_file() else ROOT / "index.html")
     parser.add_argument("--cc", default="gcc", help="Path to the GCC or Clang executable configured in VS Code")
-    parser.add_argument("--flag", action="append", help="Repeat to match VS Code tasks.json, e.g. --flag=-g")
+    parser.add_argument("--cxx", default="g++", help="Path to the g++ or clang++ executable")
+    parser.add_argument("--flag", action="append", help="C compiler flags, e.g. --flag=-std=c11 --flag=-g")
+    parser.add_argument("--cxx-flag", action="append", help="C++ compiler flags, e.g. --cxx-flag=-std=c++17")
     parser.add_argument("--open", action="store_true", help="Open the local site in your browser")
     options = parser.parse_args()
-    executable = shutil.which(options.cc)
-    if not executable:
-        parser.error("请用 --cc 指定本机 GCC 或 Clang 的完整路径。")
+    compilers = {}
+    for language, command, flags, standard in (
+        ("c", options.cc, options.flag, "-std=c11"),
+        ("cpp", options.cxx, options.cxx_flag, "-std=c++17"),
+    ):
+        executable = shutil.which(command)
+        if executable:
+            compilers[language] = (str(Path(executable).resolve()), flags or [standard, "-g"])
+    if not compilers:
+        parser.error("请用 --cc 或 --cxx 指定本机编译器的完整路径。")
     if not options.html.is_file():
         parser.error("网站 HTML 不存在，请先运行 build.py 或用 --html 指定入口。")
-    serve(options.port, options.html, str(Path(executable).resolve()), options.flag or ["-std=c11", "-g"], options.open)
+    serve(options.port, options.html, compilers, options.open)

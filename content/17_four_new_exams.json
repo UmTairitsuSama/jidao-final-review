@@ -287,7 +287,7 @@
           ],
           "cat": "algo",
           "title": "区间增量的最终峰值",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "综合算法",
             "期末仿真"
@@ -565,7 +565,7 @@
           ],
           "cat": "algo",
           "title": "最短达标连续段",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "综合算法",
             "期末仿真"
@@ -797,7 +797,7 @@
           "id": "FM9-6",
           "cat": "algo",
           "title": "公共空闲整数时段",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "综合算法",
             "期末仿真"
@@ -1141,7 +1141,7 @@
           ],
           "cat": "algo",
           "title": "恰好选k项的最大和",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "综合算法",
             "期末仿真"

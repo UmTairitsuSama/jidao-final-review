@@ -356,7 +356,7 @@
       "id": "F09",
       "cat": "mix",
       "title": "发子弹（环形同时调整）",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "数组模拟",
         "环形",
@@ -388,7 +388,7 @@
       "id": "F10",
       "cat": "mix",
       "title": "斐波那契数列的前缀和",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "斐波那契",
         "递推",
@@ -424,7 +424,7 @@
       "id": "F11",
       "cat": "mix",
       "title": "约瑟夫环（报数出圈）",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "数组模拟",
         "循环",
@@ -456,7 +456,7 @@
       "id": "F12",
       "cat": "mix",
       "title": "长度不超过 k 的最大子段和",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "前缀和",
         "枚举",
@@ -492,7 +492,7 @@
       "id": "F13",
       "cat": "mix",
       "title": "螺旋矩阵的填充与输出",
-      "difficulty": 5,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "边界控制",

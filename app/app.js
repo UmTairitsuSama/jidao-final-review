@@ -301,10 +301,11 @@
     var w = inWrong(p.id);
     var coding = !p.id.startsWith('V-') && checkpoints(p).length > 0;
     return '<div class="answer-box">' +
-      '<div class="answer-bar"><b>作答记录</b><span class="saved" id="saved-' + p.id + '">' + (a.updated ? '已保存 ' + fmtTime(a.updated) : '自动保存到本机') + '</span><span class="spacer"></span><button class="btn small" data-clear-answer="' + p.id + '">清空</button></div>' +
-      (coding ? '<div class="c-editor"><pre class="c-highlight" aria-hidden="true"><span>' + highlightC(text) + '</span></pre>' : '') +
-      '<textarea data-answer="' + p.id + '"' + (coding ? ' data-code-editor wrap="off" aria-label="C 代码" autocapitalize="off" autocomplete="off"' : ' aria-label="作答记录"') +
-      ' spellcheck="false" placeholder="' + (coding ? '在这里输入 C 代码' : '在这里记录你的推导过程') + '">\n' + esc(text) + '</textarea>' +
+      '<div class="answer-bar"><b>作答记录</b><span class="saved" id="saved-' + p.id + '">' + (a.updated ? '已保存 ' + fmtTime(a.updated) : '自动保存到本机') + '</span><span class="spacer"></span>' +
+      (coding ? judgeLanguageHtml(p) : '') + '<button class="btn small" data-clear-answer="' + p.id + '">清空</button></div>' +
+      (coding ? '<div class="c-editor"><pre class="c-highlight" aria-hidden="true"><span>' + highlightCode(text, judgeLanguage(p)) + '</span></pre>' : '') +
+      '<textarea data-answer="' + p.id + '"' + (coding ? ' data-code-editor wrap="off" aria-label="代码" autocapitalize="off" autocomplete="off"' : ' aria-label="作答记录"') +
+      ' spellcheck="false" placeholder="' + (coding ? (p.harness ? '在这里实现题目要求的函数' : '在这里输入代码') : '在这里记录你的推导过程') + '">\n' + esc(text) + '</textarea>' +
       (coding ? '</div>' + judgeHtml(p) : '') +
       '<input class="note" data-note="' + p.id + '" placeholder="备注：错误原因 / 关键点（自动保存）" value="' + esc(a.note || '') + '">' +
       '<div class="answer-foot">' + statusHtml(p.id) +
@@ -315,7 +316,7 @@
     return '<details class="solution"><summary>参考答案 / 思路提示</summary><div class="sol-body">' +
       (p.hint ? '<h4>思路</h4><div class="md">' + md(p.hint) + '</div>' : '') +
       (p.pitfalls ? '<h4>易错点</h4><div class="md">' + md(p.pitfalls) + '</div>' : '') +
-      '<h4>参考代码（C）</h4><div class="sol-code-wrap"><button class="copy-btn">复制代码</button><pre class="code"><code>' + esc(p.solution || '') + '</code></pre></div>' +
+      '<h4>' + (p.harness ? '参考函数（C）' : '参考代码（C）') + '</h4><div class="sol-code-wrap"><button class="copy-btn">复制代码</button><pre class="code"><code>' + esc(p.solution || '') + '</code></pre></div>' +
       '</div></details>';
   }
   function metaHtml(p) {
@@ -689,7 +690,7 @@
       '<div style="margin-top:14px"><div class="kv"><span>存储占用</span><b>' + (size / 1024).toFixed(1) + ' KB</b></div><div class="kv"><span>存储键名</span><span class="mono small">' + STORE_KEY + '</span></div><div class="kv"><span>自动保存</span><b>已开启</b></div></div></div>' +
       '<div class="data-card card"><h3>清空记录</h3><p>清空会删除所有作答、状态、错题本与模考计时，不可恢复。建议先导出备份。</p>' +
       '<button class="btn danger" data-clear-all="1">清空全部记录</button>' +
-      '<p style="margin-top:14px">作答和评分保存在浏览器本地。C 语言评测会联网获取编译器，程序与输入在浏览器中处理。</p></div></div>';
+      '<p style="margin-top:14px">作答和评分保存在浏览器本地。C/C++ 评测会联网获取编译器，程序与输入在浏览器中处理。</p></div></div>';
   }
 
   /* ================= 行为 ================= */
@@ -849,7 +850,7 @@
       if (!confirm('清空这道题的作答记录？')) return;
       var previousGrade = gradeOf(BY_ID[cid]);
       if (previousGrade) store.grades[cid] = previousGrade;
-      store.answers[cid] = { text: '', note: '', updated: 0 };
+      store.answers[cid] = { text: '', note: '', updated: 0, language: judgeLanguage(BY_ID[cid]) };
       saveNow();
       var card = el.closest('.answer-box');
       if (activeJudge && activeJudge.box === card) {
@@ -864,7 +865,7 @@
       }
       var judgeResult = card && card.querySelector('[data-judge-result]');
       if (judgeResult) {
-        judgeResult.textContent = 'C11 · ' + checkpoints(BY_ID[cid]).length + ' 个检查点';
+        judgeResult.textContent = judgeReady(BY_ID[cid]);
         setJudgeIssues(card, '');
       }
       var sv = document.getElementById('saved-' + cid); if (sv) sv.textContent = '已清空';
@@ -964,6 +965,7 @@
   });
   document.addEventListener('change', function (ev) {
     var t = ev.target;
+    if (t.matches('[data-judge-language]')) { changeJudgeLanguage(t); return; }
     if (t.id === 'wrongOnly') { state.wrongOnly = t.checked; state.page = 1; renderList(); return; }
     if (t.id === 'importFile') {
       var f = t.files && t.files[0];

@@ -172,6 +172,8 @@ pre.code code{background:none;color:inherit;padding:0;font-size:inherit}
 .answer-bar{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);flex-wrap:wrap}
 .answer-bar b{color:var(--text);font-size:12.5px}
 .answer-bar .spacer{flex:1}
+.judge-language{display:flex;align-items:center;gap:6px}
+.judge-language select{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:4px}
 .answer-box textarea{display:block;width:100%;min-height:96px;resize:vertical;border:none;background:var(--panel);color:var(--text);padding:11px 13px;font:12.8px/1.65 var(--mono);outline:none;border-bottom:1px dashed var(--line)}
 .answer-box textarea:focus{background:var(--panel)}
 .answer-box input.note{display:block;width:100%;border:none;background:var(--panel);color:var(--text);padding:8px 13px;font:12.8px inherit;outline:none}

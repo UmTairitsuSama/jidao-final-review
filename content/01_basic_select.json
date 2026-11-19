@@ -507,7 +507,7 @@
       "id": "A11",
       "cat": "basic",
       "title": "双十一满减与会员折扣",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "浮点比较",
         "分段计费",
@@ -1019,7 +1019,7 @@
       "id": "B08",
       "cat": "select",
       "title": "三对三篮球赛胜负判定",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "多分支",
         "规则判断",
@@ -1071,7 +1071,7 @@
       "id": "B09",
       "cat": "select",
       "title": "出租车分段计费",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "多分支",
         "分段计费",

@@ -560,7 +560,7 @@
       "id": "C15",
       "cat": "loop",
       "title": "打印方格图案",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "嵌套循环",
         "图形打印",
@@ -596,7 +596,7 @@
       "id": "C16",
       "cat": "loop",
       "title": "百钱买百鸡",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "穷举",
         "枚举优化",

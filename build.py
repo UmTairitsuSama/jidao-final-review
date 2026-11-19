@@ -18,6 +18,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = os.path.dirname(os.path.abspath(__file__))
+VERSION = "v2.1"
 CATS = {"basic", "select", "loop", "array1", "array2", "mix",
         "string", "func", "pointer", "struct", "algo"}
 CAT_ORDER = ["basic", "select", "loop", "array1", "array2", "mix",
@@ -61,6 +62,7 @@ def vscode_assets():
         "themes": themes,
         "grammars": {scope: load_json(os.path.join(folder, file)) for scope, file in (
             ("source.c", "c.tmLanguage.json"), ("source.c.platform", "platform.tmLanguage.json"),
+            ("source.cpp", "cpp.tmLanguage.json"),
         )},
     }
     with open(os.path.join(folder, "onig.wasm"), "rb") as engine:
@@ -107,7 +109,10 @@ def check_problems(problems, where):
             for case in checks
         ):
             errors.append(f"{where} {pid}: 检查点格式错误（需要由 in/out 字符串组成的列表）")
-        sol = q.get("solution") or ""
+        harness = q.get("harness", "")
+        if not isinstance(harness, str) or ("harness" in q and not re.search(r"\bmain\s*\(", harness)):
+            errors.append(f"{where} {pid}: harness 必须包含裁判主函数")
+        sol = (harness if isinstance(harness, str) else "") + (q.get("solution") or "")
         if "main" not in sol:
             errors.append(f"{where} {pid}: solution 不是完整程序")
         if re.search(r"(?<![A-Za-z_])gets\s*\(", sol) or "conio.h" in sol:
@@ -203,6 +208,7 @@ def main():
     payload = {
         "meta": {
             "builtAt": built,
+            "version": VERSION,
             "counts": {"problems": len(problems), "exams": len(exams),
                        "examProblems": len(exam_problems), "byCat": by_cat},
         },
@@ -223,6 +229,7 @@ def main():
                     .replace("%%JS%%", js.replace("%%JUDGE%%", judge))
                     .replace("%%DATA%%", data_js)
                     .replace("%%VSCODE_ASSETS%%", vscode_assets())
+                    .replace("%%VERSION%%", VERSION)
                     .replace("%%BUILT%%", built))
     with open(args.out, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)

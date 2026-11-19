@@ -82,7 +82,7 @@ def validate(problems):
         for s in q.get("samples") or []:
             if not isinstance(s, dict) or "in" not in s or "out" not in s:
                 errors.append(f"{where}: samples 每项必须有 in/out")
-        sol = q.get("solution") or ""
+        sol = q.get("harness", "") + "\n" + (q.get("solution") or "")
         if "main" not in sol:
             errors.append(f"{where}: solution 必须是完整程序（含 main）")
         if re.search(r"#include\s*<conio\.h>", sol) or re.search(r"\bgets\s*\(", sol):
@@ -103,7 +103,7 @@ def validate(problems):
 def compile_solution(workdir, q):
     src = os.path.join(workdir, "main.c")
     exe = os.path.join(workdir, "main.exe")
-    open(src, "w", encoding="utf-8").write(q["solution"])
+    open(src, "w", encoding="utf-8").write(q.get("harness", "") + "\n" + q["solution"])
     try:
         r = subprocess.run([GCC, "-std=c11", "-O2", "-o", exe, src],
                            capture_output=True, timeout=COMPILE_TIMEOUT)

@@ -210,7 +210,7 @@
           "id": "FM4-6",
           "cat": "algo",
           "title": "挂号窗口的排队等待",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "模拟",
             "贪心",
@@ -402,7 +402,7 @@
           "id": "FM5-5",
           "cat": "algo",
           "title": "包裹分拣的最轻负担",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "二分答案",
             "贪心判定",
@@ -442,7 +442,7 @@
           "id": "FM5-6",
           "cat": "algo",
           "title": "评论区爆款商品的编号",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "摩尔投票",
             "数组",
@@ -622,7 +622,7 @@
           "id": "FM6-4",
           "cat": "algo",
           "title": "雨量图的矩形区域查询",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "二维前缀和",
             "矩阵",
@@ -658,7 +658,7 @@
           "id": "FM6-5",
           "cat": "struct",
           "title": "医保结算的分类汇总",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "结构体数组",
             "分类汇总",
@@ -694,7 +694,7 @@
           "id": "FM6-6",
           "cat": "algo",
           "title": "未来第一个更暖的日子",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "单调栈",
             "数组",

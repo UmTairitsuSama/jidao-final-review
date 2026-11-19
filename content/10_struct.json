@@ -372,7 +372,7 @@
       "id": "T13",
       "cat": "struct",
       "title": "学生信息管理系统",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "结构体数组",
         "增删改查",
@@ -404,7 +404,7 @@
       "id": "T14",
       "cat": "struct",
       "title": "动态数组选前k名",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "动态内存",
         "malloc",

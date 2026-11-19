@@ -7,6 +7,15 @@
   let lastCompilation;
   const judgeReports = new Map();
   const nativeJudge = window.__NATIVE_JUDGE__;
+  const judgeLanguages = { c: 'C11', cpp: 'C++17' };
+
+  function judgeLanguage(p) {
+    return answerOf(p.id).language === 'cpp' ? 'cpp' : 'c';
+  }
+
+  function judgeReady(p) {
+    return judgeLanguages[judgeLanguage(p)] + ' · ' + checkpoints(p).length + ' 个检查点';
+  }
 
   const cLiterals = /(?<comment>\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|(?![\s\S])))|(?<string>"(?:\\[\s\S]|[^"\\\n])*(?:"|\\?)|'(?:\\[\s\S]|[^'\\\n])*(?:'|\\?))/g;
   let vscodeHighlight, vscodeLoading;
@@ -33,9 +42,10 @@
           }),
           loadGrammar: async (scope) => bundle.grammars[scope] || null,
         });
-        const grammar = await registry.loadGrammar('source.c');
-        vscodeHighlight = { registry, grammar, themes: bundle.themes, theme: null };
-      })().catch((error) => console.error('VS Code C syntax initialization failed', error));
+        const c = await registry.loadGrammar('source.c');
+        const cpp = await registry.loadGrammar('source.cpp');
+        vscodeHighlight = { registry, grammars: { c, cpp }, themes: bundle.themes, theme: null };
+      })().catch((error) => console.error('VS Code syntax initialization failed', error));
     }
     vscodeLoading.then(() => {
       if (!vscodeHighlight) return;
@@ -49,9 +59,10 @@
     });
   }
 
-  function highlightC(value) {
+  function highlightCode(value, language) {
     if (!vscodeHighlight) return esc(value) + '\n';
-    const { grammar, colors } = vscodeHighlight;
+    const { grammars, colors } = vscodeHighlight;
+    const grammar = grammars[language];
     let ruleStack = vscodetextmate.INITIAL;
     return value.split('\n').map((line) => {
       const result = grammar.tokenizeLine2(line, ruleStack, 30);
@@ -75,7 +86,7 @@
 
   function syncCodeHighlight(editor, refresh) {
     const display = editor.previousElementSibling;
-    if (refresh) display.firstElementChild.innerHTML = highlightC(editor.value);
+    if (refresh) display.firstElementChild.innerHTML = highlightCode(editor.value, judgeLanguage(BY_ID[editor.dataset.answer]));
     display.firstElementChild.style.transform = 'translate(' + -editor.scrollLeft + 'px,' + -editor.scrollTop + 'px)';
   }
 
@@ -236,7 +247,7 @@
       '<div class="judge-issues" id="issues-panel-' + id + '" role="tabpanel" aria-labelledby="issues-tab-' + id + '" data-judge-panel="issues" hidden>' +
       '<p class="muted small">暂无编译问题</p></div>' +
       '<div class="judge-result" id="terminal-panel-' + id + '" role="tabpanel" aria-labelledby="terminal-tab-' + id +
-      '" data-judge-panel="terminal" data-judge-result aria-live="polite" tabindex="0">C11 · ' + checkpoints(p).length + ' 个检查点</div></div>';
+      '" data-judge-panel="terminal" data-judge-result aria-live="polite" tabindex="0">' + judgeReady(p) + '</div></div>';
   }
 
   function selectJudgeTab(button, focus = false) {
@@ -261,7 +272,7 @@
         const level = severity.includes('error') ? 'error' : severity;
         const label = '<span class="judge-issue-level ' + level + '">' + esc(severity) + '</span>' +
           '<span>' + esc(message) + '</span>' + (location ? '<small>' + esc(location) + '</small>' : '');
-        return '<li>' + (file && /(?:^|[\\/])main\.c$/.test(file)
+        return '<li>' + (file && /(?:^|[\\/])main\.(?:c|cpp)$/.test(file)
           ? '<button type="button" data-issue-line="' + line + '" data-issue-column="' + (column || 1) + '">' + label + '</button>'
           : '<div class="judge-issue">' + label + '</div>') + '</li>';
       }).join('') + '</ul>'
@@ -281,8 +292,8 @@
   }
 
   function judgeHtml(p) {
-    return '<section class="judge-panel" aria-label="C 语言评测">' +
-      '<div class="judge-engine muted small">' + (nativeJudge ? esc(nativeJudge.compiler) : 'Clang C11 · 浏览器评测') + '</div>' +
+    return '<section class="judge-panel" aria-label="编程评测">' +
+      '<div class="judge-engine muted small">' + (nativeJudge ? '本机编译' : 'Clang/WASI · 浏览器评测') + '</div>' +
       '<label>自测输入 <span class="muted">stdin</span><textarea data-judge-input aria-label="自测输入" spellcheck="false" rows="3" placeholder="输入传给程序的内容"></textarea></label>' +
       '<div class="judge-actions">' +
       '<button type="button" class="btn small" data-judge="sample">填入样例</button>' +
@@ -292,6 +303,24 @@
       '<button type="button" class="btn small" data-judge="cancel" hidden>停止</button></div>' +
       judgeTabs(p) +
       '<div class="judge-grade" data-judge-grade aria-live="polite">' + gradeHtml(p) + '</div></section>';
+  }
+
+  function judgeLanguageHtml(p) {
+    const language = judgeLanguage(p);
+    return '<label class="judge-language">语言 <select data-judge-language="' + esc(p.id) + '">' +
+      Object.entries(judgeLanguages).map(([key, label]) =>
+        '<option value="' + key + '"' + (key === language ? ' selected' : '') + '>' + label + '</option>'
+      ).join('') + '</select></label>';
+  }
+
+  function changeJudgeLanguage(select) {
+    const p = BY_ID[select.dataset.judgeLanguage];
+    const box = select.closest('.answer-box');
+    store.answers[p.id] = { ...answerOf(p.id), language: select.value };
+    saveNow();
+    syncCodeHighlight(box.querySelector('[data-code-editor]'), true);
+    box.querySelector('[data-judge-result]').textContent = judgeReady(p);
+    setJudgeIssues(box, '');
   }
 
   function workerTask(data, signal) {
@@ -355,7 +384,7 @@
   }
 
   function setJudgeBusy(box, busy) {
-    for (const button of box.querySelectorAll('[data-judge="run"], [data-judge="submit"]')) {
+    for (const button of box.querySelectorAll('[data-judge="run"], [data-judge="submit"], [data-judge-language]')) {
       button.disabled = busy;
     }
     box.querySelector('[data-judge="cancel"]').hidden = !busy;
@@ -384,9 +413,10 @@
       if (activeJudge && activeJudge.box === box) activeJudge.controller.abort();
       return;
     }
+    const language = judgeLanguage(problem);
     const source = editor.value;
     const customInput = input.value;
-    if (!source.trim()) { result.textContent = '请先输入 C 代码。'; editor.focus(); return; }
+    if (!source.trim()) { result.textContent = '请先输入代码。'; editor.focus(); return; }
     if (source.length > 65536 || (action === 'run' && customInput.length > 65536)) {
       result.textContent = '代码和自测输入各最多 65,536 个字符。';
       return;
@@ -397,11 +427,13 @@
     setJudgeBusy(box, true);
     setJudgeIssues(box, '');
     selectJudgeTab(box.querySelector('[data-judge-tab="terminal"]'));
-    result.textContent = nativeJudge ? '正在使用本机编译器…' : '正在编译 C11，首次加载评测环境可能需要一些时间…';
+    result.textContent = '正在编译 ' + judgeLanguages[language] + '…';
     try {
-      const compiled = !nativeJudge && lastCompilation?.source === source
-        ? lastCompilation.compiled : await judgeTask({ source }, controller.signal);
-      lastCompilation = { source, compiled };
+      const file = language === 'cpp' ? 'main.cpp' : 'main.c';
+      const submission = problem.harness ? problem.harness + '\n#line 1 "' + file + '"\n' + source : source;
+      const compiled = !nativeJudge && lastCompilation?.source === submission && lastCompilation.language === language
+        ? lastCompilation.compiled : await judgeTask({ source: submission, language }, controller.signal);
+      lastCompilation = { source: submission, language, compiled };
       const diagnostics = (compiled.compileOutput || '').slice(0, 5000).trim();
       setJudgeIssues(box, diagnostics.replace(/\x1b\[[0-9;]*m/g, ''));
       if (!compiled.module) {

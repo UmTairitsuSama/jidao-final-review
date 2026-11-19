@@ -624,7 +624,7 @@
       "id": "P14",
       "cat": "pointer",
       "title": "动态二维数组转置",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "动态内存",
         "二维数组",
@@ -656,7 +656,7 @@
       "id": "P15",
       "cat": "pointer",
       "title": "函数指针选择排序方向",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "函数指针",
         "动态内存",
@@ -692,7 +692,7 @@
       "id": "P16",
       "cat": "pointer",
       "title": "动态矩阵按行整理",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "动态内存",
         "行指针",

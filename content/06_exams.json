@@ -565,7 +565,7 @@
           "id": "M3-4",
           "cat": "array2",
           "title": "地形图里的山峰",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "二维数组",
             "邻居比较",
@@ -601,7 +601,7 @@
           "id": "M3-5",
           "cat": "array1",
           "title": "相同元素的最远跨度",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "一维数组",
             "下标记录",
@@ -729,7 +729,7 @@
           "id": "M4-3",
           "cat": "mix",
           "title": "走廊里的灯",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "数组模拟",
             "状态翻转",
@@ -773,7 +773,7 @@
           "id": "M4-4",
           "cat": "array1",
           "title": "两个社团的共同成员",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "双指针",
             "有序数组",
@@ -809,7 +809,7 @@
           "id": "M4-5",
           "cat": "array2",
           "title": "斜线之字形填数",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "二维数组",
             "填充模拟",
@@ -1026,7 +1026,7 @@
           "id": "M5-5",
           "cat": "array2",
           "title": "最宽的斜线",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "二维数组",
             "对角线",
@@ -1150,7 +1150,7 @@
           "id": "M6-3",
           "cat": "array1",
           "title": "凑单的两件商品",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "双指针",
             "有序数组",
@@ -1190,7 +1190,7 @@
           "id": "M6-4",
           "cat": "array2",
           "title": "最大数字方窗",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "二维数组",
             "子矩阵",
@@ -1226,7 +1226,7 @@
           "id": "M6-5",
           "cat": "mix",
           "title": "数字三角形的最大路径",
-          "difficulty": 5,
+          "difficulty": 3,
           "tags": [
             "二维数组",
             "递推",

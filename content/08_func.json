@@ -612,7 +612,7 @@
       "id": "G15",
       "cat": "func",
       "title": "递归快速幂取模",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "递归",
         "快速幂",
@@ -656,7 +656,7 @@
       "id": "G16",
       "cat": "func",
       "title": "递归输出全排列",
-      "difficulty": 5,
+      "difficulty": 3,
       "tags": [
         "递归",
         "回溯",

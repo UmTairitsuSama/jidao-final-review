@@ -206,7 +206,7 @@
           "id": "FM1-6",
           "cat": "algo",
           "title": "食堂电子屏的最长标语片段",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "滑动窗口",
             "字符串",
@@ -450,7 +450,7 @@
           "id": "FM2-6",
           "cat": "algo",
           "title": "食堂窗口的最短总等待",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "贪心",
             "排序",
@@ -650,7 +650,7 @@
           "id": "FM3-5",
           "cat": "func",
           "title": "辩论赛开辩结辩的记录",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "递归",
             "回溯",
@@ -690,7 +690,7 @@
           "id": "FM3-6",
           "cat": "algo",
           "title": "食堂消费券的最少张数",
-          "difficulty": 4,
+          "difficulty": 3,
           "tags": [
             "动态规划",
             "完全背包",

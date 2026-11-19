@@ -424,7 +424,7 @@
       "id": "S12",
       "cat": "string",
       "title": "身份证号码末位校验",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "加权求和",
@@ -456,7 +456,7 @@
       "id": "S13",
       "cat": "string",
       "title": "子串查找与全部替换",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "子串替换",
@@ -496,7 +496,7 @@
       "id": "S14",
       "cat": "string",
       "title": "字符串行程编码压缩",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "行程编码",
@@ -540,7 +540,7 @@
       "id": "S15",
       "cat": "string",
       "title": "字符串循环左移",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "字符数组",
         "循环移位",
@@ -580,7 +580,7 @@
       "id": "S16",
       "cat": "string",
       "title": "字符串多关键字排序",
-      "difficulty": 5,
+      "difficulty": 3,
       "tags": [
         "二维字符数组",
         "strcmp",

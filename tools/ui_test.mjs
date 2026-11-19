@@ -255,6 +255,41 @@ try {
     await waitFor(() => evaluate('!!document.querySelector("[data-status]")'));
     test('刷新后保留自动设置的状态', await hasStatus('doing'));
 
+    await nav('#/library/P17');
+    await evaluate(`(() => {
+      const select = document.querySelector('[data-judge-language]');
+      select.value = 'cpp';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    })()`);
+    const election = await evaluate('window.__DATA__.problems.find(p => p.id === "P17")');
+    await type(code, '#include <bits/stdc++.h>\n' + election.solution.replace('ranks[i] = 0;', 'ranks[i] = std::vector<int>{0}.front();'));
+    await click('[data-judge="sample"]');
+    const cppRun = await judge('run');
+    test('C++17 函数题自测支持标准库并自动加入主函数', cppRun.replace(/\r\n/g, '\n').includes(election.samples[0].out.trim()), cppRun);
+    const cppGrade = await judge('submit');
+    const electionCount = election.samples.length + election.checkpoints.length;
+    test('C++17 函数题提交通过全部检查点', cppGrade.includes('100 / 100 分') &&
+      cppGrade.includes(`通过 ${electionCount} / ${electionCount}`) && (await store()).grades?.P17?.latest === 100, cppGrade.slice(0, 100));
+    await closeReport();
+    await type(code, 'void points(int*, int**, int) { invalid_name; }');
+    const cppInvalid = await judge('submit');
+    test('C++17 函数题编译错误定位到作答行', cppInvalid.includes('编译错误') &&
+      await evaluate('!!document.querySelector(\'[data-issue-line="1"]\')'));
+    await closeReport();
+    await nav('#/library/A01');
+    await nav('#/library/P17');
+    test('返回题目时恢复语言选择', await evaluate('document.querySelector("[data-judge-language]").value === "cpp"'));
+
+    for (const id of ['R17', 'R18', 'R19', 'R20']) {
+      await nav('#/library/' + id);
+      const problem = await evaluate('window.__DATA__.problems.find(p => p.id === "' + id + '")');
+      await type(code, problem.solution);
+      const grade = await judge('submit');
+      const cases = problem.samples.length + problem.checkpoints.length;
+      test(id + ' 高星题通过全部检查点', grade.includes(`通过 ${cases} / ${cases}`));
+      await closeReport();
+    }
+
     await nav('#/exam/FM7');
     const examSolution = await evaluate('window.__DATA__.exams.find(e => e.id === "FM7").problems[0].solution');
     await type(code, examSolution);

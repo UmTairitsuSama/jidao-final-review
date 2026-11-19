@@ -108,7 +108,7 @@
       "id": "E04",
       "cat": "array2",
       "title": "寻找矩阵的鞍点",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "最值",
@@ -176,7 +176,7 @@
       "id": "E06",
       "cat": "array2",
       "title": "蛇形矩阵",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "蛇形填充",
@@ -252,7 +252,7 @@
       "id": "E08",
       "cat": "array2",
       "title": "方阵顺时针旋转 90 度",
-      "difficulty": 4,
+      "difficulty": 3,
       "tags": [
         "二维数组",
         "旋转",
