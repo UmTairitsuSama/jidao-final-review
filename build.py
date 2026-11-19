@@ -18,7 +18,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "v2.2"
+VERSION = "v2.2.1"
 CATS = {"basic", "select", "loop", "array1", "array2", "mix",
         "string", "func", "pointer", "struct", "algo"}
 CAT_ORDER = ["basic", "select", "loop", "array1", "array2", "mix",
