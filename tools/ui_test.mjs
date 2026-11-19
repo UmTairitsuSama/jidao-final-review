@@ -9,9 +9,11 @@ import { pathToFileURL } from 'node:url';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const HTML = path.resolve(process.argv[2] || path.join(ROOT, '计导期末复习.html'));
-const PORT = 9333;
-const PROFILE = path.join(ROOT, 'tmp', 'ui-profile');
+const args = process.argv.slice(2);
+const target = args.find((arg) => arg !== '--judge') || path.join(ROOT, '计导期末复习.html');
+const url = target.startsWith('http://127.0.0.1:') ? target : pathToFileURL(path.resolve(target)).href;
+const PORT = Number(process.env.UI_TEST_PORT || 9333);
+const PROFILE = path.join(ROOT, 'tmp', 'ui-profile-' + PORT);
 const SHOT_DIR = path.join(ROOT, 'tmp', 'shots');
 const W = 1366, H = 768;
 
@@ -102,7 +104,6 @@ try {
   await send('Runtime.enable');
   await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
 
-  const url = pathToFileURL(HTML).href;
   await send('Page.navigate', { url });
   await sleep(1500);
 
@@ -116,7 +117,7 @@ try {
 
   // 2. 本地存储可用（file:// 下的 localStorage）
   const lsOk = await evaluate(`(()=>{try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true}catch(e){return false}})()`);
-  test('file:// 下 localStorage 可用', lsOk);
+  test('当前入口可用 localStorage', lsOk);
 
   // 3. 题库：分类过滤 + 搜索 + 作答保存 + 状态 + 错题
   await nav('#/library');
@@ -143,7 +144,124 @@ try {
   await click(`[data-wrong="${firstId}"]`);
   s = await store();
   test('加入错题本记录题号', !!(s.wrong && s.wrong[firstId]), firstId);
+  test('署名已更新', await evaluate('document.querySelector(".brand-text small").textContent === "provided by：UmTairitsuSama(songqi)"'));
+  test('左侧题面与右侧评测顶部对齐，滚动互相独立', await evaluate(`(() => {
+    const left = document.querySelector('.practice-statement');
+    const right = document.querySelector('.practice-answer');
+    const title = left.querySelector('.stars');
+    const spacer = document.createElement('div');
+    spacer.style.height = '100vh';
+    left.append(spacer);
+    const rightSpacer = spacer.cloneNode();
+    right.append(rightSpacer);
+    left.scrollTop = 150;
+    window.scrollTo(0, 200);
+    const leftMoves = left.scrollTop > 0 && right.scrollTop === 0;
+    left.scrollTop = 0;
+    right.scrollTop = 150;
+    const rightMoves = right.scrollTop > 0 && left.scrollTop === 0;
+    right.scrollTop = 0;
+    spacer.remove();
+    rightSpacer.remove();
+    return leftMoves && rightMoves && window.scrollY === 0 &&
+      left.getBoundingClientRect().top === right.getBoundingClientRect().top && !!title;
+  })()`));
   await shot('02-library');
+
+  if (args.includes('--judge')) {
+    const code = '[data-code-editor]';
+    await nav('#/library/A01');
+    const edited = await evaluate(`(() => {
+      const editor = document.querySelector('[data-code-editor]');
+      editor.value = 'int main() ';
+      editor.focus();
+      editor.setSelectionRange(editor.value.length, editor.value.length);
+      for (const key of ['{', 'Enter', '(']) {
+        editor.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+      }
+      return editor.value === 'int main() {\\n    ()\\n}' && editor.selectionStart === 18 &&
+        getComputedStyle(editor).resize === 'vertical';
+    })()`);
+    test('编辑器括号补全、自动缩进与拉长', edited);
+    await type(code, '#include <stdio.h>\nint main(void) { /* first line\n second line */ printf("%d", 42); return 0; }');
+    await waitFor(() => evaluate('!!document.querySelector(".c-highlight span[style]")'));
+    const dark = await evaluate('document.documentElement.dataset.theme === "dark"');
+    const commentColor = dark ? 'rgb(106, 153, 85)' : 'rgb(0, 128, 0)';
+    const highlighted = await evaluate(`[...document.querySelectorAll('.c-highlight span[style]')]
+      .some((span) => span.textContent.includes('second line') && span.style.color === ${JSON.stringify(commentColor)})`);
+    test('使用 VS Code 语法与主题为多行注释着色', highlighted);
+    const resultSelector = '[data-judge-result]';
+    async function judge(action) {
+      await click('[data-judge="' + action + '"]');
+      await waitFor(() => evaluate('!document.querySelector(\'[data-judge="run"]\').disabled'), 130000, 500);
+      const selector = action === 'submit' ? '#judge-dialog' : resultSelector;
+      return evaluate('document.querySelector(' + JSON.stringify(selector) + ').textContent');
+    }
+    async function closeReport() {
+      await click('#judge-dialog button');
+    }
+    const solution = await evaluate('window.__DATA__.problems.find(p => p.id === "A01").solution');
+    const statusButton = (status) => '[data-status="A01"][data-v="' + status + '"]';
+    async function hasStatus(status) {
+      return (await store()).status.A01 === status &&
+        await evaluate('document.querySelector(' + JSON.stringify(statusButton(status)) + ').getAttribute("aria-pressed") === "true"');
+    }
+    await click(statusButton('review'));
+    await type(code, solution);
+    await click('[data-judge="sample"]');
+    const run = await judge('run');
+    test('C 自测按 stdin 返回 stdout', run.includes('The sum is 3 and the difference is -1.'), run);
+    test('运行自测后保留掌握状态', await hasStatus('review'));
+    const grade = await judge('submit');
+    const count = await evaluate('window.__DATA__.problems.filter(p => p.id === "A01").map(p => p.samples.length + p.checkpoints.length)[0]');
+    const partialScore = Math.round(10000 / count) / 100;
+    test('提交弹窗逐项对比输出并计分', grade.includes('100 / 100 分') && grade.includes(`通过 ${count} / ${count}`) &&
+      await evaluate(`document.querySelector('#judge-dialog').open &&
+        document.querySelectorAll('.judge-case').length === ${count} &&
+        [...document.querySelectorAll('.judge-case')].every(c => c.querySelector('[data-actual]').textContent === c.querySelector('[data-expected]').textContent)`), grade.slice(0, 130));
+    await closeReport();
+    test('满分提交自动设为已掌握', grade.includes('本次提交 · 已掌握') && await hasStatus('done'));
+    test('满分立即标绿', await evaluate('!document.querySelector("[data-full-score=A01]").hidden'));
+    await nav('#/library/A02');
+    await nav('#/library/A01');
+    test('切题后恢复最近一次评测分数', (await evaluate('document.querySelector("[data-judge-grade]").textContent')).includes('最近 100 / 100'));
+    await type(code, '#include <stdio.h>\nint main(void){puts("The sum is 3 and the difference is -1.");}');
+    const partial = await judge('submit');
+    test('部分分显示实际输出与标准输出的差异', partial.includes(`${partialScore} / 100 分`) && partial.includes(`通过 1 / ${count}`) &&
+      await evaluate(`[...document.querySelectorAll('.judge-case')].some(c =>
+        c.querySelector('[data-actual]').textContent !== c.querySelector('[data-expected]').textContent)`));
+    await closeReport();
+    test('再次提交未满分自动设为在练', partial.includes('本次提交 · 在练') && await hasStatus('doing'));
+    const grades = (await store()).grades;
+    test('最近得分和最高分独立保存，仍保留满分标记', grades?.A01?.latest === partialScore && grades?.A01?.best === 100 &&
+      await evaluate('!document.querySelector("[data-full-score=A01]").hidden'));
+    await type(code, 'int main( {');
+    const invalid = await judge('submit');
+    test('编译错误弹窗显示零分和未运行的检查点', invalid.includes('编译错误') && invalid.includes('0 / 100 分') && invalid.includes('未运行'));
+    await closeReport();
+    test('编译失败按零分设为在练', await hasStatus('doing'));
+    await click('[data-judge-tab="issues"]');
+    test('问题面板列出带行号的编译诊断', await evaluate(`document.querySelector('[data-judge-tab="issues"]').getAttribute('aria-selected') === 'true' &&
+      !!document.querySelector('[data-issue-line="1"]') && document.querySelector('[data-judge-result]').hidden`));
+    await click('[data-issue-line="1"]');
+    test('点击编译诊断定位到代码编辑器', await evaluate('document.activeElement.matches("[data-code-editor]")'));
+    await click('[data-judge-tab="terminal"]');
+    test('终端保留原始编译诊断', await evaluate('document.querySelector("[data-judge-result]").textContent.includes("error:")'));
+    await type(code, 'int main(void){ for (;;) {} }');
+    const timeout = await judge('run');
+    test('停止超时的 C 程序', timeout.includes('运行超时'), timeout);
+    await type(code, 'int main(){ /* 我的作答 */ return 0; }');
+    await send('Page.reload');
+    await waitFor(() => evaluate('!!document.querySelector("[data-status]")'));
+    test('刷新后保留自动设置的状态', await hasStatus('doing'));
+
+    await nav('#/exam/FM7');
+    const examSolution = await evaluate('window.__DATA__.exams.find(e => e.id === "FM7").problems[0].solution');
+    await type(code, examSolution);
+    const examGrade = await judge('submit');
+    test('模考题按自身分值识别满分', examGrade.includes('10 / 10 分') && (await store()).status['FM7-1'] === 'done');
+    await closeReport();
+  }
 
   // 4. 搜索
   await nav('#/library');
@@ -158,20 +276,19 @@ try {
   test('错题本页面显示题号', wrongPage.includes(firstId), firstId);
   await shot('03-wrong');
 
-  // 6. 速查手册
+  // 6. 章节路由
   await nav('#/cheatsheet');
-  const sheet = await evaluate(`document.querySelectorAll('.sheet-section').length`);
-  test('速查手册渲染', sheet > 0, `${sheet} 节`);
+  await click('.chapter-nav a:nth-of-type(2)');
+  const sheet = await evaluate(`location.hash === '#/cheatsheet/2' &&
+    document.querySelectorAll('.sheet-section').length === 1 &&
+    document.querySelector('.chapter-nav [aria-current="page"]').textContent === document.querySelector('.sheet-section h2').textContent`);
+  test('速查手册目录切换到独立章节', sheet);
 
-  // 6.5 知识精讲
-  await nav('#/guide');
-  const guideSecs = await evaluate(`document.querySelectorAll('.sheet-section').length`);
-  const guideNav = await evaluate(`document.querySelectorAll('.sheet-nav button').length`);
-  test('知识精讲渲染', guideSecs > 0 && guideSecs === guideNav, `${guideSecs} 节`);
   await nav('#/guide/g-pointer');
-  await sleep(700);
-  const atPointer = await evaluate(`(()=>{const el=document.getElementById('sheet-0');const h=document.querySelector('.sheet-body h3');return (h&&h.textContent)||'';})()`);
-  test('精讲章节跳转', typeof atPointer === 'string' && atPointer.length > 0, atPointer);
+  const atPointer = await evaluate(`document.querySelectorAll('.sheet-section').length === 1 &&
+    document.querySelector('.chapter-nav [aria-current="page"]').getAttribute('href') === '#/guide/g-pointer' &&
+    document.querySelector('.sheet-section h2').textContent.includes('指针')`);
+  test('知识精讲章节链接只打开指定章节', atPointer);
   await shot('03b-guide');
 
   // 7. 模拟考试：开始 → 计时 → 作答 → 交卷 → 答案
@@ -213,6 +330,15 @@ try {
   // 10. 汇总
   const kpi = await evaluate(`document.querySelectorAll('.hero .kpi b').length`);
   test('首页统计渲染', kpi >= 3, `${kpi} 项`);
+
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  for (const [route, name] of [
+    ['#/home', '总览'], ['#/library', '题库'], ['#/library/A01', '做题页'], ['#/guide/g-pointer', '知识精讲'], ['#/exams', '模拟考试']
+  ]) {
+    await nav(route);
+    test('窄屏布局无整页横向溢出 · ' + name, await evaluate('document.documentElement.scrollWidth <= innerWidth && innerWidth === 390'));
+    await shot('mobile-' + route.slice(2).replaceAll('/', '-'));
+  }
 
 } catch (e) {
   test('测试框架异常', false, e.message);

@@ -7,8 +7,10 @@
     python build.py --content content --out 计导期中复习.html
 """
 import argparse
+import base64
 import datetime
 import glob
+import gzip
 import json
 import os
 import re
@@ -28,6 +30,60 @@ def load_json(path):
         return json.load(f)
 
 
+def vscode_assets():
+    folder = os.path.join(ROOT, "app", "vscode-c")
+
+    def read(name):
+        with open(os.path.join(folder, name), encoding="utf-8") as source:
+            return source.read()
+
+    def theme(name):
+        jsonc = read(name + ".json")
+        strings = r'"(?:\\.|[^"\\])*"'
+        preserve_strings = lambda token: token[0] if token[0].startswith('"') else ""
+        cleaned = re.sub(strings + r'|//[^\n]*|/\*[\s\S]*?\*/', preserve_strings, jsonc)
+        cleaned = re.sub(strings + r'|,(?=\s*[}\]])', preserve_strings, cleaned)
+        return json.loads(cleaned)
+
+    themes = {}
+    for name in ("light", "dark"):
+        base = theme(name + "_vs")
+        plus = theme(name + "_plus")
+        modern = theme(name + "_modern")
+        colors = {**base["colors"], **plus.get("colors", {}), **modern.get("colors", {})}
+        themes[name] = {
+            "settings": [{
+                "settings": {"foreground": colors["editor.foreground"],
+                             "background": colors["editor.background"]},
+            }] + base["tokenColors"] + plus["tokenColors"] + modern.get("tokenColors", []),
+        }
+    data = {
+        "themes": themes,
+        "grammars": {scope: load_json(os.path.join(folder, file)) for scope, file in (
+            ("source.c", "c.tmLanguage.json"), ("source.c.platform", "platform.tmLanguage.json"),
+        )},
+    }
+    with open(os.path.join(folder, "onig.wasm"), "rb") as engine:
+        wasm = engine.read()
+
+    def encode(value):
+        return base64.b64encode(gzip.compress(value, mtime=0)).decode("ascii")
+
+    libraries = "\n".join(
+        "<script>" + read(name + "-main.js").replace("</script", r"<\/script") + "</script>"
+        for name in ("vscode-textmate", "vscode-oniguruma")
+    )
+    notices = "\n".join(read(name) for name in (
+        "LICENSE.txt", "ThirdPartyNotices.txt", "vscode-textmate-LICENSE.md",
+        "vscode-oniguruma-LICENSE.txt", "vscode-oniguruma-NOTICES.txt",
+    ))
+    return libraries + '\n<script type="application/json" id="vscode-c-assets">' + json.dumps({
+        "data": encode(json.dumps(data, ensure_ascii=False).encode("utf-8")),
+        "wasm": encode(wasm),
+        "notices": notices,
+    }).replace("</", "<\\/") + "</script>"
+
+
 def check_problems(problems, where):
     errors, warnings = [], []
     seen = {}
@@ -45,6 +101,12 @@ def check_problems(problems, where):
         for s in q.get("samples") or []:
             if not isinstance(s, dict) or not isinstance(s.get("in"), str) or not isinstance(s.get("out"), str):
                 errors.append(f"{where} {pid}: 样例格式错误（需要 in/out 字符串）")
+        checks = q.get("checkpoints", [])
+        if not isinstance(checks, list) or any(
+            not isinstance(case, dict) or any(not isinstance(case.get(key), str) for key in ("in", "out"))
+            for case in checks
+        ):
+            errors.append(f"{where} {pid}: 检查点格式错误（需要由 in/out 字符串组成的列表）")
         sol = q.get("solution") or ""
         if "main" not in sol:
             errors.append(f"{where} {pid}: solution 不是完整程序")
@@ -153,9 +215,14 @@ def main():
     template = open(os.path.join(ROOT, "app", "template.html"), encoding="utf-8").read()
     css = open(os.path.join(ROOT, "app", "style.css"), encoding="utf-8").read()
     js = open(os.path.join(ROOT, "app", "app.js"), encoding="utf-8").read()
+    with open(os.path.join(ROOT, "app", "judge-worker.js"), encoding="utf-8") as f:
+        worker = json.dumps(f.read(), ensure_ascii=False).replace("</", "<\\/")
+    with open(os.path.join(ROOT, "app", "judge.js"), encoding="utf-8") as f:
+        judge = f.read().replace("%%JUDGE_WORKER%%", worker)
     html = (template.replace("%%CSS%%", css)
-                    .replace("%%JS%%", js)
+                    .replace("%%JS%%", js.replace("%%JUDGE%%", judge))
                     .replace("%%DATA%%", data_js)
+                    .replace("%%VSCODE_ASSETS%%", vscode_assets())
                     .replace("%%BUILT%%", built))
     with open(args.out, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)

@@ -29,7 +29,41 @@
           ],
           "hint": "只遍历拥有两个邻居的位置。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[100],c=0;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);for(int i=1;i+1<n;i++)c+=(a[i]>a[i-1]&&a[i]>a[i+1])||(a[i]<a[i-1]&&a[i]<a[i+1]);printf(\"%d\\n\",c);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[100],c=0;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);for(int i=1;i+1<n;i++)c+=(a[i]>a[i-1]&&a[i]>a[i+1])||(a[i]<a[i-1]&&a[i]<a[i+1]);printf(\"%d\\n\",c);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "5\n1 1 2 2 1\n",
+              "out": "0\n"
+            },
+            {
+              "in": "4\n2 1 2 1\n",
+              "out": "2\n"
+            },
+            {
+              "in": "7\n10 -6 -4 -10 2 4 -1\n",
+              "out": "4\n"
+            },
+            {
+              "in": "7\n-10 -6 -4 -1 2 4 10\n",
+              "out": "0\n"
+            },
+            {
+              "in": "7\n10 4 2 -1 -4 -6 -10\n",
+              "out": "0\n"
+            },
+            {
+              "in": "20\n-4 1 -6 -8 -10 -10 5 9 -7 -1 8 1 -4 0 -4 10 -7 -2 -1 -5\n",
+              "out": "10\n"
+            },
+            {
+              "in": "20\n-10 -10 -8 -7 -7 -6 -5 -4 -4 -4 -2 -1 -1 0 1 1 5 8 9 10\n",
+              "out": "0\n"
+            },
+            {
+              "in": "20\n10 9 8 5 1 1 0 -1 -1 -2 -4 -4 -4 -5 -6 -7 -7 -8 -10 -10\n",
+              "out": "0\n"
+            }
+          ]
         },
         {
           "id": "FM7-2",
@@ -54,7 +88,21 @@
           ],
           "hint": "f(n)=末位-f(剩余部分)。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint f(int n){return n<10?n:n%10-f(n/10);}int main(void){int n;scanf(\"%d\",&n);printf(\"%d\\n\",f(n));return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint f(int n){return n<10?n:n%10-f(n/10);}int main(void){int n;scanf(\"%d\",&n);printf(\"%d\\n\",f(n));return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "1000000000\n",
+              "out": "-1\n"
+            },
+            {
+              "in": "909\n",
+              "out": "18\n"
+            },
+            {
+              "in": "90\n",
+              "out": "-9\n"
+            }
+          ]
         },
         {
           "id": "FM7-3",
@@ -79,7 +127,17 @@
           ],
           "hint": "只和上一个单词比较，不能全局去重。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[202],last[202]=\"\";if(!fgets(s,sizeof s,stdin))return 0;int first=1;for(char *p=strtok(s,\" \\r\\n\");p;p=strtok(NULL,\" \\r\\n\")){if(strcmp(p,last)){printf(\"%s%s\",first?\"\":\" \",p);first=0;}strcpy(last,p);}puts(\"\");return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[202],last[202]=\"\";if(!fgets(s,sizeof s,stdin))return 0;int first=1;for(char *p=strtok(s,\" \\r\\n\");p;p=strtok(NULL,\" \\r\\n\")){if(strcmp(p,last)){printf(\"%s%s\",first?\"\":\" \",p);first=0;}strcpy(last,p);}puts(\"\");return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "  x  x y x  \n",
+              "out": "x y x\n"
+            },
+            {
+              "in": "a a a\n",
+              "out": "a\n"
+            }
+          ]
         },
         {
           "id": "FM7-4",
@@ -104,7 +162,41 @@
           ],
           "hint": "先计数再分配，明确返回内存的释放责任。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint split(const int *a,int n,int **p,int *c){*p=NULL;*c=0;for(int i=0;i<n;i++)*c+=a[i]<0;if(!*c)return 1;*p=malloc((size_t)*c*sizeof **p);if(!*p)return 0;int k=0;for(int i=0;i<n;i++)if(a[i]<0)(*p)[k++]=a[i];return 1;}int main(void){int n,a[100],*p,c;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);if(!split(a,n,&p,&c))return 1;printf(\"%d\\n\",c);if(!c)puts(\"EMPTY\");else{for(int i=0;i<c;i++)printf(\"%s%d\",i?\" \":\"\",p[i]);puts(\"\");}free(p);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint split(const int *a,int n,int **p,int *c){*p=NULL;*c=0;for(int i=0;i<n;i++)*c+=a[i]<0;if(!*c)return 1;*p=malloc((size_t)*c*sizeof **p);if(!*p)return 0;int k=0;for(int i=0;i<n;i++)if(a[i]<0)(*p)[k++]=a[i];return 1;}int main(void){int n,a[100],*p,c;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);if(!split(a,n,&p,&c))return 1;printf(\"%d\\n\",c);if(!c)puts(\"EMPTY\");else{for(int i=0;i<c;i++)printf(\"%s%d\",i?\" \":\"\",p[i]);puts(\"\");}free(p);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "3\n-1 -2 -1\n",
+              "out": "3\n-1 -2 -1\n"
+            },
+            {
+              "in": "2\n1 2\n",
+              "out": "0\nEMPTY\n"
+            },
+            {
+              "in": "7\n-1 2 3 -2 5 -9 -4\n",
+              "out": "4\n-1 -2 -9 -4\n"
+            },
+            {
+              "in": "7\n-9 -4 -2 -1 2 3 5\n",
+              "out": "4\n-9 -4 -2 -1\n"
+            },
+            {
+              "in": "7\n5 3 2 -1 -2 -4 -9\n",
+              "out": "4\n-1 -2 -4 -9\n"
+            },
+            {
+              "in": "20\n0 -9 -2 -6 -2 -10 1 -4 -2 0 -8 5 2 3 8 -1 -10 -4 -3 -10\n",
+              "out": "13\n-9 -2 -6 -2 -10 -4 -2 -8 -1 -10 -4 -3 -10\n"
+            },
+            {
+              "in": "20\n-10 -10 -10 -9 -8 -6 -4 -4 -3 -2 -2 -2 -1 0 0 1 2 3 5 8\n",
+              "out": "13\n-10 -10 -10 -9 -8 -6 -4 -4 -3 -2 -2 -2 -1\n"
+            },
+            {
+              "in": "20\n8 5 3 2 1 0 0 -1 -2 -2 -2 -3 -4 -4 -6 -8 -9 -10 -10 -10\n",
+              "out": "13\n-1 -2 -2 -2 -3 -4 -4 -6 -8 -9 -10 -10 -10\n"
+            }
+          ]
         },
         {
           "id": "FM7-5",
@@ -129,10 +221,70 @@
           ],
           "hint": "先过滤有效状态，再做两级比较。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct O{int id,day,ok;};int main(void){int n,b=-1;struct O a[100];scanf(\"%d\",&n);for(int i=0;i<n;i++){scanf(\"%d%d%d\",&a[i].id,&a[i].day,&a[i].ok);if(a[i].ok&&(b<0||a[i].day<a[b].day||(a[i].day==a[b].day&&a[i].id<a[b].id)))b=i;}if(b<0)puts(\"NONE\");else printf(\"%d\\n\",a[b].id);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct O{int id,day,ok;};int main(void){int n,b=-1;struct O a[100];scanf(\"%d\",&n);for(int i=0;i<n;i++){scanf(\"%d%d%d\",&a[i].id,&a[i].day,&a[i].ok);if(a[i].ok&&(b<0||a[i].day<a[b].day||(a[i].day==a[b].day&&a[i].id<a[b].id)))b=i;}if(b<0)puts(\"NONE\");else printf(\"%d\\n\",a[b].id);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "3\n3 1 0\n2 3 1\n1 3 1\n",
+              "out": "1\n"
+            }
+          ]
         },
         {
           "id": "FM7-6",
+          "checkpoints": [
+            {
+              "in": "3 1\n1 2 -1\n",
+              "out": "0 3\n"
+            },
+            {
+              "in": "4 3\n1 4 -4\n2 2 3\n4 4 3\n",
+              "out": "-1 2\n"
+            },
+            {
+              "in": "3 2\n1 3 -2\n3 3 1\n",
+              "out": "-1 3\n"
+            },
+            {
+              "in": "1 6\n1 1 -5\n1 1 1\n1 1 3\n1 1 3\n1 1 3\n1 1 5\n",
+              "out": "10 1\n"
+            },
+            {
+              "in": "1 6\n1 1 0\n1 1 -5\n1 1 -2\n1 1 0\n1 1 -5\n1 1 -1\n",
+              "out": "-13 1\n"
+            },
+            {
+              "in": "3 6\n2 2 3\n3 3 4\n2 3 -5\n2 2 2\n3 3 -2\n2 2 0\n",
+              "out": "0 1\n"
+            },
+            {
+              "in": "3 6\n2 2 2\n1 1 -2\n2 3 1\n1 3 0\n2 2 -4\n3 3 5\n",
+              "out": "6 3\n"
+            },
+            {
+              "in": "6 6\n1 6 5\n6 6 -2\n2 3 -3\n4 6 -4\n1 1 1\n5 6 5\n",
+              "out": "6 1\n"
+            },
+            {
+              "in": "1 6\n1 1 4\n1 1 -5\n1 1 -3\n1 1 3\n1 1 5\n1 1 3\n",
+              "out": "7 1\n"
+            },
+            {
+              "in": "5 6\n3 3 -1\n2 5 -1\n1 2 5\n4 5 -3\n1 1 -3\n3 5 -5\n",
+              "out": "4 2\n"
+            },
+            {
+              "in": "1 6\n1 1 -5\n1 1 2\n1 1 -4\n1 1 0\n1 1 1\n1 1 -5\n",
+              "out": "-11 1\n"
+            },
+            {
+              "in": "6 6\n5 5 -5\n6 6 -4\n4 4 -3\n1 3 0\n3 6 5\n4 4 3\n",
+              "out": "5 3\n"
+            },
+            {
+              "in": "7 6\n1 3 -5\n4 5 4\n1 3 3\n2 6 1\n5 7 -5\n4 4 2\n",
+              "out": "7 4\n"
+            }
+          ],
           "cat": "algo",
           "title": "区间增量的最终峰值",
           "difficulty": 4,
@@ -187,7 +339,13 @@
           ],
           "hint": "交点只计一次。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int r,c,a[20][20],rs[20]={0},cs[20]={0};scanf(\"%d%d\",&r,&c);for(int i=0;i<r;i++)for(int j=0;j<c;j++){scanf(\"%d\",&a[i][j]);rs[i]+=a[i][j];cs[j]+=a[i][j];}int b=-100000;for(int i=0;i<r;i++)for(int j=0;j<c;j++){int x=rs[i]+cs[j]-a[i][j];if(x>b)b=x;}printf(\"%d\\n\",b);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int r,c,a[20][20],rs[20]={0},cs[20]={0};scanf(\"%d%d\",&r,&c);for(int i=0;i<r;i++)for(int j=0;j<c;j++){scanf(\"%d\",&a[i][j]);rs[i]+=a[i][j];cs[j]+=a[i][j];}int b=-100000;for(int i=0;i<r;i++)for(int j=0;j<c;j++){int x=rs[i]+cs[j]-a[i][j];if(x>b)b=x;}printf(\"%d\\n\",b);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "2 3\n-1 -2 -3\n-4 -5 -6\n",
+              "out": "-10\n"
+            }
+          ]
         },
         {
           "id": "FM8-2",
@@ -212,7 +370,41 @@
           ],
           "hint": "非降序允许相等。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint ordered(const int *a,int n){return n<=1||(a[n-2]<=a[n-1]&&ordered(a,n-1));}int main(void){int n,a[100];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);puts(ordered(a,n)?\"YES\":\"NO\");return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint ordered(const int *a,int n){return n<=1||(a[n-2]<=a[n-1]&&ordered(a,n-1));}int main(void){int n,a[100];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);puts(ordered(a,n)?\"YES\":\"NO\");return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "4\n1 2 3 2\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "1\n-1\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "7\n-9 5 5 -3 10 -5 -1\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "7\n-9 -5 -3 -1 5 5 10\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "7\n10 5 5 -1 -3 -5 -9\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "20\n-10 1 -5 -1 9 7 6 -1 1 6 9 -1 -1 6 0 9 0 9 -5 -5\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "20\n-10 -5 -5 -5 -1 -1 -1 -1 0 0 1 1 6 6 6 7 9 9 9 9\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "20\n9 9 9 9 7 6 6 6 1 1 0 0 -1 -1 -1 -1 -5 -5 -5 -10\n",
+              "out": "NO\n"
+            }
+          ]
         },
         {
           "id": "FM8-3",
@@ -237,7 +429,17 @@
           ],
           "hint": "遇分隔符提交数字段，末尾也要提交。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[102];fgets(s,sizeof s,stdin);long long sum=0,v=0;for(int i=0;;i++){char c=s[i];if(c>='0'&&c<='9')v=v*10+c-'0';else{sum+=v;v=0;}if(!c)break;}printf(\"%lld\\n\",sum);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[102];fgets(s,sizeof s,stdin);long long sum=0,v=0;for(int i=0;;i++){char c=s[i];if(c>='0'&&c<='9')v=v*10+c-'0';else{sum+=v;v=0;}if(!c)break;}printf(\"%lld\\n\",sum);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "000001a999999\n",
+              "out": "1000000\n"
+            },
+            {
+              "in": "0a00\n",
+              "out": "0\n"
+            }
+          ]
         },
         {
           "id": "FM8-4",
@@ -262,7 +464,13 @@
           ],
           "hint": "各行独立分配，失败也必须清理已经分配的行。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int r,k[20];scanf(\"%d\",&r);int **a=calloc((size_t)r,sizeof *a);if(!a)return 1;int ok=1;for(int i=0;i<r;i++){scanf(\"%d\",&k[i]);a[i]=malloc((size_t)k[i]*sizeof **a);if(!a[i]){ok=0;break;}for(int j=0;j<k[i];j++)scanf(\"%d\",&a[i][j]);}if(ok)for(int i=0;i<r;i++){int s=0;for(int j=0;j<k[i];j++)s+=a[i][j];printf(\"%s%d\",i?\" \":\"\",s);}if(ok)puts(\"\");for(int i=0;i<r;i++)free(a[i]);free(a);return ok?0:1;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int r,k[20];scanf(\"%d\",&r);int **a=calloc((size_t)r,sizeof *a);if(!a)return 1;int ok=1;for(int i=0;i<r;i++){scanf(\"%d\",&k[i]);a[i]=malloc((size_t)k[i]*sizeof **a);if(!a[i]){ok=0;break;}for(int j=0;j<k[i];j++)scanf(\"%d\",&a[i][j]);}if(ok)for(int i=0;i<r;i++){int s=0;for(int j=0;j<k[i];j++)s+=a[i][j];printf(\"%s%d\",i?\" \":\"\",s);}if(ok)puts(\"\");for(int i=0;i<r;i++)free(a[i]);free(a);return ok?0:1;}\n",
+          "checkpoints": [
+            {
+              "in": "3\n1 -5\n3 0 1 -1\n2 3 4\n",
+              "out": "-5 0 7\n"
+            }
+          ]
         },
         {
           "id": "FM8-5",
@@ -287,10 +495,74 @@
           ],
           "hint": "相接端点不算冲突，每对只计一次。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct I{int s,e;};int main(void){int n,c=0;struct I a[100];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d%d\",&a[i].s,&a[i].e);for(int i=0;i<n;i++)for(int j=i+1;j<n;j++)c+=a[i].s<a[j].e&&a[j].s<a[i].e;printf(\"%d\\n\",c);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct I{int s,e;};int main(void){int n,c=0;struct I a[100];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d%d\",&a[i].s,&a[i].e);for(int i=0;i<n;i++)for(int j=i+1;j<n;j++)c+=a[i].s<a[j].e&&a[j].s<a[i].e;printf(\"%d\\n\",c);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "3\n0 1\n1 2\n0 2\n",
+              "out": "2\n"
+            }
+          ]
         },
         {
           "id": "FM8-6",
+          "checkpoints": [
+            {
+              "in": "4 8\n1 1 8 1\n",
+              "out": "1\n"
+            },
+            {
+              "in": "4 10\n1 2 3 4\n",
+              "out": "4\n"
+            },
+            {
+              "in": "4 8\n2 2 2 2\n",
+              "out": "4\n"
+            },
+            {
+              "in": "3 4\n1 1 5\n",
+              "out": "1\n"
+            },
+            {
+              "in": "8 5\n5 2 4 1 6 3 5 5\n",
+              "out": "1\n"
+            },
+            {
+              "in": "4 24\n5 6 3 2\n",
+              "out": "0\n"
+            },
+            {
+              "in": "5 18\n1 6 2 6 4\n",
+              "out": "4\n"
+            },
+            {
+              "in": "7 7\n2 2 4 2 6 1 6\n",
+              "out": "2\n"
+            },
+            {
+              "in": "8 17\n3 4 3 2 2 5 2 3\n",
+              "out": "6\n"
+            },
+            {
+              "in": "3 8\n1 2 4\n",
+              "out": "0\n"
+            },
+            {
+              "in": "7 15\n1 1 6 3 6 4 4\n",
+              "out": "3\n"
+            },
+            {
+              "in": "5 2\n5 3 6 5 3\n",
+              "out": "1\n"
+            },
+            {
+              "in": "4 24\n2 1 5 6\n",
+              "out": "0\n"
+            },
+            {
+              "in": "3 2\n6 3 6\n",
+              "out": "1\n"
+            }
+          ],
           "cat": "algo",
           "title": "最短达标连续段",
           "difficulty": 4,
@@ -345,7 +617,41 @@
           ],
           "hint": "答案不超过n，用计数标记即可。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,seen[102]={0},x;scanf(\"%d\",&n);for(int i=0;i<n;i++){scanf(\"%d\",&x);if(x<=n)seen[x]=1;}int k=0;while(seen[k])k++;printf(\"%d\\n\",k);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,seen[102]={0},x;scanf(\"%d\",&n);for(int i=0;i<n;i++){scanf(\"%d\",&x);if(x<=n)seen[x]=1;}int k=0;while(seen[k])k++;printf(\"%d\\n\",k);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "4\n0 1 2 3\n",
+              "out": "4\n"
+            },
+            {
+              "in": "3\n0 0 2\n",
+              "out": "1\n"
+            },
+            {
+              "in": "7\n6 10 5 6 5 2 10\n",
+              "out": "0\n"
+            },
+            {
+              "in": "7\n2 5 5 6 6 10 10\n",
+              "out": "0\n"
+            },
+            {
+              "in": "7\n10 10 6 6 5 5 2\n",
+              "out": "0\n"
+            },
+            {
+              "in": "20\n12 18 15 17 0 8 1 16 16 10 4 0 4 6 17 17 3 4 18 8\n",
+              "out": "2\n"
+            },
+            {
+              "in": "20\n0 0 1 3 4 4 4 6 8 8 10 12 15 16 16 17 17 17 18 18\n",
+              "out": "2\n"
+            },
+            {
+              "in": "20\n18 18 17 17 17 16 16 15 12 10 8 8 6 4 4 4 3 1 0 0\n",
+              "out": "2\n"
+            }
+          ]
         },
         {
           "id": "FM9-2",
@@ -370,7 +676,17 @@
           ],
           "hint": "递归返回1加子问题次数，空区间不能再访问数组。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint visits(const int *a,int l,int r,int x){if(l>r)return 0;int m=l+(r-l)/2;if(a[m]==x)return 1;return 1+(x<a[m]?visits(a,l,m-1,x):visits(a,m+1,r,x));}int main(void){int n,x,a[100];scanf(\"%d%d\",&n,&x);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",visits(a,0,n-1,x));return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint visits(const int *a,int l,int r,int x){if(l>r)return 0;int m=l+(r-l)/2;if(a[m]==x)return 1;return 1+(x<a[m]?visits(a,l,m-1,x):visits(a,m+1,r,x));}int main(void){int n,x,a[100];scanf(\"%d%d\",&n,&x);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",visits(a,0,n-1,x));return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "4 9\n1 2 3 4\n",
+              "out": "3\n"
+            },
+            {
+              "in": "4 1\n1 2 3 4\n",
+              "out": "2\n"
+            }
+          ]
         },
         {
           "id": "FM9-3",
@@ -395,7 +711,21 @@
           ],
           "hint": "只消费成功识别的两个字符，未知转义不能丢字符。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[102];fgets(s,sizeof s,stdin);s[strcspn(s,\"\\r\\n\")]=0;for(int i=0;s[i];i++){if(s[i]=='\\\\'&&s[i+1]=='n'){putchar('\\n');i++;}else if(s[i]=='\\\\'&&s[i+1]=='\\\\'){putchar('\\\\');i++;}else putchar(s[i]);}putchar('\\n');return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[102];fgets(s,sizeof s,stdin);s[strcspn(s,\"\\r\\n\")]=0;for(int i=0;s[i];i++){if(s[i]=='\\\\'&&s[i+1]=='n'){putchar('\\n');i++;}else if(s[i]=='\\\\'&&s[i+1]=='\\\\'){putchar('\\\\');i++;}else putchar(s[i]);}putchar('\\n');return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "x\\q\\\n",
+              "out": "x\\q\\\n"
+            },
+            {
+              "in": "a\\\\nb\n",
+              "out": "a\\nb\n"
+            },
+            {
+              "in": "x\\n\n",
+              "out": "x\n\n"
+            }
+          ]
         },
         {
           "id": "FM9-4",
@@ -420,7 +750,17 @@
           ],
           "hint": "先通分，再以绝对值求gcd。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int p,q;}Rat;int gcd(int a,int b){return b?gcd(b,a%b):a;}Rat plus(Rat a,Rat b){Rat r={a.p*b.q+b.p*a.q,a.q*b.q};int g=gcd(abs(r.p),r.q);r.p/=g;r.q/=g;return r;}int main(void){Rat a,b,r;scanf(\"%d%d%d%d\",&a.p,&a.q,&b.p,&b.q);r=plus(a,b);printf(\"%d/%d\\n\",r.p,r.q);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int p,q;}Rat;int gcd(int a,int b){return b?gcd(b,a%b):a;}Rat plus(Rat a,Rat b){Rat r={a.p*b.q+b.p*a.q,a.q*b.q};int g=gcd(abs(r.p),r.q);r.p/=g;r.q/=g;return r;}int main(void){Rat a,b,r;scanf(\"%d%d%d%d\",&a.p,&a.q,&b.p,&b.q);r=plus(a,b);printf(\"%d/%d\\n\",r.p,r.q);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "-2 4 -1 2\n",
+              "out": "-1/1\n"
+            },
+            {
+              "in": "0 9 2 4\n",
+              "out": "1/2\n"
+            }
+          ]
         },
         {
           "id": "FM9-5",
@@ -445,7 +785,13 @@
           ],
           "hint": "指针数组改变访问次序，字符存储保持不动。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,k=0;char a[50][21],*p[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%20s\",a[i]);for(int group=1;group>=0;group--)for(int i=0;i<n;i++)if((strchr(\"aeiou\",a[i][0])!=NULL)==group)p[k++]=a[i];for(int i=0;i<n;i++)puts(p[i]);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,k=0;char a[50][21],*p[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%20s\",a[i]);for(int group=1;group>=0;group--)for(int i=0;i<n;i++)if((strchr(\"aeiou\",a[i][0])!=NULL)==group)p[k++]=a[i];for(int i=0;i<n;i++)puts(p[i]);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "5\nz a u z e\n",
+              "out": "a\nu\ne\nz\nz\n"
+            }
+          ]
         },
         {
           "id": "FM9-6",
@@ -470,7 +816,13 @@
           ],
           "hint": "先得到覆盖次数，再扫描零段；相同长度保留最早起点。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,d[102]={0};scanf(\"%d\",&n);for(int i=0,l,r;i<n;i++){scanf(\"%d%d\",&l,&r);d[l]++;d[r]--;}int active=0,len=0,b=0,start=-1;for(int t=0;t<100;t++){active+=d[t];if(active==0){len++;if(len>b){b=len;start=t-len+1;}}else len=0;}printf(\"%d %d\\n\",b,start);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,d[102]={0};scanf(\"%d\",&n);for(int i=0,l,r;i<n;i++){scanf(\"%d%d\",&l,&r);d[l]++;d[r]--;}int active=0,len=0,b=0,start=-1;for(int t=0;t<100;t++){active+=d[t];if(active==0){len++;if(len>b){b=len;start=t-len+1;}}else len=0;}printf(\"%d %d\\n\",b,start);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "3\n60 70\n20 40\n35 60\n",
+              "out": "30 70\n"
+            }
+          ]
         }
       ]
     },
@@ -503,7 +855,17 @@
           ],
           "hint": "不存在的邻居不参与比较。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int r,c,a[20][20],cnt=0;scanf(\"%d%d\",&r,&c);for(int i=0;i<r;i++)for(int j=0;j<c;j++)scanf(\"%d\",&a[i][j]);for(int i=0;i<r;i++)for(int j=0;j<c;j++){int ok=1;if(i&&a[i][j]<=a[i-1][j])ok=0;if(i+1<r&&a[i][j]<=a[i+1][j])ok=0;if(j&&a[i][j]<=a[i][j-1])ok=0;if(j+1<c&&a[i][j]<=a[i][j+1])ok=0;cnt+=ok;}printf(\"%d\\n\",cnt);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int r,c,a[20][20],cnt=0;scanf(\"%d%d\",&r,&c);for(int i=0;i<r;i++)for(int j=0;j<c;j++)scanf(\"%d\",&a[i][j]);for(int i=0;i<r;i++)for(int j=0;j<c;j++){int ok=1;if(i&&a[i][j]<=a[i-1][j])ok=0;if(i+1<r&&a[i][j]<=a[i+1][j])ok=0;if(j&&a[i][j]<=a[i][j-1])ok=0;if(j+1<c&&a[i][j]<=a[i][j+1])ok=0;cnt+=ok;}printf(\"%d\\n\",cnt);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "1 4\n2 1 2 2\n",
+              "out": "1\n"
+            },
+            {
+              "in": "2 1\n-2\n-1\n",
+              "out": "1\n"
+            }
+          ]
         },
         {
           "id": "FM10-2",
@@ -528,10 +890,78 @@
           ],
           "hint": "先比较中心位置，右半部分下标减去中心位置。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint at(int n,int k){int mid=1<<(n-1);if(k==mid)return n;return at(n-1,k<mid?k:k-mid);}int main(void){int n,k;scanf(\"%d%d\",&n,&k);printf(\"%d\\n\",at(n,k));return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint at(int n,int k){int mid=1<<(n-1);if(k==mid)return n;return at(n-1,k<mid?k:k-mid);}int main(void){int n,k;scanf(\"%d%d\",&n,&k);printf(\"%d\\n\",at(n,k));return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "20 524288\n",
+              "out": "20\n"
+            },
+            {
+              "in": "20 1048575\n",
+              "out": "1\n"
+            }
+          ]
         },
         {
           "id": "FM10-3",
+          "checkpoints": [
+            {
+              "in": "a\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "deeee\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "abccbxa\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "abcdef\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "bcab\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "ccbaaaa\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "b\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "ca\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "aac\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "aabbabba\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "cccbbbc\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "bbc\n",
+              "out": "YES\n"
+            },
+            {
+              "in": "bcbccc\n",
+              "out": "NO\n"
+            },
+            {
+              "in": "ccbaa\n",
+              "out": "NO\n"
+            }
+          ],
           "cat": "string",
           "title": "可删除一个字符的回文",
           "difficulty": 2,
@@ -578,7 +1008,41 @@
           ],
           "hint": "返回调用者数组内部地址有效；NULL不能参与指针相减。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint *find(int *a,int n,int *len){int *best=NULL,k=0;*len=0;for(int i=0;i<n;i++){k=a[i]>0?k+1:0;if(k>*len){*len=k;best=a+i-k+1;}}return best;}int main(void){int n,a[100],len;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);int *p=find(a,n,&len);printf(\"%d %d\\n\",p?(int)(p-a):-1,len);return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint *find(int *a,int n,int *len){int *best=NULL,k=0;*len=0;for(int i=0;i<n;i++){k=a[i]>0?k+1:0;if(k>*len){*len=k;best=a+i-k+1;}}return best;}int main(void){int n,a[100],len;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);int *p=find(a,n,&len);printf(\"%d %d\\n\",p?(int)(p-a):-1,len);return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "4\n0 -1 2 3\n",
+              "out": "2 2\n"
+            },
+            {
+              "in": "4\n1 0 2 0\n",
+              "out": "0 1\n"
+            },
+            {
+              "in": "7\n1 -2 -3 -2 -1 -2 -1\n",
+              "out": "0 1\n"
+            },
+            {
+              "in": "7\n-3 -2 -2 -2 -1 -1 1\n",
+              "out": "6 1\n"
+            },
+            {
+              "in": "7\n1 -1 -1 -2 -2 -2 -3\n",
+              "out": "0 1\n"
+            },
+            {
+              "in": "20\n1 3 0 2 0 1 1 -1 1 0 -2 1 -1 -2 -1 -2 0 -2 -1 -2\n",
+              "out": "0 2\n"
+            },
+            {
+              "in": "20\n-2 -2 -2 -2 -2 -1 -1 -1 -1 0 0 0 0 1 1 1 1 1 2 3\n",
+              "out": "13 7\n"
+            },
+            {
+              "in": "20\n3 2 1 1 1 1 1 0 0 0 0 -1 -1 -1 -1 -2 -2 -2 -2 -2\n",
+              "out": "0 7\n"
+            }
+          ]
         },
         {
           "id": "FM10-5",
@@ -603,10 +1067,78 @@
           ],
           "hint": "校验成功后才修改，拒绝的操作不得改变库存。",
           "pitfalls": "注意最小规模、重复值和输出格式；动态内存分配后检查并释放。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct Item{int id,qty;};int apply(struct Item *a,int n,int id,int d){for(int i=0;i<n;i++)if(a[i].id==id){if(a[i].qty+d<0)return 0;a[i].qty+=d;return 1;}return 0;}int main(void){int n,m,bad=0;struct Item a[30];scanf(\"%d%d\",&n,&m);for(int i=0;i<n;i++)scanf(\"%d%d\",&a[i].id,&a[i].qty);for(int i=0,id,d;i<m;i++){scanf(\"%d%d\",&id,&d);bad+=!apply(a,n,id,d);}printf(\"%d\\n\",bad);for(int i=0;i<n;i++)printf(\"%s%d\",i?\" \":\"\",a[i].qty);puts(\"\");return 0;}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct Item{int id,qty;};int apply(struct Item *a,int n,int id,int d){for(int i=0;i<n;i++)if(a[i].id==id){if(a[i].qty+d<0)return 0;a[i].qty+=d;return 1;}return 0;}int main(void){int n,m,bad=0;struct Item a[30];scanf(\"%d%d\",&n,&m);for(int i=0;i<n;i++)scanf(\"%d%d\",&a[i].id,&a[i].qty);for(int i=0,id,d;i<m;i++){scanf(\"%d%d\",&id,&d);bad+=!apply(a,n,id,d);}printf(\"%d\\n\",bad);for(int i=0;i<n;i++)printf(\"%s%d\",i?\" \":\"\",a[i].qty);puts(\"\");return 0;}\n",
+          "checkpoints": [
+            {
+              "in": "1 3\n5 1\n5 -2\n5 -1\n5 -1\n",
+              "out": "2\n0\n"
+            }
+          ]
         },
         {
           "id": "FM10-6",
+          "checkpoints": [
+            {
+              "in": "5 3\n-1 100 -2 100 -3\n",
+              "out": "-6\n"
+            },
+            {
+              "in": "4 3\n4 3 2 1\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "4 2\n-3 -1 -4 -2\n",
+              "out": "-3\n"
+            },
+            {
+              "in": "4 2\n-1 -9 -4 -3\n",
+              "out": "-4\n"
+            },
+            {
+              "in": "3 3\n1 2 3\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "2 2\n1 -5\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "2 1\n4 4\n",
+              "out": "4\n"
+            },
+            {
+              "in": "2 1\n5 -1\n",
+              "out": "5\n"
+            },
+            {
+              "in": "5 1\n-5 -4 -1 1 -1\n",
+              "out": "1\n"
+            },
+            {
+              "in": "7 7\n3 3 3 -4 4 -5 -1\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "8 4\n4 -5 4 2 -1 1 -4 -4\n",
+              "out": "5\n"
+            },
+            {
+              "in": "5 4\n2 -5 0 1 -1\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "8 5\n-1 -1 3 -3 3 -5 -3 3\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "3 3\n5 4 0\n",
+              "out": "IMPOSSIBLE\n"
+            },
+            {
+              "in": "8 4\n-4 1 -5 3 2 3 -2 1\n",
+              "out": "8\n"
+            }
+          ],
           "cat": "algo",
           "title": "恰好选k项的最大和",
           "difficulty": 4,

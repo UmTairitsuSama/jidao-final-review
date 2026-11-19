@@ -34,7 +34,17 @@
           ],
           "hint": "用两个数组分别存报名人数和名额上限，同一轮循环里比较：`people[i] > cap[i]` 时计数加一，并更新最大超员值。最大值变量初值取 0 即可，因为超员值不会是负数。",
           "pitfalls": "判断要用严格大于（`>`），人数正好等于上限不算超员；一个超员社团都没有时第二行要输出 0 而不是不输出。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int people[MAXN], cap[MAXN];\n    int over = 0, maxExtra = 0, extra;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &people[i]);\n    }\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &cap[i]);\n    }\n    for (i = 0; i < n; i++) {\n        if (people[i] > cap[i]) {\n            extra = people[i] - cap[i];\n            over++;\n            if (extra > maxExtra) {\n                maxExtra = extra;\n            }\n        }\n    }\n    printf(\"over: %d\\n\", over);\n    printf(\"max extra: %d\\n\", maxExtra);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int people[MAXN], cap[MAXN];\n    int over = 0, maxExtra = 0, extra;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &people[i]);\n    }\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &cap[i]);\n    }\n    for (i = 0; i < n; i++) {\n        if (people[i] > cap[i]) {\n            extra = people[i] - cap[i];\n            over++;\n            if (extra > maxExtra) {\n                maxExtra = extra;\n            }\n        }\n    }\n    printf(\"over: %d\\n\", over);\n    printf(\"max extra: %d\\n\", maxExtra);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "1\n500\n0\n",
+              "out": "over: 1\nmax extra: 500\n"
+            },
+            {
+              "in": "2\n0 2\n0 2\n",
+              "out": "over: 0\nmax extra: 0\n"
+            }
+          ]
         },
         {
           "id": "FM1-2",
@@ -64,7 +74,17 @@
           ],
           "hint": "把两个单词各自用冒泡排序把字符按 ASCII 码升序排好，再用 `strcmp` 比较；相同就是互为字母重排。也可以退一步直接调 `qsort`，但考试里手写冒泡就够。",
           "pitfalls": "比较时区分大小写（`A` 和 `a` 是两个不同的字符）；字符串比较要用 `strcmp` 而不是 `==`；复制到 `sortedA`、`sortedB` 再排序，别把原始串弄丢；读入用 `%63s` 防止越界。",
-          "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXL 64\n\nstatic void sortStr(char *s)\n{\n    int i, j, len = (int)strlen(s);\n    char t;\n\n    for (i = 0; i < len - 1; i++) {\n        for (j = 0; j < len - 1 - i; j++) {\n            if (s[j] > s[j + 1]) {\n                t = s[j];\n                s[j] = s[j + 1];\n                s[j + 1] = t;\n            }\n        }\n    }\n}\n\nint main(void)\n{\n    char a[MAXL], b[MAXL], sortedA[MAXL], sortedB[MAXL];\n\n    if (scanf(\"%63s\", a) != 1) {\n        return 0;\n    }\n    if (scanf(\"%63s\", b) != 1) {\n        return 0;\n    }\n    strcpy(sortedA, a);\n    strcpy(sortedB, b);\n    sortStr(sortedA);\n    sortStr(sortedB);\n    printf(\"sorted: %s\\n\", sortedA);\n    if (strcmp(sortedA, sortedB) == 0) {\n        printf(\"rearrange: yes\\n\");\n    } else {\n        printf(\"rearrange: no\\n\");\n    }\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXL 64\n\nstatic void sortStr(char *s)\n{\n    int i, j, len = (int)strlen(s);\n    char t;\n\n    for (i = 0; i < len - 1; i++) {\n        for (j = 0; j < len - 1 - i; j++) {\n            if (s[j] > s[j + 1]) {\n                t = s[j];\n                s[j] = s[j + 1];\n                s[j + 1] = t;\n            }\n        }\n    }\n}\n\nint main(void)\n{\n    char a[MAXL], b[MAXL], sortedA[MAXL], sortedB[MAXL];\n\n    if (scanf(\"%63s\", a) != 1) {\n        return 0;\n    }\n    if (scanf(\"%63s\", b) != 1) {\n        return 0;\n    }\n    strcpy(sortedA, a);\n    strcpy(sortedB, b);\n    sortStr(sortedA);\n    sortStr(sortedB);\n    printf(\"sorted: %s\\n\", sortedA);\n    if (strcmp(sortedA, sortedB) == 0) {\n        printf(\"rearrange: yes\\n\");\n    } else {\n        printf(\"rearrange: no\\n\");\n    }\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "aA\nAA\n",
+              "out": "sorted: Aa\nrearrange: no\n"
+            },
+            {
+              "in": "aA\nAa\n",
+              "out": "sorted: Aa\nrearrange: yes\n"
+            }
+          ]
         },
         {
           "id": "FM1-3",
@@ -94,7 +114,17 @@
           ],
           "hint": "读入时就把每行的分数累加到 `total[i]` 里，读完之后再从 1 到 m 扫一遍找最大总分；更新冠军用严格大于，并列时自然保留编号小的班。",
           "pitfalls": "班级编号从 1 开始，数组下标习惯从 0 或 1 开始都可以，但输出编号别偏移；并列冠军必须输出编号小的那个，用 `>` 而不是 `>=` 更新才能做到。",
-          "solution": "#include <stdio.h>\n\n#define MAXM 25\n#define MAXN 25\n\nint main(void)\n{\n    int m, n, i, j, v;\n    int total[MAXM] = {0};\n    int best = 0, champ = 1;\n\n    scanf(\"%d%d\", &m, &n);\n    for (i = 1; i <= m; i++) {\n        for (j = 1; j <= n; j++) {\n            scanf(\"%d\", &v);\n            total[i] += v;\n        }\n    }\n    for (i = 1; i <= m; i++) {\n        printf(\"class %d: %d\\n\", i, total[i]);\n        if (i == 1 || total[i] > best) {\n            best = total[i];\n            champ = i;\n        }\n    }\n    printf(\"champion: %d\\n\", champ);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXM 25\n#define MAXN 25\n\nint main(void)\n{\n    int m, n, i, j, v;\n    int total[MAXM] = {0};\n    int best = 0, champ = 1;\n\n    scanf(\"%d%d\", &m, &n);\n    for (i = 1; i <= m; i++) {\n        for (j = 1; j <= n; j++) {\n            scanf(\"%d\", &v);\n            total[i] += v;\n        }\n    }\n    for (i = 1; i <= m; i++) {\n        printf(\"class %d: %d\\n\", i, total[i]);\n        if (i == 1 || total[i] > best) {\n            best = total[i];\n            champ = i;\n        }\n    }\n    printf(\"champion: %d\\n\", champ);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "2 1\n0\n0\n",
+              "out": "class 1: 0\nclass 2: 0\nchampion: 1\n"
+            },
+            {
+              "in": "3 1\n0\n2\n2\n",
+              "out": "class 1: 0\nclass 2: 2\nclass 3: 2\nchampion: 2\n"
+            }
+          ]
         },
         {
           "id": "FM1-4",
@@ -124,7 +154,17 @@
           ],
           "hint": "组合数满足递推关系 `C(n, k) = C(n - 1, k - 1) + C(n - 1, k)`，递归出口是 `k == 0` 或 `k == n` 时返回 1。含 1 号菜的方案数就是 `C(n - 1, k - 1)`，可以再调一次同一个函数。",
           "pitfalls": "递归出口要写在前面，否则 `n - 1` 会递归到负数；返回值用 `long long` 并用 `%lld` 输出更稳妥（`C(20, 10)` 是 184756，再大就该用记忆化或递推了）；`k == 0` 时第二行按要求输出 0。",
-          "solution": "#include <stdio.h>\n\nstatic long long comb(int n, int k)\n{\n    if (k < 0 || k > n) {\n        return 0;\n    }\n    if (k == 0 || k == n) {\n        return 1;\n    }\n    return comb(n - 1, k - 1) + comb(n - 1, k);\n}\n\nint main(void)\n{\n    int n, k;\n\n    if (scanf(\"%d%d\", &n, &k) != 2) {\n        return 0;\n    }\n    printf(\"ways: %lld\\n\", comb(n, k));\n    printf(\"fixed: %lld\\n\", k == 0 ? 0LL : comb(n - 1, k - 1));\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\nstatic long long comb(int n, int k)\n{\n    if (k < 0 || k > n) {\n        return 0;\n    }\n    if (k == 0 || k == n) {\n        return 1;\n    }\n    return comb(n - 1, k - 1) + comb(n - 1, k);\n}\n\nint main(void)\n{\n    int n, k;\n\n    if (scanf(\"%d%d\", &n, &k) != 2) {\n        return 0;\n    }\n    printf(\"ways: %lld\\n\", comb(n, k));\n    printf(\"fixed: %lld\\n\", k == 0 ? 0LL : comb(n - 1, k - 1));\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "20 10\n",
+              "out": "ways: 184756\nfixed: 92378\n"
+            },
+            {
+              "in": "5 0\n",
+              "out": "ways: 1\nfixed: 0\n"
+            }
+          ]
         },
         {
           "id": "FM1-5",
@@ -154,7 +194,13 @@
           ],
           "hint": "把记录存进结构体数组，格口号本来就升序，直接在 `[0, n-1]` 上做二分：`mid = lo + (hi - lo) / 2`，比较 `a[mid].id` 与查询值，相等就输出 `a[mid].name`；找不到时循环结束，输出 `not found`。",
           "pitfalls": "二分循环条件用 `lo <= hi`；`mid` 用 `lo + (hi - lo) / 2` 可以避免加法溢出（格口号最大 `10^9`）；姓名要用字符数组存，别存指针；没找到的分支容易漏掉。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 1005\n#define MAXL 24\n\ntypedef struct {\n    int id;\n    char name[MAXL];\n} Cell;\n\nstatic Cell a[MAXN];\n\nint main(void)\n{\n    int n, m, i, q;\n    int lo, hi, mid;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%23s\", &a[i].id, a[i].name);\n    }\n    scanf(\"%d\", &m);\n    for (i = 0; i < m; i++) {\n        scanf(\"%d\", &q);\n        lo = 0;\n        hi = n - 1;\n        mid = -1;\n        while (lo <= hi) {\n            mid = lo + (hi - lo) / 2;\n            if (a[mid].id == q) {\n                break;\n            } else if (a[mid].id < q) {\n                lo = mid + 1;\n            } else {\n                hi = mid - 1;\n            }\n        }\n        if (lo <= hi) {\n            printf(\"%s\\n\", a[mid].name);\n        } else {\n            printf(\"not found\\n\");\n        }\n    }\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 1005\n#define MAXL 24\n\ntypedef struct {\n    int id;\n    char name[MAXL];\n} Cell;\n\nstatic Cell a[MAXN];\n\nint main(void)\n{\n    int n, m, i, q;\n    int lo, hi, mid;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%23s\", &a[i].id, a[i].name);\n    }\n    scanf(\"%d\", &m);\n    for (i = 0; i < m; i++) {\n        scanf(\"%d\", &q);\n        lo = 0;\n        hi = n - 1;\n        mid = -1;\n        while (lo <= hi) {\n            mid = lo + (hi - lo) / 2;\n            if (a[mid].id == q) {\n                break;\n            } else if (a[mid].id < q) {\n                lo = mid + 1;\n            } else {\n                hi = mid - 1;\n            }\n        }\n        if (lo <= hi) {\n            printf(\"%s\\n\", a[mid].name);\n        } else {\n            printf(\"not found\\n\");\n        }\n    }\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "2\n1 A\n3 B\n3\n1\n2\n3\n",
+              "out": "A\nnot found\nB\n"
+            }
+          ]
         },
         {
           "id": "FM1-6",
@@ -184,7 +230,17 @@
           ],
           "hint": "用滑动窗口：`left`、`right` 两个指针表示当前窗口，`last[c]` 记录字符 c 上一次出现的下标。`right` 往右移时若 `last[s[right]] >= left` 就把 `left` 挪到 `last[s[right]] + 1`，再用 `right - left + 1` 更新最长长度和起点。窗口里每个字符最多出现一次，所以是 O(n)。",
           "pitfalls": "更新最长值时用严格大于，才能保证并列时保留最先出现的那一段；`last` 数组要初始化成 -1，否则第 0 个字符会被误判成「已经出现过」；输出片段时别越界，`left` 的更新要按 `last + 1` 而不是 `right`。",
-          "solution": "#include <stdio.h>\n\n#define MAXL 1005\n\nint main(void)\n{\n    char s[MAXL];\n    int last[26];\n    int i, left = 0, bestLen = 0, bestStart = 0;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    for (i = 0; i < 26; i++) {\n        last[i] = -1;\n    }\n    for (i = 0; s[i] != '\\0' && s[i] != '\\n' && s[i] != '\\r'; i++) {\n        int c = s[i] - 'a';\n        if (last[c] >= left) {\n            left = last[c] + 1;\n        }\n        last[c] = i;\n        if (i - left + 1 > bestLen) {\n            bestLen = i - left + 1;\n            bestStart = left;\n        }\n    }\n    printf(\"longest: %d\\n\", bestLen);\n    printf(\"segment: %.*s\\n\", bestLen, s + bestStart);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXL 1005\n\nint main(void)\n{\n    char s[MAXL];\n    int last[26];\n    int i, left = 0, bestLen = 0, bestStart = 0;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    for (i = 0; i < 26; i++) {\n        last[i] = -1;\n    }\n    for (i = 0; s[i] != '\\0' && s[i] != '\\n' && s[i] != '\\r'; i++) {\n        int c = s[i] - 'a';\n        if (last[c] >= left) {\n            left = last[c] + 1;\n        }\n        last[c] = i;\n        if (i - left + 1 > bestLen) {\n            bestLen = i - left + 1;\n            bestStart = left;\n        }\n    }\n    printf(\"longest: %d\\n\", bestLen);\n    printf(\"segment: %.*s\\n\", bestLen, s + bestStart);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "abba\n",
+              "out": "longest: 2\nsegment: ab\n"
+            },
+            {
+              "in": "aabcb\n",
+              "out": "longest: 3\nsegment: abc\n"
+            }
+          ]
         }
       ]
     },
@@ -222,7 +278,17 @@
           ],
           "hint": "先求和，再把每个数乘上 n 与总和比较：`a[i] * n < sum` 等价于 `a[i] < 平均值`，用整数比较可以完全避开浮点误差。最小值在读入或单独扫描时维护即可。",
           "pitfalls": "「严格低于」不能用 `<=`；用 `a[i] < sum / n` 做整数除法会丢精度（样例 1 中 80 度会被误判），所以要比 `a[i] * n < sum`。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    long long sum = 0;\n    int mn, below = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n        sum += a[i];\n    }\n    mn = a[0];\n    for (i = 0; i < n; i++) {\n        if (a[i] < mn) {\n            mn = a[i];\n        }\n        if ((long long)a[i] * n < sum) {\n            below++;\n        }\n    }\n    printf(\"below: %d\\n\", below);\n    printf(\"min: %d\\n\", mn);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    long long sum = 0;\n    int mn, below = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n        sum += a[i];\n    }\n    mn = a[0];\n    for (i = 0; i < n; i++) {\n        if (a[i] < mn) {\n            mn = a[i];\n        }\n        if ((long long)a[i] * n < sum) {\n            below++;\n        }\n    }\n    printf(\"below: %d\\n\", below);\n    printf(\"min: %d\\n\", mn);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "2\n50 51\n",
+              "out": "below: 1\nmin: 50\n"
+            },
+            {
+              "in": "2\n0 1000\n",
+              "out": "below: 1\nmin: 0\n"
+            }
+          ]
         },
         {
           "id": "FM2-2",
@@ -252,7 +318,17 @@
           ],
           "hint": "用 `fgets` 读整行，逐字符判断：大写字母用 `ch - 'A' + 'a'` 转小写；是字母就追加到结果串，同时用 `int seen[26]` 标记它是否第一次出现，第一次出现就让种数加一。",
           "pitfalls": "只处理英文字母，空格、数字、标点都要跳过；大小写要合并统计（`E` 和 `e` 算同一种）；结果串末尾要补 `'\\0'`，行末的换行符不能被当成字母。",
-          "solution": "#include <stdio.h>\n\n#define MAXL 205\n\nint main(void)\n{\n    char s[MAXL];\n    char out[MAXL];\n    int i, k = 0;\n    int seen[26] = {0};\n    int distinct = 0;\n    char ch;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    for (i = 0; s[i] != '\\0' && s[i] != '\\n' && s[i] != '\\r'; i++) {\n        ch = s[i];\n        if (ch >= 'A' && ch <= 'Z') {\n            ch = (char)(ch - 'A' + 'a');\n        }\n        if (ch >= 'a' && ch <= 'z') {\n            out[k] = ch;\n            k++;\n            if (seen[ch - 'a'] == 0) {\n                seen[ch - 'a'] = 1;\n                distinct++;\n            }\n        }\n    }\n    out[k] = '\\0';\n    printf(\"letters: %s\\n\", out);\n    printf(\"distinct: %d\\n\", distinct);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXL 205\n\nint main(void)\n{\n    char s[MAXL];\n    char out[MAXL];\n    int i, k = 0;\n    int seen[26] = {0};\n    int distinct = 0;\n    char ch;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    for (i = 0; s[i] != '\\0' && s[i] != '\\n' && s[i] != '\\r'; i++) {\n        ch = s[i];\n        if (ch >= 'A' && ch <= 'Z') {\n            ch = (char)(ch - 'A' + 'a');\n        }\n        if (ch >= 'a' && ch <= 'z') {\n            out[k] = ch;\n            k++;\n            if (seen[ch - 'a'] == 0) {\n                seen[ch - 'a'] = 1;\n                distinct++;\n            }\n        }\n    }\n    out[k] = '\\0';\n    printf(\"letters: %s\\n\", out);\n    printf(\"distinct: %d\\n\", distinct);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "aA!!Zz\n",
+              "out": "letters: aazz\ndistinct: 2\n"
+            },
+            {
+              "in": "123.4\n",
+              "out": "letters: \ndistinct: 0\n"
+            }
+          ]
         },
         {
           "id": "FM2-3",
@@ -282,7 +358,13 @@
           ],
           "hint": "定义 `struct` 把姓名和件数绑在一起，读入后用冒泡排序：只有 `r[j].cnt < r[j + 1].cnt` 时才交换，相等的记录不动，这样自然保持输入顺序（稳定）。交换时整条结构体一起交换。",
           "pitfalls": "比较条件用严格小于，用 `<=` 会破坏稳定性（样例 1 的 Amy 和 Cindy 例）；姓名要用 `char` 数组存，不能只存指针。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 55\n#define MAXL 32\n\ntypedef struct {\n    char name[MAXL];\n    int cnt;\n} Rec;\n\nint main(void)\n{\n    int n, i, j;\n    Rec r[MAXN];\n    Rec tmp;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%31s%d\", r[i].name, &r[i].cnt);\n    }\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            if (r[j].cnt < r[j + 1].cnt) {\n                tmp = r[j];\n                r[j] = r[j + 1];\n                r[j + 1] = tmp;\n            }\n        }\n    }\n    for (i = 0; i < n; i++) {\n        printf(\"%s %d\\n\", r[i].name, r[i].cnt);\n    }\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 55\n#define MAXL 32\n\ntypedef struct {\n    char name[MAXL];\n    int cnt;\n} Rec;\n\nint main(void)\n{\n    int n, i, j;\n    Rec r[MAXN];\n    Rec tmp;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%31s%d\", r[i].name, &r[i].cnt);\n    }\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            if (r[j].cnt < r[j + 1].cnt) {\n                tmp = r[j];\n                r[j] = r[j + 1];\n                r[j + 1] = tmp;\n            }\n        }\n    }\n    for (i = 0; i < n; i++) {\n        printf(\"%s %d\\n\", r[i].name, r[i].cnt);\n    }\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "3\nZ 10\nA 10\nB 10\n",
+              "out": "Z 10\nA 10\nB 10\n"
+            }
+          ]
         },
         {
           "id": "FM2-4",
@@ -312,7 +394,17 @@
           ],
           "hint": "数组作参数时长度要一起传；想「返回多个值」就用指针参数：`*maxv`、`*minv` 在函数里赋值，主函数调用时传 `&mx`、`&mn` 的地址。平均值用 `(sum - max - min) / (double)(n - 2)` 计算。",
           "pitfalls": "最高分或最低分有多个时只去掉一个（样例 3 的 100 和 60 各有两个，只各去掉一个）；平均值必须转成 double 再除，否则整数除法会把小数丢掉，输出还得用 `%.2f`。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nstatic void stat(const int a[], int n, int *maxv, int *minv, double *avg)\n{\n    int i, sum = 0;\n\n    *maxv = a[0];\n    *minv = a[0];\n    for (i = 0; i < n; i++) {\n        sum += a[i];\n        if (a[i] > *maxv) {\n            *maxv = a[i];\n        }\n        if (a[i] < *minv) {\n            *minv = a[i];\n        }\n    }\n    *avg = (double)(sum - *maxv - *minv) / (double)(n - 2);\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int mx, mn;\n    double avg;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    stat(a, n, &mx, &mn, &avg);\n    printf(\"max: %d\\n\", mx);\n    printf(\"min: %d\\n\", mn);\n    printf(\"final: %.2f\\n\", avg);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nstatic void stat(const int a[], int n, int *maxv, int *minv, double *avg)\n{\n    int i, sum = 0;\n\n    *maxv = a[0];\n    *minv = a[0];\n    for (i = 0; i < n; i++) {\n        sum += a[i];\n        if (a[i] > *maxv) {\n            *maxv = a[i];\n        }\n        if (a[i] < *minv) {\n            *minv = a[i];\n        }\n    }\n    *avg = (double)(sum - *maxv - *minv) / (double)(n - 2);\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int mx, mn;\n    double avg;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    stat(a, n, &mx, &mn, &avg);\n    printf(\"max: %d\\n\", mx);\n    printf(\"min: %d\\n\", mn);\n    printf(\"final: %.2f\\n\", avg);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "3\n0 0 0\n",
+              "out": "max: 0\nmin: 0\nfinal: 0.00\n"
+            },
+            {
+              "in": "4\n0 100 50 50\n",
+              "out": "max: 100\nmin: 0\nfinal: 50.00\n"
+            }
+          ]
         },
         {
           "id": "FM2-5",
@@ -342,7 +434,17 @@
           ],
           "hint": "`char *p` 指向字符串开头，遇到数字就记下起点 `start`，然后一直 `p++` 直到不是数字，用 `p - start` 得到这一段的长度，比当前最长还长就更新起点和长度；遇到非数字直接 `p++`。",
           "pitfalls": "并列时取最先出现的，所以只在「严格更长」时更新；指针差值 `p - start` 是 `ptrdiff_t`，用 `%.*s` 输出或转成 `int` 再输出长度；结尾的换行符不能让循环越过界。",
-          "solution": "#include <stdio.h>\n\n#define MAXL 205\n\nint main(void)\n{\n    char s[MAXL];\n    char *p;\n    const char *best = NULL;\n    int bestLen = 0;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    p = s;\n    while (*p != '\\0' && *p != '\\n' && *p != '\\r') {\n        if (*p >= '0' && *p <= '9') {\n            char *start = p;\n            while (*p >= '0' && *p <= '9') {\n                p++;\n            }\n            if ((int)(p - start) > bestLen) {\n                bestLen = (int)(p - start);\n                best = start;\n            }\n        } else {\n            p++;\n        }\n    }\n    if (bestLen == 0) {\n        printf(\"none\\n\");\n    } else {\n        printf(\"code: %.*s\\n\", bestLen, best);\n        printf(\"len: %d\\n\", bestLen);\n    }\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXL 205\n\nint main(void)\n{\n    char s[MAXL];\n    char *p;\n    const char *best = NULL;\n    int bestLen = 0;\n\n    if (fgets(s, sizeof(s), stdin) == NULL) {\n        return 0;\n    }\n    p = s;\n    while (*p != '\\0' && *p != '\\n' && *p != '\\r') {\n        if (*p >= '0' && *p <= '9') {\n            char *start = p;\n            while (*p >= '0' && *p <= '9') {\n                p++;\n            }\n            if ((int)(p - start) > bestLen) {\n                bestLen = (int)(p - start);\n                best = start;\n            }\n        } else {\n            p++;\n        }\n    }\n    if (bestLen == 0) {\n        printf(\"none\\n\");\n    } else {\n        printf(\"code: %.*s\\n\", bestLen, best);\n        printf(\"len: %d\\n\", bestLen);\n    }\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "abc 77 def 88\n",
+              "out": "code: 77\nlen: 2\n"
+            },
+            {
+              "in": "x0000\n",
+              "out": "code: 0000\nlen: 4\n"
+            }
+          ]
         },
         {
           "id": "FM2-6",
@@ -372,7 +474,17 @@
           ],
           "hint": "最优顺序就是把时长升序排好。排完序后，第 i 个人（从 0 开始数）的时长会被后面 n-1-i 个人各等一次，所以总等待时间等于 `sum(t[i] * (n-1-i))`，一趟循环即可。用 `long long` 存答案。",
           "pitfalls": "总等待时间的最大值约为 5 亿秒，`int` 虽然勉强放得下但很容易踩边界，习惯上用 `long long` 保存并用 `%lld` 输出；排序时同一时长要按原编号升序，才能得到唯一的顺序。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 1005\n\nint main(void)\n{\n    int n, i, j, t;\n    int a[MAXN], idx[MAXN];\n    long long total = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 1; i <= n; i++) {\n        scanf(\"%d\", &a[i]);\n        idx[i] = i;\n    }\n    for (i = 1; i < n; i++) {\n        for (j = 1; j <= n - i; j++) {\n            if (a[idx[j]] > a[idx[j + 1]] ||\n                (a[idx[j]] == a[idx[j + 1]] && idx[j] > idx[j + 1])) {\n                t = idx[j];\n                idx[j] = idx[j + 1];\n                idx[j + 1] = t;\n            }\n        }\n    }\n    for (i = 1; i <= n; i++) {\n        total += (long long)a[idx[i]] * (long long)(n - i);\n    }\n    printf(\"minwait: %lld\\n\", total);\n    printf(\"order:\");\n    for (i = 1; i <= n; i++) {\n        printf(\" %d\", idx[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 1005\n\nint main(void)\n{\n    int n, i, j, t;\n    int a[MAXN], idx[MAXN];\n    long long total = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 1; i <= n; i++) {\n        scanf(\"%d\", &a[i]);\n        idx[i] = i;\n    }\n    for (i = 1; i < n; i++) {\n        for (j = 1; j <= n - i; j++) {\n            if (a[idx[j]] > a[idx[j + 1]] ||\n                (a[idx[j]] == a[idx[j + 1]] && idx[j] > idx[j + 1])) {\n                t = idx[j];\n                idx[j] = idx[j + 1];\n                idx[j + 1] = t;\n            }\n        }\n    }\n    for (i = 1; i <= n; i++) {\n        total += (long long)a[idx[i]] * (long long)(n - i);\n    }\n    printf(\"minwait: %lld\\n\", total);\n    printf(\"order:\");\n    for (i = 1; i <= n; i++) {\n        printf(\" %d\", idx[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "2\n3 3\n",
+              "out": "minwait: 3\norder: 1 2\n"
+            },
+            {
+              "in": "3\n9 1 1\n",
+              "out": "minwait: 3\norder: 2 3 1\n"
+            }
+          ]
         }
       ]
     },
@@ -410,7 +522,17 @@
           ],
           "hint": "边读入边累加总学分、边更新最大学分，最后用 `sum > 30` 决定输出 `yes` 还是 `no`。",
           "pitfalls": "「超过上限」要用严格大于，正好 30 学分不算超；三行输出都要有，别漏掉 `max course` 一行。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 25\n#define LIMIT 30\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int sum = 0, mx = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n        sum += a[i];\n        if (a[i] > mx) {\n            mx = a[i];\n        }\n    }\n    printf(\"credits: %d\\n\", sum);\n    printf(\"max course: %d\\n\", mx);\n    printf(\"overflow: %s\\n\", sum > LIMIT ? \"yes\" : \"no\");\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 25\n#define LIMIT 30\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int sum = 0, mx = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n        sum += a[i];\n        if (a[i] > mx) {\n            mx = a[i];\n        }\n    }\n    printf(\"credits: %d\\n\", sum);\n    printf(\"max course: %d\\n\", mx);\n    printf(\"overflow: %s\\n\", sum > LIMIT ? \"yes\" : \"no\");\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "3\n10 10 10\n",
+              "out": "credits: 30\nmax course: 10\noverflow: no\n"
+            },
+            {
+              "in": "4\n10 10 10 1\n",
+              "out": "credits: 31\nmax course: 10\noverflow: yes\n"
+            }
+          ]
         },
         {
           "id": "FM3-2",
@@ -440,7 +562,17 @@
           ],
           "hint": "用二维字符数组（每个名字长度不超过 15）按首次出现顺序存不同的队伍名，另用 `int cnt[]` 记次数；每读入一个词，就在已存的 `n` 个名字里用 `strcmp` 查一遍，找到就次数加一，找不到就追加到末尾。",
           "pitfalls": "只能用 `strcmp` 比较字符串，`name[i] == buf` 比较的是地址永远不等；读入用循环 `scanf(\"%15s\", buf)`，读到文件结束 `scanf` 返回 EOF 时停止。",
-          "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXN 120\n#define MAXL 16\n\nint main(void)\n{\n    char name[MAXN][MAXL];\n    char buf[MAXL];\n    int cnt[MAXN];\n    int n = 0, i;\n\n    while (n < MAXN && scanf(\"%15s\", buf) == 1) {\n        for (i = 0; i < n; i++) {\n            if (strcmp(name[i], buf) == 0) {\n                cnt[i]++;\n                break;\n            }\n        }\n        if (i == n) {\n            strcpy(name[n], buf);\n            cnt[n] = 1;\n            n++;\n        }\n    }\n    printf(\"teams: %d\\n\", n);\n    for (i = 0; i < n; i++) {\n        printf(\"%s %d\\n\", name[i], cnt[i]);\n    }\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXN 120\n#define MAXL 16\n\nint main(void)\n{\n    char name[MAXN][MAXL];\n    char buf[MAXL];\n    int cnt[MAXN];\n    int n = 0, i;\n\n    while (n < MAXN && scanf(\"%15s\", buf) == 1) {\n        for (i = 0; i < n; i++) {\n            if (strcmp(name[i], buf) == 0) {\n                cnt[i]++;\n                break;\n            }\n        }\n        if (i == n) {\n            strcpy(name[n], buf);\n            cnt[n] = 1;\n            n++;\n        }\n    }\n    printf(\"teams: %d\\n\", n);\n    for (i = 0; i < n; i++) {\n        printf(\"%s %d\\n\", name[i], cnt[i]);\n    }\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "a A a a A\n",
+              "out": "teams: 2\na 3\nA 2\n"
+            },
+            {
+              "in": "z z z\n",
+              "out": "teams: 1\nz 3\n"
+            }
+          ]
         },
         {
           "id": "FM3-3",
@@ -470,7 +602,13 @@
           ],
           "hint": "用结构体数组把记录整条读进来，再一趟遍历：`days > 30` 就计入逾期，同时把罚金累加到总额，并用「严格大于」更新最高罚金与对应学号。罚金的每一笔都是 0.5 的整数倍，误差不会累积。",
           "pitfalls": "到期日正好 30 天不算逾期；学号最大到 `10^9` 要用 `int` 或 `long long`；并列最高时取学号最小的（用严格大于更新，且要额外比较学号）；没有逾期时三行都要输出，罚金总额输出 `0.00`。",
-          "solution": "#include <stdio.h>\n\n#define MAXN 105\n#define LIMIT 30\n\ntypedef struct {\n    int id;\n    char book[24];\n    int days;\n} Rec;\n\nstatic Rec r[MAXN];\n\nint main(void)\n{\n    int n, i, k = 0;\n    int worst = 0, hasWorst = 0;\n    double total = 0.0, best = 0.0, fine;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%23s%d\", &r[i].id, r[i].book, &r[i].days);\n    }\n    for (i = 0; i < n; i++) {\n        if (r[i].days > LIMIT) {\n            fine = (double)(r[i].days - LIMIT) * 0.5;\n            k++;\n            total += fine;\n            if (!hasWorst || fine > best || (fine == best && r[i].id < worst)) {\n                best = fine;\n                worst = r[i].id;\n                hasWorst = 1;\n            }\n        }\n    }\n    printf(\"overdue: %d\\n\", k);\n    printf(\"total: %.2f\\n\", total);\n    printf(\"worst: %d\\n\", worst);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXN 105\n#define LIMIT 30\n\ntypedef struct {\n    int id;\n    char book[24];\n    int days;\n} Rec;\n\nstatic Rec r[MAXN];\n\nint main(void)\n{\n    int n, i, k = 0;\n    int worst = 0, hasWorst = 0;\n    double total = 0.0, best = 0.0, fine;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%23s%d\", &r[i].id, r[i].book, &r[i].days);\n    }\n    for (i = 0; i < n; i++) {\n        if (r[i].days > LIMIT) {\n            fine = (double)(r[i].days - LIMIT) * 0.5;\n            k++;\n            total += fine;\n            if (!hasWorst || fine > best || (fine == best && r[i].id < worst)) {\n                best = fine;\n                worst = r[i].id;\n                hasWorst = 1;\n            }\n        }\n    }\n    printf(\"overdue: %d\\n\", k);\n    printf(\"total: %.2f\\n\", total);\n    printf(\"worst: %d\\n\", worst);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "3\n1 A 30\n2 B 31\n3 C 29\n",
+              "out": "overdue: 1\ntotal: 0.50\nworst: 2\n"
+            }
+          ]
         },
         {
           "id": "FM3-4",
@@ -500,7 +638,13 @@
           ],
           "hint": "先 `malloc` 一个 `int *` 数组当行指针表，再为每一行 `malloc` 一个长度为 n 的数组；填数时顺便求每行最大值，全部填完后定全局最大。用完要把每一行和行表都 `free` 掉（考试时哪怕不 free 也要会写）。",
           "pitfalls": "行表要分配 `m * sizeof(int *)`，每行分配 `n * sizeof(int)`，两者别搞混；元素可能是负数，全局最大值的初值不能写 0，要用「是否第一个元素」的标志。",
-          "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int m, n, i, j;\n    int **a;\n    int rowsum = 0;\n    int best = 0, bestR = 1, bestC = 1;\n    int first = 1;\n\n    if (scanf(\"%d%d\", &m, &n) != 2) {\n        return 0;\n    }\n    a = (int **)malloc((size_t)m * sizeof(int *));\n    if (a == NULL) {\n        return 0;\n    }\n    for (i = 0; i < m; i++) {\n        a[i] = (int *)malloc((size_t)n * sizeof(int));\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++) {\n                free(a[j]);\n            }\n            free(a);\n            return 0;\n        }\n    }\n    for (i = 0; i < m; i++) {\n        int rmax = 0;\n        for (j = 0; j < n; j++) {\n            scanf(\"%d\", &a[i][j]);\n            if (j == 0 || a[i][j] > rmax) {\n                rmax = a[i][j];\n            }\n            if (first || a[i][j] > best) {\n                best = a[i][j];\n                bestR = i + 1;\n                bestC = j + 1;\n                first = 0;\n            }\n        }\n        rowsum += rmax;\n    }\n    printf(\"rowmax sum: %d\\n\", rowsum);\n    printf(\"global max: %d at row %d col %d\\n\", best, bestR, bestC);\n    for (i = 0; i < m; i++) {\n        free(a[i]);\n    }\n    free(a);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int m, n, i, j;\n    int **a;\n    int rowsum = 0;\n    int best = 0, bestR = 1, bestC = 1;\n    int first = 1;\n\n    if (scanf(\"%d%d\", &m, &n) != 2) {\n        return 0;\n    }\n    a = (int **)malloc((size_t)m * sizeof(int *));\n    if (a == NULL) {\n        return 0;\n    }\n    for (i = 0; i < m; i++) {\n        a[i] = (int *)malloc((size_t)n * sizeof(int));\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++) {\n                free(a[j]);\n            }\n            free(a);\n            return 0;\n        }\n    }\n    for (i = 0; i < m; i++) {\n        int rmax = 0;\n        for (j = 0; j < n; j++) {\n            scanf(\"%d\", &a[i][j]);\n            if (j == 0 || a[i][j] > rmax) {\n                rmax = a[i][j];\n            }\n            if (first || a[i][j] > best) {\n                best = a[i][j];\n                bestR = i + 1;\n                bestC = j + 1;\n                first = 0;\n            }\n        }\n        rowsum += rmax;\n    }\n    printf(\"rowmax sum: %d\\n\", rowsum);\n    printf(\"global max: %d at row %d col %d\\n\", best, bestR, bestC);\n    for (i = 0; i < m; i++) {\n        free(a[i]);\n    }\n    free(a);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "2 2\n-9 -1\n-1 -8\n",
+              "out": "rowmax sum: -2\nglobal max: -1 at row 1 col 2\n"
+            }
+          ]
         },
         {
           "id": "FM3-5",
@@ -530,7 +674,17 @@
           ],
           "hint": "递归函数带两个计数：已用的 `left` 和已用的 `right`。当 `left < n` 时可以放 `(`；当 `right < left` 时可以放 `)`。放到 `left + right == 2n` 时整串完成，输出并计数。先试 `(` 后试 `)` 就自然得到字典序。",
           "pitfalls": "剪枝条件必须保证「先有足够的 `(`」：只有 `right < left` 时才能放 `)`；回溯时字符本身不必擦掉（下一位会覆盖），但每一层的 `pos` 必须正确回退，不能用全局下标死记；n 最大 6，合法记录共 132 种，输出量不大。",
-          "solution": "#include <stdio.h>\n\n#define MAXL 32\n\nstatic int n;\nstatic char buf[MAXL];\nstatic int total = 0;\n\nstatic void dfs(int pos, int left, int right)\n{\n    if (pos == 2 * n) {\n        buf[pos] = '\\0';\n        printf(\"%s\\n\", buf);\n        total++;\n        return;\n    }\n    if (left < n) {\n        buf[pos] = '(';\n        dfs(pos + 1, left + 1, right);\n    }\n    if (right < left) {\n        buf[pos] = ')';\n        dfs(pos + 1, left, right + 1);\n    }\n}\n\nint main(void)\n{\n    if (scanf(\"%d\", &n) != 1) {\n        return 0;\n    }\n    dfs(0, 0, 0);\n    printf(\"total: %d\\n\", total);\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXL 32\n\nstatic int n;\nstatic char buf[MAXL];\nstatic int total = 0;\n\nstatic void dfs(int pos, int left, int right)\n{\n    if (pos == 2 * n) {\n        buf[pos] = '\\0';\n        printf(\"%s\\n\", buf);\n        total++;\n        return;\n    }\n    if (left < n) {\n        buf[pos] = '(';\n        dfs(pos + 1, left + 1, right);\n    }\n    if (right < left) {\n        buf[pos] = ')';\n        dfs(pos + 1, left, right + 1);\n    }\n}\n\nint main(void)\n{\n    if (scanf(\"%d\", &n) != 1) {\n        return 0;\n    }\n    dfs(0, 0, 0);\n    printf(\"total: %d\\n\", total);\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "4\n",
+              "out": "(((())))\n((()()))\n((())())\n((()))()\n(()(()))\n(()()())\n(()())()\n(())(())\n(())()()\n()((()))\n()(()())\n()(())()\n()()(())\n()()()()\ntotal: 14\n"
+            },
+            {
+              "in": "5\n",
+              "out": "((((()))))\n(((()())))\n(((())()))\n(((()))())\n(((())))()\n((()(())))\n((()()()))\n((()())())\n((()()))()\n((())(()))\n((())()())\n((())())()\n((()))(())\n((()))()()\n(()((())))\n(()(()()))\n(()(())())\n(()(()))()\n(()()(()))\n(()()()())\n(()()())()\n(()())(())\n(()())()()\n(())((()))\n(())(()())\n(())(())()\n(())()(())\n(())()()()\n()(((())))\n()((()()))\n()((())())\n()((()))()\n()(()(()))\n()(()()())\n()(()())()\n()(())(())\n()(())()()\n()()((()))\n()()(()())\n()()(())()\n()()()(())\n()()()()()\ntotal: 42\n"
+            }
+          ]
         },
         {
           "id": "FM3-6",
@@ -560,7 +714,17 @@
           ],
           "hint": "设 `dp[j]` 为凑出 j 元最少要几张券，`dp[0] = 0`，其余初始化为一个大数（表示凑不出）；每种面额 a 做一次「正序」遍历 `dp[j] = min(dp[j], dp[j - a] + 1)`（j 从 a 到 S），正序是允许同一种券重复用的关键。最后看 `dp[S]` 是否还是无穷大。",
           "pitfalls": "内层循环必须从小到大（正序），倒序就变成每种券只能取一次（0/1 背包）；`dp` 初值要用足够大的数，判断「凑不出」时别去比较溢出后的值。",
-          "solution": "#include <stdio.h>\n\n#define MAXS 10005\n#define MAXN 15\n#define INF 100000000\n\nint main(void)\n{\n    int n, s, i, j;\n    int a[MAXN];\n    int dp[MAXS];\n\n    if (scanf(\"%d%d\", &n, &s) != 2) {\n        return 0;\n    }\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    for (j = 0; j <= s; j++) {\n        dp[j] = INF;\n    }\n    dp[0] = 0;\n    for (i = 0; i < n; i++) {\n        for (j = a[i]; j <= s; j++) {\n            if (dp[j - a[i]] + 1 < dp[j]) {\n                dp[j] = dp[j - a[i]] + 1;\n            }\n        }\n    }\n    if (dp[s] >= INF) {\n        printf(\"impossible\\n\");\n    } else {\n        printf(\"min coupons: %d\\n\", dp[s]);\n    }\n    return 0;\n}\n"
+          "solution": "#include <stdio.h>\n\n#define MAXS 10005\n#define MAXN 15\n#define INF 100000000\n\nint main(void)\n{\n    int n, s, i, j;\n    int a[MAXN];\n    int dp[MAXS];\n\n    if (scanf(\"%d%d\", &n, &s) != 2) {\n        return 0;\n    }\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    for (j = 0; j <= s; j++) {\n        dp[j] = INF;\n    }\n    dp[0] = 0;\n    for (i = 0; i < n; i++) {\n        for (j = a[i]; j <= s; j++) {\n            if (dp[j - a[i]] + 1 < dp[j]) {\n                dp[j] = dp[j - a[i]] + 1;\n            }\n        }\n    }\n    if (dp[s] >= INF) {\n        printf(\"impossible\\n\");\n    } else {\n        printf(\"min coupons: %d\\n\", dp[s]);\n    }\n    return 0;\n}\n",
+          "checkpoints": [
+            {
+              "in": "1 3\n1000\n",
+              "out": "impossible\n"
+            },
+            {
+              "in": "3 6\n1 3 4\n",
+              "out": "min coupons: 2\n"
+            }
+          ]
         }
       ]
     }

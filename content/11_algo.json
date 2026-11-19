@@ -24,7 +24,17 @@
       ],
       "hint": "对每个数反复做 `x & 1` 取最低位、`x >>= 1` 去掉最低位，直到 x 变成 0，累加就得到 1 的个数。找一个变量记录当前的“最大个数”以及对应的原数，只有严格更大时才更新，就能自然实现“并列取最先出现”。",
       "pitfalls": "0 的二进制中 1 的个数是 0（循环一次也不执行），容易漏掉；把位图存成 `unsigned int` 更稳妥，避免对有符号数右移的依赖；n 个数可能跨行，用循环调用 `scanf` 读够 n 个即可。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 1005\n\nunsigned int card[MAXN];\nint cnt[MAXN];\n\nint main(void)\n{\n    int n, i, sum = 0, best = -1, arg = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%u\", &card[i]);\n    }\n\n    for (i = 0; i < n; i++) {\n        unsigned int x = card[i];\n        int c = 0;\n        while (x > 0) {\n            c += (int)(x & 1u);\n            x >>= 1;\n        }\n        cnt[i] = c;\n        sum += c;\n        if (c > best) {\n            best = c;\n            arg = (int)card[i];\n        }\n    }\n\n    for (i = 0; i < n; i++) {\n        if (i > 0) {\n            printf(\" \");\n        }\n        printf(\"%d\", cnt[i]);\n    }\n    printf(\"\\n\");\n    printf(\"SUM %d\\n\", sum);\n    printf(\"MAX %d\\n\", arg);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 1005\n\nunsigned int card[MAXN];\nint cnt[MAXN];\n\nint main(void)\n{\n    int n, i, sum = 0, best = -1, arg = 0;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%u\", &card[i]);\n    }\n\n    for (i = 0; i < n; i++) {\n        unsigned int x = card[i];\n        int c = 0;\n        while (x > 0) {\n            c += (int)(x & 1u);\n            x >>= 1;\n        }\n        cnt[i] = c;\n        sum += c;\n        if (c > best) {\n            best = c;\n            arg = (int)card[i];\n        }\n    }\n\n    for (i = 0; i < n; i++) {\n        if (i > 0) {\n            printf(\" \");\n        }\n        printf(\"%d\", cnt[i]);\n    }\n    printf(\"\\n\");\n    printf(\"SUM %d\\n\", sum);\n    printf(\"MAX %d\\n\", arg);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "4\n0 8 7 11\n",
+          "out": "0 1 3 3\nSUM 7\nMAX 7\n"
+        },
+        {
+          "in": "1\n0\n",
+          "out": "0\nSUM 0\nMAX 0\n"
+        }
+      ]
     },
     {
       "id": "R02",
@@ -54,7 +64,17 @@
       ],
       "hint": "f(n) 的三步结构：把上面 n-1 片从 A 搬到 C（f(n-1) 次），把最大的那片从 A 搬到 B（1 次），把 n-1 片从 C 搬回 A（f(n-1) 次），把最大片从 B 搬到 C（1 次），再把 n-1 片从 A 搬到 C（f(n-1) 次）。用一个循环 `f = 3 * f + 2` 递推到 n 即可。",
       "pitfalls": "n = 38 时答案约 1.35×10^18，必须用 `long long` 存并用 `%lld` 输出，`int` 会溢出；递推是 `f = 3 * f + 2` 从 f = 0 开始执行 n 轮（等于 3^n - 1），不要套用经典汉诺塔的 2^n - 1。",
-      "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int n, i;\n    long long f = 0; /* f(0) = 0，f(n) = 3 * f(n-1) + 2 */\n\n    scanf(\"%d\", &n);\n    for (i = 1; i <= n; i++) {\n        f = 3 * f + 2;\n    }\n    printf(\"%lld\\n\", f);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int n, i;\n    long long f = 0; /* f(0) = 0，f(n) = 3 * f(n-1) + 2 */\n\n    scanf(\"%d\", &n);\n    for (i = 1; i <= n; i++) {\n        f = 3 * f + 2;\n    }\n    printf(\"%lld\\n\", f);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "2\n",
+          "out": "8\n"
+        },
+        {
+          "in": "37\n",
+          "out": "450283905890997362\n"
+        }
+      ]
     },
     {
       "id": "R03",
@@ -80,7 +100,37 @@
       ],
       "hint": "开一个 `int cnt[101]` 统计每个分数出现的次数，再让 s 从 0 扫到 100，把 cnt[s] 个 s 依次输出，就完成了计数排序，时间复杂度只有 O(n + 100)。统计众数时顺序扫描，用 `cnt[s] > best` 判断，就能自然取到并列中的较小分数。",
       "pitfalls": "n 最大 10 万，输出时注意行末不能多空格；众数并列要取较小值（判断写成 `>` 而不是 `>=`）；`cnt` 数组必须初始化为 0。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n#define MAXS 101\n\nint score[MAXN];\nint cnt[MAXS];\n\nint main(void)\n{\n    int n, i, s;\n    int hi = -1, lo = 101, mode = 0, modeCnt = 0, first = 1;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &score[i]);\n        cnt[score[i]]++;\n    }\n\n    for (s = 0; s <= 100; s++) {\n        for (i = 0; i < cnt[s]; i++) {\n            if (!first) {\n                printf(\" \");\n            }\n            printf(\"%d\", s);\n            first = 0;\n        }\n        if (cnt[s] > 0) {\n            if (s > hi) {\n                hi = s;\n            }\n            if (s < lo) {\n                lo = s;\n            }\n            if (cnt[s] > modeCnt) {\n                modeCnt = cnt[s];\n                mode = s;\n            }\n        }\n    }\n    printf(\"\\n\");\n    printf(\"MAX %d\\n\", hi);\n    printf(\"MIN %d\\n\", lo);\n    printf(\"MODE %d\\n\", mode);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n#define MAXS 101\n\nint score[MAXN];\nint cnt[MAXS];\n\nint main(void)\n{\n    int n, i, s;\n    int hi = -1, lo = 101, mode = 0, modeCnt = 0, first = 1;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &score[i]);\n        cnt[score[i]]++;\n    }\n\n    for (s = 0; s <= 100; s++) {\n        for (i = 0; i < cnt[s]; i++) {\n            if (!first) {\n                printf(\" \");\n            }\n            printf(\"%d\", s);\n            first = 0;\n        }\n        if (cnt[s] > 0) {\n            if (s > hi) {\n                hi = s;\n            }\n            if (s < lo) {\n                lo = s;\n            }\n            if (cnt[s] > modeCnt) {\n                modeCnt = cnt[s];\n                mode = s;\n            }\n        }\n    }\n    printf(\"\\n\");\n    printf(\"MAX %d\\n\", hi);\n    printf(\"MIN %d\\n\", lo);\n    printf(\"MODE %d\\n\", mode);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "5\n100 0 100 0 50\n",
+          "out": "0 0 50 100 100\nMAX 100\nMIN 0\nMODE 0\n"
+        },
+        {
+          "in": "7\n82 14 10 43 43 8 94\n",
+          "out": "8 10 14 43 43 82 94\nMAX 94\nMIN 8\nMODE 43\n"
+        },
+        {
+          "in": "7\n8 10 14 43 43 82 94\n",
+          "out": "8 10 14 43 43 82 94\nMAX 94\nMIN 8\nMODE 43\n"
+        },
+        {
+          "in": "7\n94 82 43 43 14 10 8\n",
+          "out": "8 10 14 43 43 82 94\nMAX 94\nMIN 8\nMODE 43\n"
+        },
+        {
+          "in": "20\n59 90 14 31 11 5 38 60 53 11 10 86 14 77 53 35 57 100 15 3\n",
+          "out": "3 5 10 11 11 14 14 15 31 35 38 53 53 57 59 60 77 86 90 100\nMAX 100\nMIN 3\nMODE 11\n"
+        },
+        {
+          "in": "20\n3 5 10 11 11 14 14 15 31 35 38 53 53 57 59 60 77 86 90 100\n",
+          "out": "3 5 10 11 11 14 14 15 31 35 38 53 53 57 59 60 77 86 90 100\nMAX 100\nMIN 3\nMODE 11\n"
+        },
+        {
+          "in": "20\n100 90 86 77 60 59 57 53 53 38 35 31 15 14 14 11 11 10 5 3\n",
+          "out": "3 5 10 11 11 14 14 15 31 35 38 53 53 57 59 60 77 86 90 100\nMAX 100\nMIN 3\nMODE 11\n"
+        }
+      ]
     },
     {
       "id": "R04",
@@ -110,7 +160,25 @@
       ],
       "hint": "末尾 0 的个数等于 min(n! 中因子 2 的个数, 因子 5 的个数)，而 2 的个数一定不少于 5 的个数，所以只数 5：个数 = n/5 + n/25 + n/125 + …。用 while 循环每次 `n /= 5` 累加即可，复杂度 O(log n)。",
       "pitfalls": "n 最大 10^9，绝对不能真的去算 n!（会溢出）；注意 100 以内的数也可能贡献多个 5（如 25、125），所以要循环除 5 而不是只除一次；计数用 `long long`。",
-      "solution": "#include <stdio.h>\n\nint main(void)\n{\n    long long n, cnt = 0;\n\n    scanf(\"%lld\", &n);\n    while (n > 0) {\n        n /= 5;\n        cnt += n;\n    }\n    printf(\"%lld\\n\", cnt);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\nint main(void)\n{\n    long long n, cnt = 0;\n\n    scanf(\"%lld\", &n);\n    while (n > 0) {\n        n /= 5;\n        cnt += n;\n    }\n    printf(\"%lld\\n\", cnt);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1\n",
+          "out": "0\n"
+        },
+        {
+          "in": "24\n",
+          "out": "4\n"
+        },
+        {
+          "in": "125\n",
+          "out": "31\n"
+        },
+        {
+          "in": "1000000000\n",
+          "out": "249999998\n"
+        }
+      ]
     },
     {
       "id": "R05",
@@ -136,7 +204,13 @@
       ],
       "hint": "三种请求都能归结为两个边界函数：`lower(x)` 返回第一个大于等于 x 的下标（下标从 0 开始，可能等于 n，表示不存在），`upper(x)` 返回第一个大于 x 的下标。于是 t=1 的答案是 `upper - lower`；t=2 的答案是 `lower + 1`，但当 lower 等于 n 时要输出 0；t=3 的答案是 `upper` 本身（它就是“不大于 x 的元素个数”，正好等于最后一份的序号）。",
       "pitfalls": "边界函数用 `while (l < r)` + `mid = l + (r - l) / 2` 最不容易写错；n、m 都可能达到 20 万，逐个顺序扫描会超时，必须二分；所有输出位置都是从 1 开始计数的，别忘记 +1 或换算。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 200005\n\nint a[MAXN];\n\n/* 第一个大于等于 x 的下标，范围 0..n */\nint lowerBound(int arr[], int n, int x)\n{\n    int l = 0, r = n;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (arr[mid] < x) {\n            l = mid + 1;\n        } else {\n            r = mid;\n        }\n    }\n    return l;\n}\n\n/* 第一个大于 x 的下标，范围 0..n */\nint upperBound(int arr[], int n, int x)\n{\n    int l = 0, r = n;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (arr[mid] <= x) {\n            l = mid + 1;\n        } else {\n            r = mid;\n        }\n    }\n    return l;\n}\n\nint main(void)\n{\n    int n, m, i, t, x;\n\n    scanf(\"%d%d\", &n, &m);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n\n    for (i = 0; i < m; i++) {\n        scanf(\"%d%d\", &t, &x);\n        if (t == 1) {\n            int cnt = upperBound(a, n, x) - lowerBound(a, n, x);\n            printf(\"%d\\n\", cnt);\n        } else if (t == 2) {\n            int p = lowerBound(a, n, x);\n            printf(\"%d\\n\", p < n ? p + 1 : 0);\n        } else {\n            int p = upperBound(a, n, x);\n            printf(\"%d\\n\", p);\n        }\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 200005\n\nint a[MAXN];\n\n/* 第一个大于等于 x 的下标，范围 0..n */\nint lowerBound(int arr[], int n, int x)\n{\n    int l = 0, r = n;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (arr[mid] < x) {\n            l = mid + 1;\n        } else {\n            r = mid;\n        }\n    }\n    return l;\n}\n\n/* 第一个大于 x 的下标，范围 0..n */\nint upperBound(int arr[], int n, int x)\n{\n    int l = 0, r = n;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (arr[mid] <= x) {\n            l = mid + 1;\n        } else {\n            r = mid;\n        }\n    }\n    return l;\n}\n\nint main(void)\n{\n    int n, m, i, t, x;\n\n    scanf(\"%d%d\", &n, &m);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n\n    for (i = 0; i < m; i++) {\n        scanf(\"%d%d\", &t, &x);\n        if (t == 1) {\n            int cnt = upperBound(a, n, x) - lowerBound(a, n, x);\n            printf(\"%d\\n\", cnt);\n        } else if (t == 2) {\n            int p = lowerBound(a, n, x);\n            printf(\"%d\\n\", p < n ? p + 1 : 0);\n        } else {\n            int p = upperBound(a, n, x);\n            printf(\"%d\\n\", p);\n        }\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3 4\n2 2 2\n1 2\n2 2\n3 2\n1 3\n",
+          "out": "3\n1\n3\n0\n"
+        }
+      ]
     },
     {
       "id": "R06",
@@ -162,7 +236,13 @@
       ],
       "hint": "把每位选手的编号、数学、英语和总分放进结构体数组（可以只设 `id`、`math`、`eng`、`total` 这几个成员），再用 `qsort` 和一个比较函数一次排好。比较函数按“总分 → 数学 → 编号”的顺序依次判断，第一个不相等的键决定顺序。",
       "pitfalls": "比较函数必须返回负数、0、正数三种情况，漏掉 `return 0;` 会让 qsort 行为不确定；10 万个结构体约 1.6 MB，务必定义成全局变量，否则可能爆栈；只要输出前 k 名，别把所有人都打印出来。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\n#define MAXN 100005\n\ntypedef struct {\n    int id;\n    int math;\n    int eng;\n    int total;\n} Player;\n\nPlayer stu[MAXN];\n\n/* 总分降序 -> 数学降序 -> 编号升序 */\nint cmp(const void *pa, const void *pb)\n{\n    const Player *a = (const Player *)pa;\n    const Player *b = (const Player *)pb;\n\n    if (a->total != b->total) {\n        return a->total > b->total ? -1 : 1;\n    }\n    if (a->math != b->math) {\n        return a->math > b->math ? -1 : 1;\n    }\n    if (a->id != b->id) {\n        return a->id < b->id ? -1 : 1;\n    }\n    return 0;\n}\n\nint main(void)\n{\n    int n, k, i;\n\n    scanf(\"%d%d\", &n, &k);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%d%d\", &stu[i].id, &stu[i].math, &stu[i].eng);\n        stu[i].total = stu[i].math + stu[i].eng;\n    }\n\n    qsort(stu, (size_t)n, sizeof(Player), cmp);\n\n    for (i = 0; i < k; i++) {\n        printf(\"%d %d\\n\", stu[i].id, stu[i].total);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\n#define MAXN 100005\n\ntypedef struct {\n    int id;\n    int math;\n    int eng;\n    int total;\n} Player;\n\nPlayer stu[MAXN];\n\n/* 总分降序 -> 数学降序 -> 编号升序 */\nint cmp(const void *pa, const void *pb)\n{\n    const Player *a = (const Player *)pa;\n    const Player *b = (const Player *)pb;\n\n    if (a->total != b->total) {\n        return a->total > b->total ? -1 : 1;\n    }\n    if (a->math != b->math) {\n        return a->math > b->math ? -1 : 1;\n    }\n    if (a->id != b->id) {\n        return a->id < b->id ? -1 : 1;\n    }\n    return 0;\n}\n\nint main(void)\n{\n    int n, k, i;\n\n    scanf(\"%d%d\", &n, &k);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d%d%d\", &stu[i].id, &stu[i].math, &stu[i].eng);\n        stu[i].total = stu[i].math + stu[i].eng;\n    }\n\n    qsort(stu, (size_t)n, sizeof(Player), cmp);\n\n    for (i = 0; i < k; i++) {\n        printf(\"%d %d\\n\", stu[i].id, stu[i].total);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3 2\n3 50 50\n1 50 50\n2 60 40\n",
+          "out": "2 100\n1 100\n"
+        }
+      ]
     },
     {
       "id": "R07",
@@ -192,7 +272,41 @@
       ],
       "hint": "用 Kadane 递推：设 cur 为“以第 i 天结尾的最大子段和”，则 cur = max(cur + a[i], a[i])，同时记录 cur 的起点；当 cur + a[i] 与 a[i] 相等时沿用旧起点，才能保证起点更早。然后再和全局最优比较：和更大就换；和相同则起点更早优先；起点也相同则结束天数更小优先。",
       "pitfalls": "全负数时答案是最小的那个负数，不能把初始最大和设成 0；和可能超出 int 范围，必须用 `long long`；cur 的起点别在“相等”时被重置，否则会丢掉“起点更早”的合法答案。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n\nlong long a[MAXN];\n\nint main(void)\n{\n    int n, i;\n    long long cur, best;\n    int cs, bs, be;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%lld\", &a[i]);\n    }\n\n    best = a[0];\n    bs = 0;\n    be = 0;\n    cur = a[0];\n    cs = 0;\n\n    for (i = 1; i < n; i++) {\n        if (cur + a[i] >= a[i]) { /* 相等时沿用更早的起点 */\n            cur += a[i];\n        } else {\n            cur = a[i];\n            cs = i;\n        }\n        if (cur > best || (cur == best && (cs < bs || (cs == bs && i < be)))) {\n            best = cur;\n            bs = cs;\n            be = i;\n        }\n    }\n\n    printf(\"%lld %d %d\\n\", best, bs + 1, be + 1);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n\nlong long a[MAXN];\n\nint main(void)\n{\n    int n, i;\n    long long cur, best;\n    int cs, bs, be;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%lld\", &a[i]);\n    }\n\n    best = a[0];\n    bs = 0;\n    be = 0;\n    cur = a[0];\n    cs = 0;\n\n    for (i = 1; i < n; i++) {\n        if (cur + a[i] >= a[i]) { /* 相等时沿用更早的起点 */\n            cur += a[i];\n        } else {\n            cur = a[i];\n            cs = i;\n        }\n        if (cur > best || (cur == best && (cs < bs || (cs == bs && i < be)))) {\n            best = cur;\n            bs = cs;\n            be = i;\n        }\n    }\n\n    printf(\"%lld %d %d\\n\", best, bs + 1, be + 1);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3\n1000000000 1000000000 1000000000\n",
+          "out": "3000000000 1 3\n"
+        },
+        {
+          "in": "3\n0 0 0\n",
+          "out": "0 1 1\n"
+        },
+        {
+          "in": "7\n-34 57 48 29 -82 -17 -84\n",
+          "out": "134 2 4\n"
+        },
+        {
+          "in": "7\n-84 -82 -34 -17 29 48 57\n",
+          "out": "134 5 7\n"
+        },
+        {
+          "in": "7\n57 48 29 -17 -34 -82 -84\n",
+          "out": "134 1 3\n"
+        },
+        {
+          "in": "20\n21 -73 -56 -74 -98 76 -57 -18 -31 31 -56 61 -13 4 -43 25 -1 54 99 98\n",
+          "out": "284 12 20\n"
+        },
+        {
+          "in": "20\n-98 -74 -73 -57 -56 -56 -43 -31 -18 -13 -1 4 21 25 31 54 61 76 98 99\n",
+          "out": "469 12 20\n"
+        },
+        {
+          "in": "20\n99 98 76 61 54 31 25 21 4 -1 -13 -18 -31 -43 -56 -56 -57 -73 -74 -98\n",
+          "out": "469 1 9\n"
+        }
+      ]
     },
     {
       "id": "R08",
@@ -218,7 +332,13 @@
       ],
       "hint": "用埃拉托斯特尼筛法把 1 到 10^6 的素数标记出来：`isPrime[i]` 初值为真，从 2 开始，若 i 是素数就把它的倍数（可以从 i*i 开始）全部标记成合数。筛完再做前缀和 `pre[i] = pre[i - 1] + isPrime[i]`，每次询问用 `pre[R] - pre[L - 1]` 一次算出答案。",
       "pitfalls": "1 不是素数，必须把 `isPrime[1]` 置 0；筛法的内层从 `i * i` 开始，注意 `i * i` 在 int 内不要越界；区间查询要用前缀和，不能每次询问都重新筛一遍（q 最大 10 万）。",
-      "solution": "#include <stdio.h>\n\n#define MAXV 1000000\n\nstatic char isPrime[MAXV + 2];\nstatic int pre[MAXV + 2];\n\nint main(void)\n{\n    int q, i, j, l, r;\n\n    for (i = 2; i <= MAXV; i++) {\n        isPrime[i] = 1;\n    }\n    for (i = 2; (long long)i * i <= MAXV; i++) {\n        if (isPrime[i]) {\n            for (j = i * i; j <= MAXV; j += i) {\n                isPrime[j] = 0;\n            }\n        }\n    }\n    pre[0] = 0;\n    for (i = 1; i <= MAXV; i++) {\n        pre[i] = pre[i - 1] + (isPrime[i] ? 1 : 0);\n    }\n\n    scanf(\"%d\", &q);\n    for (i = 0; i < q; i++) {\n        scanf(\"%d%d\", &l, &r);\n        printf(\"%d\\n\", pre[r] - pre[l - 1]);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXV 1000000\n\nstatic char isPrime[MAXV + 2];\nstatic int pre[MAXV + 2];\n\nint main(void)\n{\n    int q, i, j, l, r;\n\n    for (i = 2; i <= MAXV; i++) {\n        isPrime[i] = 1;\n    }\n    for (i = 2; (long long)i * i <= MAXV; i++) {\n        if (isPrime[i]) {\n            for (j = i * i; j <= MAXV; j += i) {\n                isPrime[j] = 0;\n            }\n        }\n    }\n    pre[0] = 0;\n    for (i = 1; i <= MAXV; i++) {\n        pre[i] = pre[i - 1] + (isPrime[i] ? 1 : 0);\n    }\n\n    scanf(\"%d\", &q);\n    for (i = 0; i < q; i++) {\n        scanf(\"%d%d\", &l, &r);\n        printf(\"%d\\n\", pre[r] - pre[l - 1]);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3\n1 2\n49 49\n97 97\n",
+          "out": "1\n0\n1\n"
+        }
+      ]
     },
     {
       "id": "R09",
@@ -248,7 +368,17 @@
       ],
       "hint": "写两个小函数：`isLeap(y)` 判断闰年，`serial(y, m, d)` 把日期换算成“从 1900 年 1 月 1 日起是第几天”——先累加之前整年的天数（每年 365 或 366），再累加之前整月的天数（闰年 2 月加 1 天），最后加上 `d - 1`。两个 serial 相减再取绝对值就是答案。",
       "pitfalls": "闰年规则是“能被 4 整除且不能被 100 整除，或能被 400 整除”，只写 `y % 4 == 0` 会在 2100 年算错；闰年 2 月要在月份天数表的基础上额外加 1；相隔天数可能达到 7 万多天，用 `long long` 统计，并且别忘记取绝对值。",
-      "solution": "#include <stdio.h>\n\nstatic const int mdays[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};\n\nstatic int isLeap(int y)\n{\n    return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);\n}\n\n/* 从 1900-01-01 起算，返回该日期是第几天（0 开始） */\nstatic long long serial(int y, int m, int d)\n{\n    long long s = 0;\n    int i;\n\n    for (i = 1900; i < y; i++) {\n        s += isLeap(i) ? 366 : 365;\n    }\n    for (i = 1; i < m; i++) {\n        s += mdays[i];\n        if (i == 2 && isLeap(y)) {\n            s += 1;\n        }\n    }\n    s += d - 1;\n    return s;\n}\n\nint main(void)\n{\n    int y1, m1, d1, y2, m2, d2;\n    long long diff;\n\n    scanf(\"%d%d%d\", &y1, &m1, &d1);\n    scanf(\"%d%d%d\", &y2, &m2, &d2);\n\n    diff = serial(y1, m1, d1) - serial(y2, m2, d2);\n    if (diff < 0) {\n        diff = -diff;\n    }\n    printf(\"%lld\\n\", diff);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\nstatic const int mdays[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};\n\nstatic int isLeap(int y)\n{\n    return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);\n}\n\n/* 从 1900-01-01 起算，返回该日期是第几天（0 开始） */\nstatic long long serial(int y, int m, int d)\n{\n    long long s = 0;\n    int i;\n\n    for (i = 1900; i < y; i++) {\n        s += isLeap(i) ? 366 : 365;\n    }\n    for (i = 1; i < m; i++) {\n        s += mdays[i];\n        if (i == 2 && isLeap(y)) {\n            s += 1;\n        }\n    }\n    s += d - 1;\n    return s;\n}\n\nint main(void)\n{\n    int y1, m1, d1, y2, m2, d2;\n    long long diff;\n\n    scanf(\"%d%d%d\", &y1, &m1, &d1);\n    scanf(\"%d%d%d\", &y2, &m2, &d2);\n\n    diff = serial(y1, m1, d1) - serial(y2, m2, d2);\n    if (diff < 0) {\n        diff = -diff;\n    }\n    printf(\"%lld\\n\", diff);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1900 2 28\n1900 3 1\n",
+          "out": "1\n"
+        },
+        {
+          "in": "2020 1 1\n2020 1 1\n",
+          "out": "0\n"
+        }
+      ]
     },
     {
       "id": "R10",
@@ -278,7 +408,21 @@
       ],
       "hint": "用两个字符数组读入，从两个串的末尾开始逐位相加并处理进位，结果存到 int 数组里（多留一位存最高位的进位），最后从高位找第一个非零位开始输出。",
       "pitfalls": "结果可能比输入多一位（如 999 + 1 = 1000），结果数组要开到 1002；去掉前导零时不要把有效位全删光，结果为 0 时必须输出 `0`；字符转数字要减 `'0'`。",
-      "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXL 1005\n\nint main(void)\n{\n    char s1[MAXL], s2[MAXL];\n    int res[MAXL + 2];\n    int n1, n2, len, i, carry, top;\n\n    scanf(\"%s\", s1);\n    scanf(\"%s\", s2);\n    n1 = (int)strlen(s1);\n    n2 = (int)strlen(s2);\n    len = (n1 > n2) ? n1 : n2;\n\n    for (i = 0; i <= len + 1; i++) {\n        res[i] = 0;\n    }\n\n    carry = 0;\n    for (i = 0; i < len; i++) {\n        int d1 = (i < n1) ? s1[n1 - 1 - i] - '0' : 0;\n        int d2 = (i < n2) ? s2[n2 - 1 - i] - '0' : 0;\n        int sum = d1 + d2 + carry;\n        res[i] = sum % 10;\n        carry = sum / 10;\n    }\n    if (carry > 0) {\n        res[len] = carry;\n    }\n\n    top = len;\n    while (top > 0 && res[top] == 0) {\n        top--;\n    }\n    for (i = top; i >= 0; i--) {\n        printf(\"%d\", res[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <string.h>\n\n#define MAXL 1005\n\nint main(void)\n{\n    char s1[MAXL], s2[MAXL];\n    int res[MAXL + 2];\n    int n1, n2, len, i, carry, top;\n\n    scanf(\"%s\", s1);\n    scanf(\"%s\", s2);\n    n1 = (int)strlen(s1);\n    n2 = (int)strlen(s2);\n    len = (n1 > n2) ? n1 : n2;\n\n    for (i = 0; i <= len + 1; i++) {\n        res[i] = 0;\n    }\n\n    carry = 0;\n    for (i = 0; i < len; i++) {\n        int d1 = (i < n1) ? s1[n1 - 1 - i] - '0' : 0;\n        int d2 = (i < n2) ? s2[n2 - 1 - i] - '0' : 0;\n        int sum = d1 + d2 + carry;\n        res[i] = sum % 10;\n        carry = sum / 10;\n    }\n    if (carry > 0) {\n        res[len] = carry;\n    }\n\n    top = len;\n    while (top > 0 && res[top] == 0) {\n        top--;\n    }\n    for (i = top; i >= 0; i--) {\n        printf(\"%d\", res[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "0000\n000\n",
+          "out": "0\n"
+        },
+        {
+          "in": "9999999999999999999999\n1\n",
+          "out": "10000000000000000000000\n"
+        },
+        {
+          "in": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999\n1\n",
+          "out": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\n"
+        }
+      ]
     },
     {
       "id": "R11",
@@ -304,7 +448,17 @@
       ],
       "hint": "分区可以用“挖坑法”：先三数取中选基准（把 l、mid、r 中大小居中的那个换到 h[l]），取出 pivot 后 l 位置就成了一个“坑”；右指针 j 从右往左找不大于 pivot 的元素，把它填进左边的坑，再让左指针 i 从左往右找不小于 pivot 的元素，把它填进右边的坑；i、j 相遇时把 pivot 放进最后的坑，返回这个位置。再递归 `[l, cut-1]` 和 `[cut+1, r]`。排好序后输出 `h[k-1]`。",
       "pitfalls": "递归出口必须写 `if (l >= r) return;`；注意每次分区后基准已经落到最终位置，递归时要把它排除在外（写成 `[l, cut-1]` 和 `[cut+1, r]`），否则会死递归；基准若固定取第一个元素，在已排序的 10 万数据上会退化到 O(n^2) 而超时；内层扫描一律加 `i < j` 保护，防止越界。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n\nint h[MAXN];\n\nstatic void swapElem(int *x, int *y)\n{\n    int t = *x;\n    *x = *y;\n    *y = t;\n}\n\n/* 三数取中：调整后 h[l] <= h[mid] <= h[r]，再把中位数换到 h[l] 作基准 */\nstatic void medianToLeft(int l, int r)\n{\n    int mid = l + (r - l) / 2;\n\n    if (h[mid] < h[l]) {\n        swapElem(&h[mid], &h[l]);\n    }\n    if (h[r] < h[l]) {\n        swapElem(&h[r], &h[l]);\n    }\n    if (h[r] < h[mid]) {\n        swapElem(&h[r], &h[mid]);\n    }\n    swapElem(&h[l], &h[mid]);\n}\n\n/* 挖坑法分区：返回基准的最终下标，左侧元素都不大于基准，右侧都不小于基准 */\nstatic int partition(int l, int r)\n{\n    int pivot, i, j;\n\n    medianToLeft(l, r);\n    pivot = h[l];\n    i = l;\n    j = r;\n    while (i < j) {\n        while (i < j && h[j] > pivot) {\n            j--;\n        }\n        if (i < j) {\n            h[i] = h[j];\n            i++;\n        }\n        while (i < j && h[i] < pivot) {\n            i++;\n        }\n        if (i < j) {\n            h[j] = h[i];\n            j--;\n        }\n    }\n    h[i] = pivot;\n    return i;\n}\n\nstatic void quickSort(int l, int r)\n{\n    int cut;\n\n    if (l >= r) {\n        return;\n    }\n    cut = partition(l, r);\n    quickSort(l, cut - 1);\n    quickSort(cut + 1, r);\n}\n\nint main(void)\n{\n    int n, k, i;\n\n    scanf(\"%d%d\", &n, &k);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &h[i]);\n    }\n\n    quickSort(0, n - 1);\n\n    for (i = 0; i < n; i++) {\n        if (i > 0) {\n            printf(\" \");\n        }\n        printf(\"%d\", h[i]);\n    }\n    printf(\"\\n\");\n    printf(\"KTH %d\\n\", h[k - 1]);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n\nint h[MAXN];\n\nstatic void swapElem(int *x, int *y)\n{\n    int t = *x;\n    *x = *y;\n    *y = t;\n}\n\n/* 三数取中：调整后 h[l] <= h[mid] <= h[r]，再把中位数换到 h[l] 作基准 */\nstatic void medianToLeft(int l, int r)\n{\n    int mid = l + (r - l) / 2;\n\n    if (h[mid] < h[l]) {\n        swapElem(&h[mid], &h[l]);\n    }\n    if (h[r] < h[l]) {\n        swapElem(&h[r], &h[l]);\n    }\n    if (h[r] < h[mid]) {\n        swapElem(&h[r], &h[mid]);\n    }\n    swapElem(&h[l], &h[mid]);\n}\n\n/* 挖坑法分区：返回基准的最终下标，左侧元素都不大于基准，右侧都不小于基准 */\nstatic int partition(int l, int r)\n{\n    int pivot, i, j;\n\n    medianToLeft(l, r);\n    pivot = h[l];\n    i = l;\n    j = r;\n    while (i < j) {\n        while (i < j && h[j] > pivot) {\n            j--;\n        }\n        if (i < j) {\n            h[i] = h[j];\n            i++;\n        }\n        while (i < j && h[i] < pivot) {\n            i++;\n        }\n        if (i < j) {\n            h[j] = h[i];\n            j--;\n        }\n    }\n    h[i] = pivot;\n    return i;\n}\n\nstatic void quickSort(int l, int r)\n{\n    int cut;\n\n    if (l >= r) {\n        return;\n    }\n    cut = partition(l, r);\n    quickSort(l, cut - 1);\n    quickSort(cut + 1, r);\n}\n\nint main(void)\n{\n    int n, k, i;\n\n    scanf(\"%d%d\", &n, &k);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &h[i]);\n    }\n\n    quickSort(0, n - 1);\n\n    for (i = 0; i < n; i++) {\n        if (i > 0) {\n            printf(\" \");\n        }\n        printf(\"%d\", h[i]);\n    }\n    printf(\"\\n\");\n    printf(\"KTH %d\\n\", h[k - 1]);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "4 4\n0 3000 0 1\n",
+          "out": "0 0 1 3000\nKTH 3000\n"
+        },
+        {
+          "in": "1 1\n0\n",
+          "out": "0\nKTH 0\n"
+        }
+      ]
     },
     {
       "id": "R12",
@@ -334,7 +488,41 @@
       ],
       "hint": "相邻交换的最少次数等于序列的**逆序对**个数，即满足 i < j 且 h[i] > h[j] 的配对个数。用归并排序在合并时顺带统计：合并左右两段时，若取的是右段的元素，说明它比左段剩下的所有元素都小，可以一次性把“左段剩余元素个数”累加进答案。",
       "pitfalls": "逆序对最多约 5×10^9，必须用 `long long` 统计；身高相等不算逆序对（比较用 `>`，合并时左段优先取等值元素）；合并前记得保存两段元素或用临时数组，且注意临时数组下标不要越界。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n\nint h[MAXN];\nint tmp[MAXN];\nlong long swaps = 0;\n\nstatic void mergeSort(int l, int r)\n{\n    int mid, i, j, k;\n\n    if (l >= r) {\n        return;\n    }\n    mid = l + (r - l) / 2;\n    mergeSort(l, mid);\n    mergeSort(mid + 1, r);\n\n    i = l;\n    j = mid + 1;\n    k = l;\n    while (i <= mid && j <= r) {\n        if (h[i] <= h[j]) {\n            tmp[k++] = h[i++];\n        } else {\n            tmp[k++] = h[j++];\n            swaps += (long long)(mid - i + 1);\n        }\n    }\n    while (i <= mid) {\n        tmp[k++] = h[i++];\n    }\n    while (j <= r) {\n        tmp[k++] = h[j++];\n    }\n    for (k = l; k <= r; k++) {\n        h[k] = tmp[k];\n    }\n}\n\nint main(void)\n{\n    int n, i;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &h[i]);\n    }\n\n    mergeSort(0, n - 1);\n\n    printf(\"SWAPS %lld\\n\", swaps);\n    for (i = 0; i < n; i++) {\n        if (i > 0) {\n            printf(\" \");\n        }\n        printf(\"%d\", h[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 100005\n\nint h[MAXN];\nint tmp[MAXN];\nlong long swaps = 0;\n\nstatic void mergeSort(int l, int r)\n{\n    int mid, i, j, k;\n\n    if (l >= r) {\n        return;\n    }\n    mid = l + (r - l) / 2;\n    mergeSort(l, mid);\n    mergeSort(mid + 1, r);\n\n    i = l;\n    j = mid + 1;\n    k = l;\n    while (i <= mid && j <= r) {\n        if (h[i] <= h[j]) {\n            tmp[k++] = h[i++];\n        } else {\n            tmp[k++] = h[j++];\n            swaps += (long long)(mid - i + 1);\n        }\n    }\n    while (i <= mid) {\n        tmp[k++] = h[i++];\n    }\n    while (j <= r) {\n        tmp[k++] = h[j++];\n    }\n    for (k = l; k <= r; k++) {\n        h[k] = tmp[k];\n    }\n}\n\nint main(void)\n{\n    int n, i;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &h[i]);\n    }\n\n    mergeSort(0, n - 1);\n\n    printf(\"SWAPS %lld\\n\", swaps);\n    for (i = 0; i < n; i++) {\n        if (i > 0) {\n            printf(\" \");\n        }\n        printf(\"%d\", h[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "4\n7 7 7 7\n",
+          "out": "SWAPS 0\n7 7 7 7\n"
+        },
+        {
+          "in": "5\n2 1 2 1 2\n",
+          "out": "SWAPS 3\n1 1 2 2 2\n"
+        },
+        {
+          "in": "7\n11 15 11 14 14 16 0\n",
+          "out": "SWAPS 9\n0 11 11 14 14 15 16\n"
+        },
+        {
+          "in": "7\n0 11 11 14 14 15 16\n",
+          "out": "SWAPS 0\n0 11 11 14 14 15 16\n"
+        },
+        {
+          "in": "7\n16 15 14 14 11 11 0\n",
+          "out": "SWAPS 19\n0 11 11 14 14 15 16\n"
+        },
+        {
+          "in": "20\n17 10 3 16 18 3 10 19 17 16 15 20 4 16 16 19 12 9 11 0\n",
+          "out": "SWAPS 100\n0 3 3 4 9 10 10 11 12 15 16 16 16 16 17 17 18 19 19 20\n"
+        },
+        {
+          "in": "20\n0 3 3 4 9 10 10 11 12 15 16 16 16 16 17 17 18 19 19 20\n",
+          "out": "SWAPS 0\n0 3 3 4 9 10 10 11 12 15 16 16 16 16 17 17 18 19 19 20\n"
+        },
+        {
+          "in": "20\n20 19 19 18 17 17 16 16 16 16 15 12 11 10 10 9 4 3 3 0\n",
+          "out": "SWAPS 180\n0 3 3 4 9 10 10 11 12 15 16 16 16 16 17 17 18 19 19 20\n"
+        }
+      ]
     },
     {
       "id": "R13",
@@ -364,7 +552,17 @@
       ],
       "hint": "设 dp[i][j] 为走到 (i,j) 的走法数，则 dp[i][j] = (dp[i-1][j] + dp[i][j-1]) % 1000000007；路障格子的 dp 直接置 0；dp[1][1] 的初值为 1。按行列顺序递推，最后输出 dp[m][n]。",
       "pitfalls": "每做一次加法就要取模，否则路径数会远远超出 `long long` 的范围；dp 数组要开到 1001×1001（约 4 MB），必须定义为全局变量，放到 main 里会爆栈；边界要判断：第一行只能从左边转移、第一列只能从上边转移，用 `i > 1`、`j > 1` 防止越界，起点 (1,1) 的初值只能是 1。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 1005\n#define MOD 1000000007\n\nstatic int dp[MAXN][MAXN];\nstatic char blocked[MAXN][MAXN];\n\nint main(void)\n{\n    int m, n, k, i, j, r, c;\n\n    scanf(\"%d%d%d\", &m, &n, &k);\n    for (i = 0; i < k; i++) {\n        scanf(\"%d%d\", &r, &c);\n        blocked[r][c] = 1;\n    }\n\n    if (blocked[1][1]) {\n        printf(\"0\\n\");\n        return 0;\n    }\n    dp[1][1] = 1;\n    for (i = 1; i <= m; i++) {\n        for (j = 1; j <= n; j++) {\n            if (i == 1 && j == 1) {\n                continue;\n            }\n            if (blocked[i][j]) {\n                dp[i][j] = 0;\n                continue;\n            }\n            {\n                long long s = 0;\n                if (i > 1) {\n                    s += dp[i - 1][j];\n                }\n                if (j > 1) {\n                    s += dp[i][j - 1];\n                }\n                dp[i][j] = (int)(s % MOD);\n            }\n        }\n    }\n\n    printf(\"%d\\n\", dp[m][n]);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 1005\n#define MOD 1000000007\n\nstatic int dp[MAXN][MAXN];\nstatic char blocked[MAXN][MAXN];\n\nint main(void)\n{\n    int m, n, k, i, j, r, c;\n\n    scanf(\"%d%d%d\", &m, &n, &k);\n    for (i = 0; i < k; i++) {\n        scanf(\"%d%d\", &r, &c);\n        blocked[r][c] = 1;\n    }\n\n    if (blocked[1][1]) {\n        printf(\"0\\n\");\n        return 0;\n    }\n    dp[1][1] = 1;\n    for (i = 1; i <= m; i++) {\n        for (j = 1; j <= n; j++) {\n            if (i == 1 && j == 1) {\n                continue;\n            }\n            if (blocked[i][j]) {\n                dp[i][j] = 0;\n                continue;\n            }\n            {\n                long long s = 0;\n                if (i > 1) {\n                    s += dp[i - 1][j];\n                }\n                if (j > 1) {\n                    s += dp[i][j - 1];\n                }\n                dp[i][j] = (int)(s % MOD);\n            }\n        }\n    }\n\n    printf(\"%d\\n\", dp[m][n]);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1 1 0\n",
+          "out": "1\n"
+        },
+        {
+          "in": "1 4 1\n1 3\n",
+          "out": "0\n"
+        }
+      ]
     },
     {
       "id": "R14",
@@ -390,7 +588,13 @@
       ],
       "hint": "记向量 V(k) = (f(k+1), f(k))，则 V(k) = A · V(k-1)，其中 A = [[1,1],[1,0]]，且 V(1) = (1,1)。所以 f(n) 就等于 A^(n-1) 的左上角元素。矩阵快速幂：结果矩阵初始化为单位阵，指数 e = n-1 不断右移，遇到二进制位为 1 就把结果乘上当前底数，底数每轮自乘一次，所有乘法都取模。",
       "pitfalls": "M 最大约 10^9，两个小于 M 的数相乘接近 10^18，用 `int` 会溢出成负数，必须用 `long long` 存中间结果再取模；n = 1 时指数是 0，要保证返回 1；指数是 `long long`，循环条件写成 `while (e > 0)` 并每次 `e >>= 1`。",
-      "solution": "#include <stdio.h>\n\ntypedef struct {\n    long long m[2][2];\n} Mat;\n\nstatic long long MODV;\n\nstatic Mat multiply(Mat a, Mat b)\n{\n    Mat c;\n    int i, j, k;\n\n    for (i = 0; i < 2; i++) {\n        for (j = 0; j < 2; j++) {\n            long long s = 0;\n            for (k = 0; k < 2; k++) {\n                s = (s + a.m[i][k] * b.m[k][j]) % MODV;\n            }\n            c.m[i][j] = s;\n        }\n    }\n    return c;\n}\n\nint main(void)\n{\n    int q, i;\n    long long n, e;\n\n    scanf(\"%d\", &q);\n    for (i = 0; i < q; i++) {\n        Mat base, res;\n\n        scanf(\"%lld%lld\", &n, &MODV);\n\n        base.m[0][0] = 1; base.m[0][1] = 1;\n        base.m[1][0] = 1; base.m[1][1] = 0;\n        res.m[0][0] = 1;  res.m[0][1] = 0;\n        res.m[1][0] = 0;  res.m[1][1] = 1;\n\n        e = n - 1;\n        while (e > 0) {\n            if (e & 1) {\n                res = multiply(res, base);\n            }\n            base = multiply(base, base);\n            e >>= 1;\n        }\n        printf(\"%lld\\n\", res.m[0][0] % MODV);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\ntypedef struct {\n    long long m[2][2];\n} Mat;\n\nstatic long long MODV;\n\nstatic Mat multiply(Mat a, Mat b)\n{\n    Mat c;\n    int i, j, k;\n\n    for (i = 0; i < 2; i++) {\n        for (j = 0; j < 2; j++) {\n            long long s = 0;\n            for (k = 0; k < 2; k++) {\n                s = (s + a.m[i][k] * b.m[k][j]) % MODV;\n            }\n            c.m[i][j] = s;\n        }\n    }\n    return c;\n}\n\nint main(void)\n{\n    int q, i;\n    long long n, e;\n\n    scanf(\"%d\", &q);\n    for (i = 0; i < q; i++) {\n        Mat base, res;\n\n        scanf(\"%lld%lld\", &n, &MODV);\n\n        base.m[0][0] = 1; base.m[0][1] = 1;\n        base.m[1][0] = 1; base.m[1][1] = 0;\n        res.m[0][0] = 1;  res.m[0][1] = 0;\n        res.m[1][0] = 0;  res.m[1][1] = 1;\n\n        e = n - 1;\n        while (e > 0) {\n            if (e & 1) {\n                res = multiply(res, base);\n            }\n            base = multiply(base, base);\n            e >>= 1;\n        }\n        printf(\"%lld\\n\", res.m[0][0] % MODV);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3\n1 100\n2 2\n3 2\n",
+          "out": "1\n1\n0\n"
+        }
+      ]
     }
   ]
 }

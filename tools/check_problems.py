@@ -29,10 +29,11 @@ RUN_TIMEOUT = 10
 
 def norm(text: str) -> str:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
-    lines = [ln.rstrip() for ln in text.split("\n")]
-    while lines and lines[-1] == "":
-        lines.pop()
-    return "\n".join(lines)
+    if not text:
+        return ""
+    if not text.endswith("\n"):
+        text += "\n"
+    return re.sub(r"[^\S\n]+$", "", text, flags=re.MULTILINE)
 
 
 def collect(paths):
@@ -121,6 +122,8 @@ def run_case(exe, workdir, sample):
         return None, "运行超时"
     out = r.stdout.decode("utf-8", "replace")
     err = r.stderr.decode("utf-8", "replace")
+    if r.returncode:
+        return None, f"退出码 {r.returncode}：{err}"
     return out, err
 
 
@@ -138,11 +141,12 @@ def check(problems):
                 print("       " + (err or "").replace("\n", "\n       ")[:1200])
                 continue
             bad = []
-            for j, s in enumerate(q.get("samples") or [], 1):
+            cases = (q.get("samples") or []) + (q.get("checkpoints") or [])
+            for j, s in enumerate(cases, 1):
                 total_cases += 1
                 out, err = run_case(exe, tmp, s)
                 if out is None:
-                    bad.append((j, "运行超时", ""))
+                    bad.append((j, s["out"], err))
                 elif norm(out) != norm(s["out"]):
                     bad.append((j, norm(s["out"]), norm(out)))
             if bad:

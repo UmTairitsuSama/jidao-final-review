@@ -9,7 +9,11 @@
 北京邮电大学 大一上《计算导论与程序设计》**期末机考（C 语言）**离线复习网站的单文件网页版。
 
 - 在线预览：<https://umtairitsusama.github.io/jidao-final-review/>
-- 直接打开仓库里的 `index.html` 也可以离线使用（无需联网、无外部依赖）。
+- 直接打开仓库里的 `index.html` 可以离线复习和记录作答。C 评测加载编译器时需要联网。
+
+编程题提交后弹窗逐项显示实际输出、标准输出和得分。最新一次提交得满分时自动设为「已掌握」，未满分时设为「在练」。浏览器保存每题的最近得分和历史最高分，曾获 100 分的练习题在目录标绿。「问题」面板列出可点击定位的编译诊断，「终端」面板显示编译与运行输出。做题页左右两栏分别滚动。速查手册与知识精讲按章节从目录打开。C 语法高亮使用 VS Code 的 C 语法和 Dark Modern / Light Modern 主题。
+
+GitHub Pages 发布目录中的 `index.html` 已内嵌所需页面资源。浏览器内的 C 评测使用 Clang/WASI。若需使用与本机 VS Code 相同的 GCC 或 Clang，运行 `python tools/local_judge.py --open`，并按需要用 `--cc`、`--flag` 对齐本机任务。此入口只在回环地址提供，仅适用于自己信任的程序。
 
 ## 内容
 
@@ -29,6 +33,7 @@
 python build.py --out index.html
 python tools/check_problems.py --all
 node tools/ui_test.mjs index.html
+node tools/ui_test.mjs index.html --judge
 ```
 
 源码位于 `app/`（template.html / style.css / app.js），题目数据位于 `content/`，写作规范见 `SPEC_FINAL.md`。

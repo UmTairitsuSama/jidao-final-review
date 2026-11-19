@@ -2,6 +2,28 @@
   "problems": [
     {
       "id": "A01",
+      "checkpoints": [
+        {
+          "in": "2147483647 0\n",
+          "out": "The sum is 2147483647 and the difference is 2147483647.\n"
+        },
+        {
+          "in": "-7 -7\n",
+          "out": "The sum is -14 and the difference is 0.\n"
+        },
+        {
+          "in": "0 0\n",
+          "out": "The sum is 0 and the difference is 0.\n"
+        },
+        {
+          "in": "-2147483647 0\n",
+          "out": "The sum is -2147483647 and the difference is -2147483647.\n"
+        },
+        {
+          "in": "100 -100\n",
+          "out": "The sum is 0 and the difference is 200.\n"
+        }
+      ],
       "cat": "basic",
       "title": "两数之和与差的计算",
       "difficulty": 1,
@@ -49,7 +71,17 @@
       ],
       "hint": "性别用 `char` 和 `%c`，年龄用 `int` 和 `%d`，身高用 `float` 和 `%f`；`%f` 默认输出 6 位小数。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    char sex;\n    int age;\n    float height;\n\n    scanf(\" %c\", &sex);\n    scanf(\"%d\", &age);\n    scanf(\"%f\", &height);\n    printf(\"The sex is %c, the age is %d, and the height is %f.\\n\",\n           sex, age, height);\n    return 0;\n}\n",
-      "pitfalls": "身高必须用 `float` 型（题目要求），输入格式符是 `%f`；`%c` 不会跳过空白字符，写成 `\" %c\"` 更稳妥。"
+      "pitfalls": "身高必须用 `float` 型（题目要求），输入格式符是 `%f`；`%c` 不会跳过空白字符，写成 `\" %c\"` 更稳妥。",
+      "checkpoints": [
+        {
+          "in": "F\n1\n0.5\n",
+          "out": "The sex is F, the age is 1, and the height is 0.500000.\n"
+        },
+        {
+          "in": "M\n150\n2.5\n",
+          "out": "The sex is M, the age is 150, and the height is 2.500000.\n"
+        }
+      ]
     },
     {
       "id": "A03",
@@ -75,7 +107,17 @@
       ],
       "hint": "四个数都用 `double` 存储，输入用 `%lf`；按运算优先级直接用一条表达式计算即可。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    double a, b, c, d, result;\n\n    scanf(\"%lf%lf%lf%lf\", &a, &b, &c, &d);\n    result = (a + b) * (a - b) + c / d;\n    printf(\"%f\\n\", result);\n    return 0;\n}\n",
-      "pitfalls": "操作数是浮点数，必须用 `%lf` 读入；用 `int` 读入会丢掉小数部分。"
+      "pitfalls": "操作数是浮点数，必须用 `%lf` 读入；用 `int` 读入会丢掉小数部分。",
+      "checkpoints": [
+        {
+          "in": "-3 2 -8 4\n",
+          "out": "3.000000\n"
+        },
+        {
+          "in": "0 -1 3 -2\n",
+          "out": "-2.500000\n"
+        }
+      ]
     },
     {
       "id": "A04",
@@ -101,10 +143,38 @@
       ],
       "hint": "用 `#define PI 3.14159265` 定义符号常量，输出用 `%.4f`（`double` 也可以写 `%.4lf`）。",
       "solution": "#include <stdio.h>\n\n#define PI 3.14159265\n\nint main(void)\n{\n    double r, perimeter, area;\n\n    scanf(\"%lf\", &r);\n    perimeter = 2.0 * PI * r;\n    area = PI * r * r;\n    printf(\"The perimeter is %.4f, the area is %.4f.\\n\", perimeter, area);\n    return 0;\n}\n",
-      "pitfalls": "周长是 `2 * PI * R`，面积是 `PI * R * R`，两者不要写混；结果保留 4 位小数。"
+      "pitfalls": "周长是 `2 * PI * R`，面积是 `PI * R * R`，两者不要写混；结果保留 4 位小数。",
+      "checkpoints": [
+        {
+          "in": "0.01\n",
+          "out": "The perimeter is 0.0628, the area is 0.0003.\n"
+        },
+        {
+          "in": "1000\n",
+          "out": "The perimeter is 6283.1853, the area is 3141592.6500.\n"
+        }
+      ]
     },
     {
       "id": "A05",
+      "checkpoints": [
+        {
+          "in": "100\n",
+          "out": "1 1\n"
+        },
+        {
+          "in": "101\n",
+          "out": "2 101\n"
+        },
+        {
+          "in": "909\n",
+          "out": "18 909\n"
+        },
+        {
+          "in": "990\n",
+          "out": "18 99\n"
+        }
+      ],
       "cat": "basic",
       "title": "三位整数的拆位与逆序",
       "difficulty": 2,
@@ -159,10 +229,54 @@
       ],
       "hint": "先把 4 件商品的价格求和，再按总价所在的区间累加运费，可以用 `if-else if` 链依次判断。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int p1, p2, p3, p4, total, shipping;\n\n    scanf(\"%d%d%d%d\", &p1, &p2, &p3, &p4);\n    total = p1 + p2 + p3 + p4;\n    if (total < 20) {\n        shipping = 10;\n    } else if (total < 30) {\n        shipping = 8;\n    } else if (total < 40) {\n        shipping = 5;\n    } else {\n        shipping = 0;\n    }\n    printf(\"%d\\n\", total + shipping);\n    return 0;\n}\n",
-      "pitfalls": "总价区间是左闭右开：20 元属于 8 元档、30 元属于 5 元档、40 元包邮，不要把边界判错。"
+      "pitfalls": "总价区间是左闭右开：20 元属于 8 元档、30 元属于 5 元档、40 元包邮，不要把边界判错。",
+      "checkpoints": [
+        {
+          "in": "1 1 1 16\n",
+          "out": "29\n"
+        },
+        {
+          "in": "1 1 1 26\n",
+          "out": "37\n"
+        },
+        {
+          "in": "1 1 1 27\n",
+          "out": "35\n"
+        },
+        {
+          "in": "1 1 1 36\n",
+          "out": "44\n"
+        },
+        {
+          "in": "1 1 1 37\n",
+          "out": "40\n"
+        }
+      ]
     },
     {
       "id": "A07",
+      "checkpoints": [
+        {
+          "in": "2100\n",
+          "out": "No\n"
+        },
+        {
+          "in": "2400\n",
+          "out": "Yes\n"
+        },
+        {
+          "in": "2023\n",
+          "out": "No\n"
+        },
+        {
+          "in": "2499\n",
+          "out": "No\n"
+        },
+        {
+          "in": "2500\n",
+          "out": "No\n"
+        }
+      ],
       "cat": "basic",
       "title": "公历闰年判断",
       "difficulty": 2,
@@ -217,7 +331,101 @@
       ],
       "hint": "字符在 C 中可以直接当整数用；大写转小写加 32（即 `c - 'A' + 'a'`），字母序号为 `c - 'A' + 1`。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    char c;\n\n    scanf(\" %c\", &c);\n    printf(\"%d %c %d\\n\", c, c - 'A' + 'a', c - 'A' + 1);\n    return 0;\n}\n",
-      "pitfalls": "输出三个值之间各用一个空格分隔；`%d` 和 `%c` 不要用混。"
+      "pitfalls": "输出三个值之间各用一个空格分隔；`%d` 和 `%c` 不要用混。",
+      "checkpoints": [
+        {
+          "in": "B\n",
+          "out": "66 b 2\n"
+        },
+        {
+          "in": "C\n",
+          "out": "67 c 3\n"
+        },
+        {
+          "in": "D\n",
+          "out": "68 d 4\n"
+        },
+        {
+          "in": "E\n",
+          "out": "69 e 5\n"
+        },
+        {
+          "in": "F\n",
+          "out": "70 f 6\n"
+        },
+        {
+          "in": "H\n",
+          "out": "72 h 8\n"
+        },
+        {
+          "in": "I\n",
+          "out": "73 i 9\n"
+        },
+        {
+          "in": "J\n",
+          "out": "74 j 10\n"
+        },
+        {
+          "in": "K\n",
+          "out": "75 k 11\n"
+        },
+        {
+          "in": "L\n",
+          "out": "76 l 12\n"
+        },
+        {
+          "in": "M\n",
+          "out": "77 m 13\n"
+        },
+        {
+          "in": "N\n",
+          "out": "78 n 14\n"
+        },
+        {
+          "in": "O\n",
+          "out": "79 o 15\n"
+        },
+        {
+          "in": "P\n",
+          "out": "80 p 16\n"
+        },
+        {
+          "in": "Q\n",
+          "out": "81 q 17\n"
+        },
+        {
+          "in": "R\n",
+          "out": "82 r 18\n"
+        },
+        {
+          "in": "S\n",
+          "out": "83 s 19\n"
+        },
+        {
+          "in": "T\n",
+          "out": "84 t 20\n"
+        },
+        {
+          "in": "U\n",
+          "out": "85 u 21\n"
+        },
+        {
+          "in": "V\n",
+          "out": "86 v 22\n"
+        },
+        {
+          "in": "W\n",
+          "out": "87 w 23\n"
+        },
+        {
+          "in": "X\n",
+          "out": "88 x 24\n"
+        },
+        {
+          "in": "Y\n",
+          "out": "89 y 25\n"
+        }
+      ]
     },
     {
       "id": "A09",
@@ -243,7 +451,13 @@
       ],
       "hint": "按题目顺序定义 7 个变量并依次读入；用 `sizeof(变量)` 得到字节数，用 `%zu` 输出；注意各类型对应的 `scanf` 格式符（`%hd`、`%ld`、`%lld`、`%f`、`%lf`）。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    char a;\n    short b;\n    int c;\n    long d;\n    long long e;\n    float f;\n    double g;\n\n    scanf(\"%c\", &a);\n    scanf(\"%hd\", &b);\n    scanf(\"%d\", &c);\n    scanf(\"%ld\", &d);\n    scanf(\"%lld\", &e);\n    scanf(\"%f\", &f);\n    scanf(\"%lf\", &g);\n\n    printf(\"The 'char' variable is %c, it takes %zu byte.\\n\", a, sizeof(a));\n    printf(\"The 'short' variable is %hd, it takes %zu bytes.\\n\", b, sizeof(b));\n    printf(\"The 'int' variable is %d, it takes %zu bytes.\\n\", c, sizeof(c));\n    printf(\"The 'long' variable is %ld, it takes %zu bytes.\\n\", d, sizeof(d));\n    printf(\"The 'long long' variable is %lld, it takes %zu bytes.\\n\", e, sizeof(e));\n    printf(\"The 'float' variable is %f, it takes %zu bytes.\\n\", f, sizeof(f));\n    printf(\"The 'double' variable is %f, it takes %zu bytes.\\n\", g, sizeof(g));\n    return 0;\n}\n",
-      "pitfalls": "各类型的 `scanf` 格式符不能混用（`short` 用 `%hd`、`long` 用 `%ld`、`long long` 用 `%lld`）；`char` 行用 `byte`，其余行用 `bytes`；`long` 的字节数随平台变化，不要写死。"
+      "pitfalls": "各类型的 `scanf` 格式符不能混用（`short` 用 `%hd`、`long` 用 `%ld`、`long long` 用 `%lld`）；`char` 行用 `byte`，其余行用 `bytes`；`long` 的字节数随平台变化，不要写死。",
+      "checkpoints": [
+        {
+          "in": "z\n-1\n0\n-100\n9876543210\n-0.25\n0.125\n",
+          "out": "The 'char' variable is z, it takes 1 byte.\nThe 'short' variable is -1, it takes 2 bytes.\nThe 'int' variable is 0, it takes 4 bytes.\nThe 'long' variable is -100, it takes 4 bytes.\nThe 'long long' variable is 9876543210, it takes 8 bytes.\nThe 'float' variable is -0.250000, it takes 4 bytes.\nThe 'double' variable is 0.125000, it takes 8 bytes.\n"
+        }
+      ]
     },
     {
       "id": "A10",
@@ -273,7 +487,21 @@
       ],
       "hint": "先判断 `a + b > c && a + c > b && b + c > a`；再用 `#include <math.h>` 中的 `sqrt` 计算海伦公式，注意 S 要用浮点数。",
       "solution": "#include <stdio.h>\n#include <math.h>\n\nint main(void)\n{\n    int a, b, c;\n\n    scanf(\"%d%d%d\", &a, &b, &c);\n    if (a + b > c && a + c > b && b + c > a) {\n        double s = (a + b + c) / 2.0;\n        double area = sqrt(s * (s - a) * (s - b) * (s - c));\n        printf(\"%.3f\\n\", area);\n    } else {\n        printf(\"The edges cannot make up of a triangle.\\n\");\n    }\n    return 0;\n}\n",
-      "pitfalls": "`S = (a + b + c) / 2.0` 不能写成 `/ 2`，否则会整除丢掉小数；`sqrt` 需要 `#include <math.h>`。"
+      "pitfalls": "`S = (a + b + c) / 2.0` 不能写成 `/ 2`，否则会整除丢掉小数；`sqrt` 需要 `#include <math.h>`。",
+      "checkpoints": [
+        {
+          "in": "2 2 2\n",
+          "out": "1.732\n"
+        },
+        {
+          "in": "2 3 6\n",
+          "out": "The edges cannot make up of a triangle.\n"
+        },
+        {
+          "in": "3 5 4\n",
+          "out": "6.000\n"
+        }
+      ]
     },
     {
       "id": "A11",
@@ -303,10 +531,98 @@
       ],
       "hint": "把每个单价换算成「分」：`(long long)(p * 100 + 0.5)`，求和后用整数分做满减和 95 折，最后分别输出整数部分和小数部分，避免浮点误差。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    double p1, p2, p3;\n    char member;\n    long long cents;\n\n    scanf(\"%lf%lf%lf\", &p1, &p2, &p3);\n    scanf(\" %c\", &member);\n\n    cents = (long long)(p1 * 100 + 0.5)\n          + (long long)(p2 * 100 + 0.5)\n          + (long long)(p3 * 100 + 0.5);\n\n    if (cents >= 30000) {\n        cents -= 5000;\n    } else if (cents >= 20000) {\n        cents -= 3000;\n    } else if (cents >= 10000) {\n        cents -= 1000;\n    }\n\n    if (member == 'Y') {\n        cents = (cents * 95 + 50) / 100;\n    }\n\n    printf(\"%lld.%02lld\\n\", cents / 100, cents % 100);\n    return 0;\n}\n",
-      "pitfalls": "300.00 元必须按「满 300 减 50」计算，直接对 double 求和可能得到 299.999… 而判错档位；95 折按分四舍五入：`(cents * 95 + 50) / 100`；输出必须恰好两位小数。"
+      "pitfalls": "300.00 元必须按「满 300 减 50」计算，直接对 double 求和可能得到 299.999… 而判错档位；95 折按分四舍五入：`(cents * 95 + 50) / 100`；输出必须恰好两位小数。",
+      "checkpoints": [
+        {
+          "in": "33.33 33.33 33.34\nY\n",
+          "out": "85.50\n"
+        },
+        {
+          "in": "99.99 100 0.01\nN\n",
+          "out": "170.00\n"
+        },
+        {
+          "in": "100 100 100\nY\n",
+          "out": "237.50\n"
+        },
+        {
+          "in": "99.98 0.01 0.01\nN\n",
+          "out": "90.00\n"
+        },
+        {
+          "in": "0.01 0.01 99.97\nY\n",
+          "out": "94.99\n"
+        },
+        {
+          "in": "0.01 0.01 99.97\nN\n",
+          "out": "99.99\n"
+        },
+        {
+          "in": "0.01 0.01 99.98\nY\n",
+          "out": "85.50\n"
+        },
+        {
+          "in": "0.01 0.01 99.98\nN\n",
+          "out": "90.00\n"
+        },
+        {
+          "in": "0.01 0.01 199.97\nY\n",
+          "out": "180.49\n"
+        },
+        {
+          "in": "0.01 0.01 199.97\nN\n",
+          "out": "189.99\n"
+        },
+        {
+          "in": "0.01 0.01 199.98\nY\n",
+          "out": "161.50\n"
+        },
+        {
+          "in": "0.01 0.01 199.98\nN\n",
+          "out": "170.00\n"
+        },
+        {
+          "in": "0.01 0.01 299.97\nY\n",
+          "out": "256.49\n"
+        },
+        {
+          "in": "0.01 0.01 299.97\nN\n",
+          "out": "269.99\n"
+        },
+        {
+          "in": "0.01 0.01 299.98\nY\n",
+          "out": "237.50\n"
+        },
+        {
+          "in": "0.01 0.01 299.98\nN\n",
+          "out": "250.00\n"
+        }
+      ]
     },
     {
       "id": "B01",
+      "checkpoints": [
+        {
+          "in": "0 2147483647\n",
+          "out": "The larger number is 2147483647, the smaller number is 0.\n"
+        },
+        {
+          "in": "-2147483648 -2147483648\n",
+          "out": "The two numbers are equal.\n"
+        },
+        {
+          "in": "-3 2\n",
+          "out": "The larger number is 2, the smaller number is -3.\n"
+        },
+        {
+          "in": "0 0\n",
+          "out": "The two numbers are equal.\n"
+        },
+        {
+          "in": "9 -3\n",
+          "out": "The larger number is 9, the smaller number is -3.\n"
+        }
+      ],
       "cat": "select",
       "title": "两个整数的大小比较",
       "difficulty": 2,
@@ -361,7 +677,17 @@
       ],
       "hint": "先计算分母 `b * c - d` 并判断它是否为 0：为 0 时直接输出 `error`，否则再计算除法。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    double a, b, c, d, denom;\n\n    scanf(\"%lf%lf%lf%lf\", &a, &b, &c, &d);\n    denom = b * c - d;\n    if (denom == 0.0) {\n        printf(\"error\\n\");\n    } else {\n        printf(\"%.1f\\n\", a / denom);\n    }\n    return 0;\n}\n",
-      "pitfalls": "分母为 0 时不能做除法；输出结果保留 1 位小数。"
+      "pitfalls": "分母为 0 时不能做除法；输出结果保留 1 位小数。",
+      "checkpoints": [
+        {
+          "in": "0 0 0 0\n",
+          "out": "error\n"
+        },
+        {
+          "in": "-2 3 4 -1\n",
+          "out": "-0.2\n"
+        }
+      ]
     },
     {
       "id": "B03",
@@ -390,7 +716,53 @@
       ],
       "hint": "用 `if-else if` 链从高分到低分依次判断；注意先处理小于 0 或大于 100 的越界情况。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int score;\n\n    scanf(\"%d\", &score);\n    if (score < 0 || score > 100) {\n        printf(\"The score is out of range!\\n\");\n    } else if (score >= 90) {\n        printf(\"A\\n\");\n    } else if (score >= 80) {\n        printf(\"B\\n\");\n    } else if (score >= 70) {\n        printf(\"C\\n\");\n    } else if (score >= 60) {\n        printf(\"D\\n\");\n    } else {\n        printf(\"E\\n\");\n    }\n    return 0;\n}\n",
-      "pitfalls": "区间是左闭右开：90 分是 A，89 分是 B，60 分是 D；越界提示末尾的感叹号和句点要完全一致。"
+      "pitfalls": "区间是左闭右开：90 分是 A，89 分是 B，60 分是 D；越界提示末尾的感叹号和句点要完全一致。",
+      "checkpoints": [
+        {
+          "in": "-1\n",
+          "out": "The score is out of range!\n"
+        },
+        {
+          "in": "0\n",
+          "out": "E\n"
+        },
+        {
+          "in": "59\n",
+          "out": "E\n"
+        },
+        {
+          "in": "60\n",
+          "out": "D\n"
+        },
+        {
+          "in": "69\n",
+          "out": "D\n"
+        },
+        {
+          "in": "70\n",
+          "out": "C\n"
+        },
+        {
+          "in": "79\n",
+          "out": "C\n"
+        },
+        {
+          "in": "80\n",
+          "out": "B\n"
+        },
+        {
+          "in": "90\n",
+          "out": "A\n"
+        },
+        {
+          "in": "99\n",
+          "out": "A\n"
+        },
+        {
+          "in": "101\n",
+          "out": "The score is out of range!\n"
+        }
+      ]
     },
     {
       "id": "B04",
@@ -419,7 +791,41 @@
       ],
       "hint": "用 `if-else if` 分成 0~15、15~25、25 以上三段，每一段只累加超出该档起点的部分水费。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int x;\n    double fee;\n\n    scanf(\"%d\", &x);\n    if (x <= 15) {\n        fee = x * 2.50;\n    } else if (x <= 25) {\n        fee = 15 * 2.50 + (x - 15) * 3.75;\n    } else {\n        fee = 15 * 2.50 + 10 * 3.75 + (x - 25) * 7.00;\n    }\n    printf(\"%.2f\\n\", fee);\n    return 0;\n}\n",
-      "pitfalls": "不能把全部用水量都按最高档单价相乘；15 吨、25 吨这两个边界属于较低档。"
+      "pitfalls": "不能把全部用水量都按最高档单价相乘；15 吨、25 吨这两个边界属于较低档。",
+      "checkpoints": [
+        {
+          "in": "0\n",
+          "out": "0.00\n"
+        },
+        {
+          "in": "14\n",
+          "out": "35.00\n"
+        },
+        {
+          "in": "15\n",
+          "out": "37.50\n"
+        },
+        {
+          "in": "16\n",
+          "out": "41.25\n"
+        },
+        {
+          "in": "24\n",
+          "out": "71.25\n"
+        },
+        {
+          "in": "25\n",
+          "out": "75.00\n"
+        },
+        {
+          "in": "26\n",
+          "out": "82.00\n"
+        },
+        {
+          "in": "80\n",
+          "out": "460.00\n"
+        }
+      ]
     },
     {
       "id": "B05",
@@ -449,7 +855,65 @@
       ],
       "hint": "先判断闰年确定 2 月天数；再用 `switch` 从当前月份开始，借助不加 `break` 的「贯穿」特性，把之前各月的天数依次累加，最后加上 d。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int y, m, d, leap, sum;\n\n    scanf(\"%d%d%d\", &y, &m, &d);\n    leap = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;\n    sum = d;\n\n    switch (m) {\n    /* 11 月：30 天 */\n    case 12: sum += 30;  /* fall through */\n    /* 10 月：31 天 */\n    case 11: sum += 31;  /* fall through */\n    /* 9 月：30 天 */\n    case 10: sum += 30;  /* fall through */\n    /* 8 月：31 天 */\n    case 9:  sum += 31;  /* fall through */\n    /* 7 月：31 天 */\n    case 8:  sum += 31;  /* fall through */\n    /* 6 月：30 天 */\n    case 7:  sum += 30;  /* fall through */\n    /* 5 月：31 天 */\n    case 6:  sum += 31;  /* fall through */\n    /* 4 月：30 天 */\n    case 5:  sum += 30;  /* fall through */\n    /* 3 月：31 天 */\n    case 4:  sum += 31;  /* fall through */\n    /* 2 月：闰年 29 天，平年 28 天 */\n    case 3:  sum += leap ? 29 : 28;  /* fall through */\n    /* 1 月：31 天 */\n    case 2:  sum += 31;  /* fall through */\n    case 1:  break;\n    default: break;\n    }\n\n    printf(\"%d\\n\", sum);\n    return 0;\n}\n",
-      "pitfalls": "`switch` 里不加 `break` 的贯穿是故意使用的，但 `case 1` 后必须 `break`，否则不会停止累加；闰年的整百规则别漏（1900 不是闰年）。"
+      "pitfalls": "`switch` 里不加 `break` 的贯穿是故意使用的，但 `case 1` 后必须 `break`，否则不会停止累加；闰年的整百规则别漏（1900 不是闰年）。",
+      "checkpoints": [
+        {
+          "in": "2000 2 29\n",
+          "out": "60\n"
+        },
+        {
+          "in": "1900 1 1\n",
+          "out": "1\n"
+        },
+        {
+          "in": "2023 3 1\n",
+          "out": "60\n"
+        },
+        {
+          "in": "2024 1 1\n",
+          "out": "1\n"
+        },
+        {
+          "in": "2024 2 1\n",
+          "out": "32\n"
+        },
+        {
+          "in": "2024 4 1\n",
+          "out": "92\n"
+        },
+        {
+          "in": "2024 5 1\n",
+          "out": "122\n"
+        },
+        {
+          "in": "2024 6 1\n",
+          "out": "153\n"
+        },
+        {
+          "in": "2024 7 1\n",
+          "out": "183\n"
+        },
+        {
+          "in": "2024 8 1\n",
+          "out": "214\n"
+        },
+        {
+          "in": "2024 9 1\n",
+          "out": "245\n"
+        },
+        {
+          "in": "2024 10 1\n",
+          "out": "275\n"
+        },
+        {
+          "in": "2024 11 1\n",
+          "out": "306\n"
+        },
+        {
+          "in": "2024 12 1\n",
+          "out": "336\n"
+        }
+      ]
     },
     {
       "id": "B06",
@@ -479,7 +943,29 @@
       ],
       "hint": "先判断 x 是否在 [1, 10000] 内；再数出 x 的位数 k，比较 `x * x % 10^k` 与 x 是否相等。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int x;\n\n    scanf(\"%d\", &x);\n    if (x < 1 || x > 10000) {\n        printf(\"%d out of range\\n\", x);\n    } else {\n        long long sq = (long long)x * x;\n        long long p = 10;\n        while (p <= x) {\n            p *= 10;\n        }\n        if (sq % p == x) {\n            printf(\"Yes\\n\");\n        } else {\n            printf(\"No\\n\");\n        }\n    }\n    return 0;\n}\n",
-      "pitfalls": "必须先判断范围再计算；x 最大为 10000，`x * x` 为 10^8，用 `int` 也放得下，但用 `long long` 更稳妥。"
+      "pitfalls": "必须先判断范围再计算；x 最大为 10000，`x * x` 为 10^8，用 `int` 也放得下，但用 `long long` 更稳妥。",
+      "checkpoints": [
+        {
+          "in": "25\n",
+          "out": "Yes\n"
+        },
+        {
+          "in": "76\n",
+          "out": "Yes\n"
+        },
+        {
+          "in": "625\n",
+          "out": "Yes\n"
+        },
+        {
+          "in": "1\n",
+          "out": "Yes\n"
+        },
+        {
+          "in": "6\n",
+          "out": "Yes\n"
+        }
+      ]
     },
     {
       "id": "B07",
@@ -505,7 +991,29 @@
       ],
       "hint": "设鸡 c、兔 r、蜻蜓 d，则 c + r + d = m、2c + 4r + 6d = n；两式相减得 r + 2d = (n - 2m) / 2，于是只需枚举 d 就能依次求出 r 和 c。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int m, n, rest, k, d, r, c;\n\n    scanf(\"%d%d\", &m, &n);\n    rest = n - 2 * m;              /* 2r + 4d = n - 2m */\n    if (rest >= 0 && rest % 2 == 0) {\n        k = rest / 2;              /* r + 2d = k */\n        for (d = 0; d <= k / 2; d++) {\n            r = k - 2 * d;\n            c = m - r - d;\n            if (c >= 0 && r >= 0) {\n                printf(\"%d %d %d\\n\", c, r, d);\n            }\n        }\n    }\n    return 0;\n}\n",
-      "pitfalls": "三种动物的数量都必须非负；无解时不要输出任何内容；按 d 从小到大枚举，鸡的只数正好从小到大排列。"
+      "pitfalls": "三种动物的数量都必须非负；无解时不要输出任何内容；按 d 从小到大枚举，鸡的只数正好从小到大排列。",
+      "checkpoints": [
+        {
+          "in": "1 1\n",
+          "out": ""
+        },
+        {
+          "in": "1 2\n",
+          "out": "1 0 0\n"
+        },
+        {
+          "in": "1 4\n",
+          "out": "0 1 0\n"
+        },
+        {
+          "in": "1 6\n",
+          "out": "0 0 1\n"
+        },
+        {
+          "in": "6 18\n",
+          "out": "3 3 0\n4 1 1\n"
+        }
+      ]
     },
     {
       "id": "B08",
@@ -535,7 +1043,29 @@
       ],
       "hint": "依次判断：两队是否都达到 21 分（error）→ 是否只有一队达到 21 分（该队获胜）→ 两队都未到 21 分时比较大小。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    int a, b;\n\n    scanf(\"%d%d\", &a, &b);\n    if (a >= 21 && b >= 21) {\n        printf(\"error\\n\");\n    } else if (a >= 21) {\n        printf(\"A win\\n\");\n    } else if (b >= 21) {\n        printf(\"B win\\n\");\n    } else if (a > b) {\n        printf(\"A win\\n\");\n    } else if (b > a) {\n        printf(\"B win\\n\");\n    } else {\n        printf(\"no result\\n\");\n    }\n    return 0;\n}\n",
-      "pitfalls": "两队都 ≥ 21 时比分不可能出现；只有两队都低于 21 分且相等时才输出 `no result`；`A win`、`B win` 的大小写和空格要与题目一致。"
+      "pitfalls": "两队都 ≥ 21 时比分不可能出现；只有两队都低于 21 分且相等时才输出 `no result`；`A win`、`B win` 的大小写和空格要与题目一致。",
+      "checkpoints": [
+        {
+          "in": "21 20\n",
+          "out": "A win\n"
+        },
+        {
+          "in": "20 22\n",
+          "out": "B win\n"
+        },
+        {
+          "in": "21 21\n",
+          "out": "error\n"
+        },
+        {
+          "in": "0 0\n",
+          "out": "no result\n"
+        },
+        {
+          "in": "23 0\n",
+          "out": "A win\n"
+        }
+      ]
     },
     {
       "id": "B09",
@@ -565,7 +1095,25 @@
       ],
       "hint": "先按里程用 `if-else if` 分成 `s ≤ 3`、`3 < s ≤ 15`、`s > 15` 三段计算基础车费，再根据时段字符决定是否乘以 1.2。",
       "solution": "#include <stdio.h>\n\nint main(void)\n{\n    double s, fee;\n    char period;\n\n    scanf(\"%lf\", &s);\n    scanf(\" %c\", &period);\n\n    if (s <= 3.0) {\n        fee = 13.0;\n    } else if (s <= 15.0) {\n        fee = 13.0 + (s - 3.0) * 2.30;\n    } else {\n        fee = 13.0 + 12.0 * 2.30 + (s - 15.0) * 3.45;\n    }\n    if (period == 'N') {\n        fee = fee * 1.2;\n    }\n    printf(\"%.2f\\n\", fee);\n    return 0;\n}\n",
-      "pitfalls": "15 公里是分段点，前后两段在 15 处应连续；夜间加价是在总费用基础上乘 1.2，而不是在每段单价上；结果保留 2 位小数。"
+      "pitfalls": "15 公里是分段点，前后两段在 15 处应连续；夜间加价是在总费用基础上乘 1.2，而不是在每段单价上；结果保留 2 位小数。",
+      "checkpoints": [
+        {
+          "in": "3.0\nN\n",
+          "out": "15.60\n"
+        },
+        {
+          "in": "3.1\nD\n",
+          "out": "13.23\n"
+        },
+        {
+          "in": "15.0\nN\n",
+          "out": "48.72\n"
+        },
+        {
+          "in": "15.2\nD\n",
+          "out": "41.29\n"
+        }
+      ]
     }
   ]
 }

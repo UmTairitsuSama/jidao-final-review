@@ -24,7 +24,41 @@
       ],
       "hint": "按 x 所在区间从小到大的顺序写 if / else if 链，一旦命中就 `return`，后面的区间不必再判断。",
       "pitfalls": "边界值 1、10、100 分别属于哪个区间要看准；x > 100 这一支不要漏判，否则会掉进上一个分支。",
-      "solution": "#include <stdio.h>\n\n/* 分段函数求值 */\nint fun(int x)\n{\n    if (x < 1) {\n        return x;\n    }\n    if (x <= 10) {\n        return 2 * x - 1;\n    }\n    if (x <= 100) {\n        return 3 * x - 11;\n    }\n    return x * x - 24;\n}\n\nint main(void)\n{\n    int x;\n\n    scanf(\"%d\", &x);\n    printf(\"The result is:y=%d\\n\", fun(x));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 分段函数求值 */\nint fun(int x)\n{\n    if (x < 1) {\n        return x;\n    }\n    if (x <= 10) {\n        return 2 * x - 1;\n    }\n    if (x <= 100) {\n        return 3 * x - 11;\n    }\n    return x * x - 24;\n}\n\nint main(void)\n{\n    int x;\n\n    scanf(\"%d\", &x);\n    printf(\"The result is:y=%d\\n\", fun(x));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "-10000\n",
+          "out": "The result is:y=-10000\n"
+        },
+        {
+          "in": "10000\n",
+          "out": "The result is:y=99999976\n"
+        },
+        {
+          "in": "1\n",
+          "out": "The result is:y=1\n"
+        },
+        {
+          "in": "10\n",
+          "out": "The result is:y=19\n"
+        },
+        {
+          "in": "100\n",
+          "out": "The result is:y=289\n"
+        },
+        {
+          "in": "0\n",
+          "out": "The result is:y=0\n"
+        },
+        {
+          "in": "11\n",
+          "out": "The result is:y=22\n"
+        },
+        {
+          "in": "101\n",
+          "out": "The result is:y=10177\n"
+        }
+      ]
     },
     {
       "id": "G02",
@@ -54,7 +88,21 @@
       ],
       "hint": "结果初值取 1，然后循环 n 次、每轮乘一次 x；因为 n = 0 时循环一次都不执行，初值 1 正好是正确答案。",
       "pitfalls": "初值写成 0 会让结果永远是 0；n = 0 时要能直接返回 1；本题保证幂不超过 int 范围，更大的数据要换 long long。",
-      "solution": "#include <stdio.h>\n\n/* 返回 x 的 n 次幂（n >= 0） */\nint mypow(int x, int n)\n{\n    int result = 1;\n\n    while (n > 0) {\n        result *= x;\n        n--;\n    }\n    return result;\n}\n\nint main(void)\n{\n    int x, n;\n\n    scanf(\"%d%d\", &x, &n);\n    printf(\"%d\\n\", mypow(x, n));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 返回 x 的 n 次幂（n >= 0） */\nint mypow(int x, int n)\n{\n    int result = 1;\n\n    while (n > 0) {\n        result *= x;\n        n--;\n    }\n    return result;\n}\n\nint main(void)\n{\n    int x, n;\n\n    scanf(\"%d%d\", &x, &n);\n    printf(\"%d\\n\", mypow(x, n));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "100 0\n",
+          "out": "1\n"
+        },
+        {
+          "in": "1 5\n",
+          "out": "1\n"
+        },
+        {
+          "in": "100 3\n",
+          "out": "1000000\n"
+        }
+      ]
     },
     {
       "id": "G03",
@@ -80,7 +128,21 @@
       ],
       "hint": "每做一次 `n /= 10` 位数就加一，直到 n 变成 0；n 最长可达 19 位，必须用 `long long` 存储。",
       "pitfalls": "读入 `long long` 要用 `%lld`，用 `%d` 会截断；遍历用 while (n > 0) 或 do-while，注意别把 0 算成 0 位。",
-      "solution": "#include <stdio.h>\n\n/* 返回正整数 n 的十进制位数 */\nint getDigit(long long n)\n{\n    int len = 0;\n\n    do {\n        len++;\n        n /= 10;\n    } while (n > 0);\n    return len;\n}\n\nint main(void)\n{\n    long long n;\n    int len;\n\n    scanf(\"%lld\", &n);\n    len = getDigit(n);\n    if (len > 1) {\n        printf(\"The integer %lld has %d digits.\\n\", n, len);\n    } else {\n        printf(\"The integer %lld has %d digit.\\n\", n, len);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 返回正整数 n 的十进制位数 */\nint getDigit(long long n)\n{\n    int len = 0;\n\n    do {\n        len++;\n        n /= 10;\n    } while (n > 0);\n    return len;\n}\n\nint main(void)\n{\n    long long n;\n    int len;\n\n    scanf(\"%lld\", &n);\n    len = getDigit(n);\n    if (len > 1) {\n        printf(\"The integer %lld has %d digits.\\n\", n, len);\n    } else {\n        printf(\"The integer %lld has %d digit.\\n\", n, len);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1000000000000000000\n",
+          "out": "The integer 1000000000000000000 has 19 digits.\n"
+        },
+        {
+          "in": "10\n",
+          "out": "The integer 10 has 2 digits.\n"
+        },
+        {
+          "in": "1\n",
+          "out": "The integer 1 has 1 digit.\n"
+        }
+      ]
     },
     {
       "id": "G04",
@@ -106,7 +168,21 @@
       ],
       "hint": "一边取末位一边拼结果：`r = r * 10 + n % 10;`，再 `n /= 10;`，循环到 n 为 0 结束。",
       "pitfalls": "不要借字符串或数组实现（本题考的是数位分离）；累乘时要保证反转结果仍在 int 范围内。",
-      "solution": "#include <stdio.h>\n\n/* 返回正整数 n 反转后的数 */\nint reverseNum(int n)\n{\n    int r = 0;\n\n    while (n > 0) {\n        r = r * 10 + n % 10;\n        n /= 10;\n    }\n    return r;\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"The reverse form of number %d is %d.\\n\", n, reverseNum(n));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 返回正整数 n 反转后的数 */\nint reverseNum(int n)\n{\n    int r = 0;\n\n    while (n > 0) {\n        r = r * 10 + n % 10;\n        n /= 10;\n    }\n    return r;\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"The reverse form of number %d is %d.\\n\", n, reverseNum(n));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1\n",
+          "out": "The reverse form of number 1 is 1.\n"
+        },
+        {
+          "in": "1000001\n",
+          "out": "The reverse form of number 1000001 is 1000001.\n"
+        },
+        {
+          "in": "999999999\n",
+          "out": "The reverse form of number 999999999 is 999999999.\n"
+        }
+      ]
     },
     {
       "id": "G05",
@@ -136,7 +212,25 @@
       ],
       "hint": "先把三边升序排好，让 c 最大；再依次判断：任意两边之和不大于第三边（不是三角形）→ 三边相等 → a*a + b*b == c*c（直角）→ 有一对边相等（等腰）→ 否则一般三角形。",
       "pitfalls": "不排序就写 `a + b > c` 会误判；先判等腰会把等边判成等腰；边长不超过 10000，平方用 int 也不会溢出。",
-      "solution": "#include <stdio.h>\n\n/* 把三个整数按升序整理（通过指针修改调用者的变量） */\nstatic void sort3(int *a, int *b, int *c)\n{\n    int t;\n\n    if (*a > *b) {\n        t = *a;\n        *a = *b;\n        *b = t;\n    }\n    if (*b > *c) {\n        t = *b;\n        *b = *c;\n        *c = t;\n    }\n    if (*a > *b) {\n        t = *a;\n        *a = *b;\n        *b = t;\n    }\n}\n\n/* -1：不是三角形；0：一般三角形；1：直角；2：等腰；3：等边 */\nint judgeTriangle(int a, int b, int c)\n{\n    sort3(&a, &b, &c);\n    if (a <= 0 || a + b <= c) {\n        return -1;\n    }\n    if (a == c) {\n        return 3;\n    }\n    if (a * a + b * b == c * c) {\n        return 1;\n    }\n    if (a == b || b == c) {\n        return 2;\n    }\n    return 0;\n}\n\nint main(void)\n{\n    int a, b, c;\n\n    scanf(\"%d%d%d\", &a, &b, &c);\n    switch (judgeTriangle(a, b, c)) {\n    case -1:\n        printf(\"It is not a triangle.\\n\");\n        break;\n    case 0:\n        printf(\"It is a scalenous triangle.\\n\");\n        break;\n    case 1:\n        printf(\"It is a right-angled triangle.\\n\");\n        break;\n    case 2:\n        printf(\"It is an isosceles triangle.\\n\");\n        break;\n    case 3:\n        printf(\"It is a equilateral triangle.\\n\");\n        break;\n    default:\n        break;\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 把三个整数按升序整理（通过指针修改调用者的变量） */\nstatic void sort3(int *a, int *b, int *c)\n{\n    int t;\n\n    if (*a > *b) {\n        t = *a;\n        *a = *b;\n        *b = t;\n    }\n    if (*b > *c) {\n        t = *b;\n        *b = *c;\n        *c = t;\n    }\n    if (*a > *b) {\n        t = *a;\n        *a = *b;\n        *b = t;\n    }\n}\n\n/* -1：不是三角形；0：一般三角形；1：直角；2：等腰；3：等边 */\nint judgeTriangle(int a, int b, int c)\n{\n    sort3(&a, &b, &c);\n    if (a <= 0 || a + b <= c) {\n        return -1;\n    }\n    if (a == c) {\n        return 3;\n    }\n    if (a * a + b * b == c * c) {\n        return 1;\n    }\n    if (a == b || b == c) {\n        return 2;\n    }\n    return 0;\n}\n\nint main(void)\n{\n    int a, b, c;\n\n    scanf(\"%d%d%d\", &a, &b, &c);\n    switch (judgeTriangle(a, b, c)) {\n    case -1:\n        printf(\"It is not a triangle.\\n\");\n        break;\n    case 0:\n        printf(\"It is a scalenous triangle.\\n\");\n        break;\n    case 1:\n        printf(\"It is a right-angled triangle.\\n\");\n        break;\n    case 2:\n        printf(\"It is an isosceles triangle.\\n\");\n        break;\n    case 3:\n        printf(\"It is a equilateral triangle.\\n\");\n        break;\n    default:\n        break;\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "5 5 5\n",
+          "out": "It is a equilateral triangle.\n"
+        },
+        {
+          "in": "2 3 4\n",
+          "out": "It is a scalenous triangle.\n"
+        },
+        {
+          "in": "3 4 5\n",
+          "out": "It is a right-angled triangle.\n"
+        },
+        {
+          "in": "6 8 10\n",
+          "out": "It is a right-angled triangle.\n"
+        }
+      ]
     },
     {
       "id": "G06",
@@ -162,7 +256,17 @@
       ],
       "hint": "`swapByValue` 里怎么换都不会影响实参；`swapByPtr` 里要用 `*a`、`*b` 交换它们指向的内容，调用时写 `swapByPtr(&x, &y)`。",
       "pitfalls": "`swapByPtr` 里写成 `int t = a;` 交换的是两个地址的值，形参类型是 int*，改成 int 会编译报错；调用时别漏掉 `&`。",
-      "solution": "#include <stdio.h>\n\n/* 值传递：交换的只是形参副本，不影响调用者 */\nvoid swapByValue(int a, int b)\n{\n    int t;\n\n    t = a;\n    a = b;\n    b = t;\n}\n\n/* 地址传递：通过指针交换调用者的两个变量 */\nvoid swapByPtr(int *a, int *b)\n{\n    int t;\n\n    t = *a;\n    *a = *b;\n    *b = t;\n}\n\nint main(void)\n{\n    int x, y;\n\n    scanf(\"%d%d\", &x, &y);\n    printf(\"before: x=%d y=%d\\n\", x, y);\n\n    swapByValue(x, y);\n    printf(\"after swapByValue: x=%d y=%d\\n\", x, y);\n\n    swapByPtr(&x, &y);\n    printf(\"after swapByPtr: x=%d y=%d\\n\", x, y);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 值传递：交换的只是形参副本，不影响调用者 */\nvoid swapByValue(int a, int b)\n{\n    int t;\n\n    t = a;\n    a = b;\n    b = t;\n}\n\n/* 地址传递：通过指针交换调用者的两个变量 */\nvoid swapByPtr(int *a, int *b)\n{\n    int t;\n\n    t = *a;\n    *a = *b;\n    *b = t;\n}\n\nint main(void)\n{\n    int x, y;\n\n    scanf(\"%d%d\", &x, &y);\n    printf(\"before: x=%d y=%d\\n\", x, y);\n\n    swapByValue(x, y);\n    printf(\"after swapByValue: x=%d y=%d\\n\", x, y);\n\n    swapByPtr(&x, &y);\n    printf(\"after swapByPtr: x=%d y=%d\\n\", x, y);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "-1 -1\n",
+          "out": "before: x=-1 y=-1\nafter swapByValue: x=-1 y=-1\nafter swapByPtr: x=-1 y=-1\n"
+        },
+        {
+          "in": "1000000000 -1000000000\n",
+          "out": "before: x=1000000000 y=-1000000000\nafter swapByValue: x=1000000000 y=-1000000000\nafter swapByPtr: x=-1000000000 y=1000000000\n"
+        }
+      ]
     },
     {
       "id": "G07",
@@ -188,7 +292,41 @@
       ],
       "hint": "先令 `*maxVal = *minVal = a[0]`、两个下标都置 0，再从下标 1 开始扫；只有严格大于 / 严格小于时才更新，所以留下的就是首次出现的位置。",
       "pitfalls": "用 `>=`、`<=` 更新会取到最后一个极值的下标；调用时忘记传 `&` 会让程序崩溃；`const int a[]` 与 `int a[]` 等价传递。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\n/* 求最大值、最小值及其首次出现的下标（下标从 0 开始） */\nvoid findExtremes(const int a[], int n, int *maxVal, int *maxIdx,\n                  int *minVal, int *minIdx)\n{\n    int i;\n\n    *maxVal = a[0];\n    *minVal = a[0];\n    *maxIdx = 0;\n    *minIdx = 0;\n    for (i = 1; i < n; i++) {\n        if (a[i] > *maxVal) {\n            *maxVal = a[i];\n            *maxIdx = i;\n        }\n        if (a[i] < *minVal) {\n            *minVal = a[i];\n            *minIdx = i;\n        }\n    }\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int maxVal, minVal, maxIdx, minIdx;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    findExtremes(a, n, &maxVal, &maxIdx, &minVal, &minIdx);\n    printf(\"max=%d index=%d\\n\", maxVal, maxIdx);\n    printf(\"min=%d index=%d\\n\", minVal, minIdx);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\n/* 求最大值、最小值及其首次出现的下标（下标从 0 开始） */\nvoid findExtremes(const int a[], int n, int *maxVal, int *maxIdx,\n                  int *minVal, int *minIdx)\n{\n    int i;\n\n    *maxVal = a[0];\n    *minVal = a[0];\n    *maxIdx = 0;\n    *minIdx = 0;\n    for (i = 1; i < n; i++) {\n        if (a[i] > *maxVal) {\n            *maxVal = a[i];\n            *maxIdx = i;\n        }\n        if (a[i] < *minVal) {\n            *minVal = a[i];\n            *minIdx = i;\n        }\n    }\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int maxVal, minVal, maxIdx, minIdx;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    findExtremes(a, n, &maxVal, &maxIdx, &minVal, &minIdx);\n    printf(\"max=%d index=%d\\n\", maxVal, maxIdx);\n    printf(\"min=%d index=%d\\n\", minVal, minIdx);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3\n5 5 5\n",
+          "out": "max=5 index=0\nmin=5 index=0\n"
+        },
+        {
+          "in": "4\n-1 -1 7 -1\n",
+          "out": "max=7 index=2\nmin=-1 index=0\n"
+        },
+        {
+          "in": "7\n8 -19 20 -15 19 -8 -5\n",
+          "out": "max=20 index=2\nmin=-19 index=1\n"
+        },
+        {
+          "in": "7\n-19 -15 -8 -5 8 19 20\n",
+          "out": "max=20 index=6\nmin=-19 index=0\n"
+        },
+        {
+          "in": "7\n20 19 8 -5 -8 -15 -19\n",
+          "out": "max=20 index=0\nmin=-19 index=6\n"
+        },
+        {
+          "in": "20\n6 12 -19 -13 -9 -11 -4 -6 8 19 2 19 -20 -17 6 2 -3 -18 1 15\n",
+          "out": "max=19 index=9\nmin=-20 index=12\n"
+        },
+        {
+          "in": "20\n-20 -19 -18 -17 -13 -11 -9 -6 -4 -3 1 2 2 6 6 8 12 15 19 19\n",
+          "out": "max=19 index=18\nmin=-20 index=0\n"
+        },
+        {
+          "in": "20\n19 19 15 12 8 6 6 2 2 1 -3 -4 -6 -9 -11 -13 -17 -18 -19 -20\n",
+          "out": "max=19 index=0\nmin=-20 index=19\n"
+        }
+      ]
     },
     {
       "id": "G08",
@@ -214,7 +352,25 @@
       ],
       "hint": "先用 `/` 和 `%` 把 4 位整数拆成 4 个数字，再拼回去；加密分两步：先每位加 5 取余，再交换第 1/3 位和第 2/4 位。解密就把这两步按相反顺序做一遍。",
       "pitfalls": "加 5 取余与交换位置的先后顺序不能乱，解密必须严格反过来；拼回整数时权值别搞混（千位是乘 1000）；直接数位分离比按字符串处理更稳。",
-      "solution": "#include <stdio.h>\n\n/* 把 4 位整数拆成 4 个数字，下标 0 为千位 */\nstatic void split4(int n, int d[4])\n{\n    d[0] = n / 1000 % 10;\n    d[1] = n / 100 % 10;\n    d[2] = n / 10 % 10;\n    d[3] = n % 10;\n}\n\n/* 把 4 个数字拼回 4 位整数 */\nstatic int join4(const int d[4])\n{\n    return d[0] * 1000 + d[1] * 100 + d[2] * 10 + d[3];\n}\n\n/* 每位加 5 再对 10 取余 */\nstatic void addFive(const int in[4], int out[4])\n{\n    int i;\n\n    for (i = 0; i < 4; i++) {\n        out[i] = (in[i] + 5) % 10;\n    }\n}\n\n/* 第 1、3 位交换，第 2、4 位交换 */\nstatic void swapPlaces(const int in[4], int out[4])\n{\n    out[0] = in[2];\n    out[1] = in[3];\n    out[2] = in[0];\n    out[3] = in[1];\n}\n\n/* 加密：先每位加 5 取余，再交换位置 */\nint encrypt(int n)\n{\n    int d[4], e[4], s[4];\n\n    split4(n, d);\n    addFive(d, e);\n    swapPlaces(e, s);\n    return join4(s);\n}\n\n/* 解密：先把位置换回来，再每位加 5 取余 */\nint decrypt(int n)\n{\n    int d[4], s[4], e[4];\n\n    split4(n, d);\n    swapPlaces(d, s);\n    addFive(s, e);\n    return join4(e);\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"encrypted=%d\\n\", encrypt(n));\n    printf(\"decrypted=%d\\n\", decrypt(encrypt(n)));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 把 4 位整数拆成 4 个数字，下标 0 为千位 */\nstatic void split4(int n, int d[4])\n{\n    d[0] = n / 1000 % 10;\n    d[1] = n / 100 % 10;\n    d[2] = n / 10 % 10;\n    d[3] = n % 10;\n}\n\n/* 把 4 个数字拼回 4 位整数 */\nstatic int join4(const int d[4])\n{\n    return d[0] * 1000 + d[1] * 100 + d[2] * 10 + d[3];\n}\n\n/* 每位加 5 再对 10 取余 */\nstatic void addFive(const int in[4], int out[4])\n{\n    int i;\n\n    for (i = 0; i < 4; i++) {\n        out[i] = (in[i] + 5) % 10;\n    }\n}\n\n/* 第 1、3 位交换，第 2、4 位交换 */\nstatic void swapPlaces(const int in[4], int out[4])\n{\n    out[0] = in[2];\n    out[1] = in[3];\n    out[2] = in[0];\n    out[3] = in[1];\n}\n\n/* 加密：先每位加 5 取余，再交换位置 */\nint encrypt(int n)\n{\n    int d[4], e[4], s[4];\n\n    split4(n, d);\n    addFive(d, e);\n    swapPlaces(e, s);\n    return join4(s);\n}\n\n/* 解密：先把位置换回来，再每位加 5 取余 */\nint decrypt(int n)\n{\n    int d[4], s[4], e[4];\n\n    split4(n, d);\n    swapPlaces(d, s);\n    addFive(s, e);\n    return join4(e);\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"encrypted=%d\\n\", encrypt(n));\n    printf(\"decrypted=%d\\n\", decrypt(encrypt(n)));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1000\n",
+          "out": "encrypted=5565\ndecrypted=1000\n"
+        },
+        {
+          "in": "5123\n",
+          "out": "encrypted=7806\ndecrypted=5123\n"
+        },
+        {
+          "in": "1111\n",
+          "out": "encrypted=6666\ndecrypted=1111\n"
+        },
+        {
+          "in": "9999\n",
+          "out": "encrypted=4444\ndecrypted=9999\n"
+        }
+      ]
     },
     {
       "id": "G09",
@@ -240,7 +396,21 @@
       ],
       "hint": "把定义式直接翻译成代码：`n <= 0` 时返回 0，否则 `return fuc(n - 1) + (long long)n * n * n;`，递归出口就是 n = 0。",
       "pitfalls": "出口写成 n == 1 会让 n = 0 的情况无限递归；不要在递归里用全局变量累加（题目明确禁止）；`n*n*n` 在 n = 200 时是 8*10^6，注意用 long long 返回。",
-      "solution": "#include <stdio.h>\n\n/* f(0) = 0，f(n) = f(n-1) + n 的三次方 */\nlong long fuc(int n)\n{\n    if (n <= 0) {\n        return 0;\n    }\n    return fuc(n - 1) + (long long)n * n * n;\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"%lld\\n\", fuc(n));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* f(0) = 0，f(n) = f(n-1) + n 的三次方 */\nlong long fuc(int n)\n{\n    if (n <= 0) {\n        return 0;\n    }\n    return fuc(n - 1) + (long long)n * n * n;\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"%lld\\n\", fuc(n));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "0\n",
+          "out": "0\n"
+        },
+        {
+          "in": "1\n",
+          "out": "1\n"
+        },
+        {
+          "in": "200\n",
+          "out": "404010000\n"
+        }
+      ]
     },
     {
       "id": "G10",
@@ -266,7 +436,21 @@
       ],
       "hint": "递归体只有两行：`if (b == 0) return a; return gcd(b, a % b);`；最小公倍数 = a / gcd * b。",
       "pitfalls": "先乘后除在 a、b 接近 10^9 时结果可达 10^18，用 int 一定溢出；gcd 的出口是 b == 0，不是 a == b。",
-      "solution": "#include <stdio.h>\n\n/* 辗转相除递归求最大公约数 */\nlong long gcd(long long a, long long b)\n{\n    if (b == 0) {\n        return a;\n    }\n    return gcd(b, a % b);\n}\n\nint main(void)\n{\n    long long a, b, g;\n\n    scanf(\"%lld%lld\", &a, &b);\n    g = gcd(a, b);\n    printf(\"%lld\\n\", g);\n    printf(\"%lld\\n\", a / g * b);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 辗转相除递归求最大公约数 */\nlong long gcd(long long a, long long b)\n{\n    if (b == 0) {\n        return a;\n    }\n    return gcd(b, a % b);\n}\n\nint main(void)\n{\n    long long a, b, g;\n\n    scanf(\"%lld%lld\", &a, &b);\n    g = gcd(a, b);\n    printf(\"%lld\\n\", g);\n    printf(\"%lld\\n\", a / g * b);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1000000000 999999999\n",
+          "out": "1\n999999999000000000\n"
+        },
+        {
+          "in": "1 1\n",
+          "out": "1\n1\n"
+        },
+        {
+          "in": "999999999 3\n",
+          "out": "3\n999999999\n"
+        }
+      ]
     },
     {
       "id": "G11",
@@ -296,7 +480,21 @@
       ],
       "hint": "第一步从左到右累加：`value = value * n + (number % 10)` 需要从最高位开始，所以也可以从右往左用 `digit * n 的幂` 累加；第二步用 `result += (value % m) * place; value /= m; place *= 10;`。",
       "pitfalls": "第一步乘的是 n（源进制），第二步拼结果时权值每次乘 10（因为结果是用十进制数字序列表示的）；number 是「数字序列」而不是十进制数，不要当成十进制直接转换。",
-      "solution": "#include <stdio.h>\n\n/* 把 n 进制的 number 转换成 m 进制并返回（2 <= n, m <= 10） */\nint numConvert(int number, int n, int m)\n{\n    int decimal = 0;\n    int base = 1;\n    int result = 0;\n    int place = 1;\n    int digit;\n\n    while (number > 0) {\n        digit = number % 10;\n        decimal += digit * base;\n        base *= n;\n        number /= 10;\n    }\n    while (decimal > 0) {\n        result += (decimal % m) * place;\n        place *= 10;\n        decimal /= m;\n    }\n    return result;\n}\n\nint main(void)\n{\n    int number, n, m;\n\n    scanf(\"%d%d%d\", &number, &n, &m);\n    printf(\"%d\\n\", numConvert(number, n, m));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 把 n 进制的 number 转换成 m 进制并返回（2 <= n, m <= 10） */\nint numConvert(int number, int n, int m)\n{\n    int decimal = 0;\n    int base = 1;\n    int result = 0;\n    int place = 1;\n    int digit;\n\n    while (number > 0) {\n        digit = number % 10;\n        decimal += digit * base;\n        base *= n;\n        number /= 10;\n    }\n    while (decimal > 0) {\n        result += (decimal % m) * place;\n        place *= 10;\n        decimal /= m;\n    }\n    return result;\n}\n\nint main(void)\n{\n    int number, n, m;\n\n    scanf(\"%d%d%d\", &number, &n, &m);\n    printf(\"%d\\n\", numConvert(number, n, m));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "100 10 2\n",
+          "out": "1100100\n"
+        },
+        {
+          "in": "1 2 9\n",
+          "out": "1\n"
+        },
+        {
+          "in": "1010 2 8\n",
+          "out": "12\n"
+        }
+      ]
     },
     {
       "id": "G12",
@@ -322,7 +520,17 @@
       ],
       "hint": "先写出递归定义式 S(0) = 1 + a、S(k) = S(k-1) + a^(k+1)，再写一个递归的求幂函数 a^e（出口 e = 0 返回 1）；两个递归都要有明确的出口。",
       "pitfalls": "出口写成 n == 1 会漏掉 n = 0 的情况；最高次是 n+1 次而不是 n 次，别多数或少数一项；a = 4、n = 12 时结果接近 9*10^7，仍在 int 范围内。",
-      "solution": "#include <stdio.h>\n\n/* 递归求 a 的 e 次幂 */\nstatic int powerRec(int a, int e)\n{\n    if (e == 0) {\n        return 1;\n    }\n    return a * powerRec(a, e - 1);\n}\n\n/* 递归求 s = 1 + a + a^2 + ... + a^(n+1) */\nint evaluation(int n, int a)\n{\n    if (n == 0) {\n        return 1 + a;\n    }\n    return evaluation(n - 1, a) + powerRec(a, n + 1);\n}\n\nint main(void)\n{\n    int n, a;\n\n    scanf(\"%d%d\", &n, &a);\n    printf(\"%d\\n\", evaluation(n, a));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 递归求 a 的 e 次幂 */\nstatic int powerRec(int a, int e)\n{\n    if (e == 0) {\n        return 1;\n    }\n    return a * powerRec(a, e - 1);\n}\n\n/* 递归求 s = 1 + a + a^2 + ... + a^(n+1) */\nint evaluation(int n, int a)\n{\n    if (n == 0) {\n        return 1 + a;\n    }\n    return evaluation(n - 1, a) + powerRec(a, n + 1);\n}\n\nint main(void)\n{\n    int n, a;\n\n    scanf(\"%d%d\", &n, &a);\n    printf(\"%d\\n\", evaluation(n, a));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "12 4\n",
+          "out": "89478485\n"
+        },
+        {
+          "in": "1 4\n",
+          "out": "21\n"
+        }
+      ]
     },
     {
       "id": "G13",
@@ -348,7 +556,21 @@
       ],
       "hint": "从 d = p 开始往上找能整除 n 的最小数 d（它一定是素数）；如果一直找到 d*d > n，说明剩下的 n 自己就是素数，可以直接输出。输出 d 之后，只要 n/d > 1 就先输出 `*` 再递归调用 printFactor(n/d, d)；顶层调用（p 传 1）负责输出 `n=` 和行末换行。",
       "pitfalls": "等号后面每个因子之间都要有 `*`，第一个因子前面不能有；n = 1 要特判输出 `1=1`，否则会打出空等号；判断 `d*d > n` 时 d 最大到 n 的平方根，注意别写成 `d > n` 导致漏掉因子。",
-      "solution": "#include <stdio.h>\n\n/* 打印 n 的素数分解式。\n   参数 p 表示起始试除因子：主程序调用时传 1（此时由本层输出 \"n=\" 和行末换行），\n   递归调用时传刚找到的素因子 d（此后不再重复输出 \"n=\"）。 */\nvoid printFactor(int n, int p)\n{\n    int d;\n\n    if (n == 1 && p < 2) {\n        printf(\"1=1\\n\");\n        return;\n    }\n    d = (p < 2) ? 2 : p;\n    while ((long long)d * d <= n && n % d != 0) {\n        d++;\n    }\n    if ((long long)d * d > n) {\n        d = n;            /* 剩下的 n 本身就是素数 */\n    }\n    if (p < 2) {\n        printf(\"%d=\", n);\n    }\n    printf(\"%d\", d);\n    if (n / d > 1) {\n        printf(\"*\");\n        printFactor(n / d, d);\n    }\n    if (p < 2) {\n        printf(\"\\n\");\n    }\n}\n\nint main(void)\n{\n    int a, b, i;\n\n    scanf(\"%d%d\", &a, &b);\n    for (i = a; i <= b; i++) {\n        printFactor(i, 1);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 打印 n 的素数分解式。\n   参数 p 表示起始试除因子：主程序调用时传 1（此时由本层输出 \"n=\" 和行末换行），\n   递归调用时传刚找到的素因子 d（此后不再重复输出 \"n=\"）。 */\nvoid printFactor(int n, int p)\n{\n    int d;\n\n    if (n == 1 && p < 2) {\n        printf(\"1=1\\n\");\n        return;\n    }\n    d = (p < 2) ? 2 : p;\n    while ((long long)d * d <= n && n % d != 0) {\n        d++;\n    }\n    if ((long long)d * d > n) {\n        d = n;            /* 剩下的 n 本身就是素数 */\n    }\n    if (p < 2) {\n        printf(\"%d=\", n);\n    }\n    printf(\"%d\", d);\n    if (n / d > 1) {\n        printf(\"*\");\n        printFactor(n / d, d);\n    }\n    if (p < 2) {\n        printf(\"\\n\");\n    }\n}\n\nint main(void)\n{\n    int a, b, i;\n\n    scanf(\"%d%d\", &a, &b);\n    for (i = a; i <= b; i++) {\n        printFactor(i, 1);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1 1\n",
+          "out": "1=1\n"
+        },
+        {
+          "in": "60 60\n",
+          "out": "60=2*2*3*5\n"
+        },
+        {
+          "in": "2 20\n",
+          "out": "2=2\n3=3\n4=2*2\n5=5\n6=2*3\n7=7\n8=2*2*2\n9=3*3\n10=2*5\n11=11\n12=2*2*3\n13=13\n14=2*7\n15=3*5\n16=2*2*2*2\n17=17\n18=2*3*3\n19=19\n20=2*2*5\n"
+        }
+      ]
     },
     {
       "id": "G14",
@@ -374,7 +596,17 @@
       ],
       "hint": "移动次数就是 2 的 n 次方减 1，用递归 h(n) = 2*h(n-1) + 1 求；步骤打印只需要在两次递归调用之间输出一次 `源->目标`。",
       "pitfalls": "三个参数的「源、目标、辅助」顺序在两次递归里是交换的，写反会导致步骤顺序不对；必须先输出 Total moves 这一行再输出步骤。",
-      "solution": "#include <stdio.h>\n\n/* 递归统计 n 个盘子的最少移动次数：h(0)=0, h(n)=2*h(n-1)+1 */\nstatic long long moveCount(int n)\n{\n    if (n == 0) {\n        return 0;\n    }\n    return 2 * moveCount(n - 1) + 1;\n}\n\n/* 把 n 个盘子从 from 经 via 移到 to，并打印每一步 */\nstatic void hanoi(int n, char from, char to, char via)\n{\n    if (n == 0) {\n        return;\n    }\n    hanoi(n - 1, from, via, to);\n    printf(\"%c->%c\\n\", from, to);\n    hanoi(n - 1, via, to, from);\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"Total moves: %lld\\n\", moveCount(n));\n    hanoi(n, 'A', 'C', 'B');\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 递归统计 n 个盘子的最少移动次数：h(0)=0, h(n)=2*h(n-1)+1 */\nstatic long long moveCount(int n)\n{\n    if (n == 0) {\n        return 0;\n    }\n    return 2 * moveCount(n - 1) + 1;\n}\n\n/* 把 n 个盘子从 from 经 via 移到 to，并打印每一步 */\nstatic void hanoi(int n, char from, char to, char via)\n{\n    if (n == 0) {\n        return;\n    }\n    hanoi(n - 1, from, via, to);\n    printf(\"%c->%c\\n\", from, to);\n    hanoi(n - 1, via, to, from);\n}\n\nint main(void)\n{\n    int n;\n\n    scanf(\"%d\", &n);\n    printf(\"Total moves: %lld\\n\", moveCount(n));\n    hanoi(n, 'A', 'C', 'B');\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "10\n",
+          "out": "Total moves: 1023\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nC->B\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nB->A\nC->A\nC->B\nA->B\nC->A\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\n"
+        },
+        {
+          "in": "2\n",
+          "out": "Total moves: 3\nA->B\nA->C\nB->C\n"
+        }
+      ]
     },
     {
       "id": "G15",
@@ -404,7 +636,21 @@
       ],
       "hint": "递归算出 `b^(e/2) mod m` 后平方再 `% m`，若 e 是奇数再乘一个 `b % m`；指数每层减半，递归深度只有 60 左右。",
       "pitfalls": "`half * half` 两个因子都小于 10^9，乘积能到 10^18，必须用 long long；e = 0 时返回 `1 % m`（m = 1 的答案是 0），不要直接写 return 1。",
-      "solution": "#include <stdio.h>\n\n/* 递归快速幂：返回 (b^e) mod m */\nlong long powerMod(long long b, long long e, long long m)\n{\n    long long half, r;\n\n    if (e == 0) {\n        return 1 % m;\n    }\n    half = powerMod(b, e / 2, m);\n    r = half * half % m;\n    if (e % 2 == 1) {\n        r = r * (b % m) % m;\n    }\n    return r;\n}\n\nint main(void)\n{\n    long long b, e, m;\n\n    scanf(\"%lld%lld%lld\", &b, &e, &m);\n    printf(\"%lld\\n\", powerMod(b, e, m));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n/* 递归快速幂：返回 (b^e) mod m */\nlong long powerMod(long long b, long long e, long long m)\n{\n    long long half, r;\n\n    if (e == 0) {\n        return 1 % m;\n    }\n    half = powerMod(b, e / 2, m);\n    r = half * half % m;\n    if (e % 2 == 1) {\n        r = r * (b % m) % m;\n    }\n    return r;\n}\n\nint main(void)\n{\n    long long b, e, m;\n\n    scanf(\"%lld%lld%lld\", &b, &e, &m);\n    printf(\"%lld\\n\", powerMod(b, e, m));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "0 0 1\n",
+          "out": "0\n"
+        },
+        {
+          "in": "1000000000 1000000000 1000000000\n",
+          "out": "0\n"
+        },
+        {
+          "in": "5 0 1000000000\n",
+          "out": "1\n"
+        }
+      ]
     },
     {
       "id": "G16",
@@ -430,7 +676,21 @@
       ],
       "hint": "递归函数只带一个参数 depth（当前填到第几个位置）：depth == n 时输出整个排列并 return；否则 for 循环从 1 到 n，遇到没用过的数字就占位、递归、再回溯清标记。",
       "pitfalls": "递归返回后一定要把 used 清 0，否则后面的分支会少数字；输出时最后一个数字后不要多打空格；n = 8 有 40320 行，别用字符串拼接再输出。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 10\n\nstatic int n;\nstatic int used[MAXN];\nstatic int perm[MAXN];\n\n/* 递归按字典序输出 1..n 的全排列 */\nstatic void dfs(int depth)\n{\n    int i;\n\n    if (depth == n) {\n        for (i = 0; i < n; i++) {\n            printf(\"%d\", perm[i]);\n            if (i != n - 1) {\n                printf(\" \");\n            }\n        }\n        printf(\"\\n\");\n        return;\n    }\n    for (i = 1; i <= n; i++) {\n        if (!used[i]) {\n            used[i] = 1;\n            perm[depth] = i;\n            dfs(depth + 1);\n            used[i] = 0;\n        }\n    }\n}\n\nint main(void)\n{\n    scanf(\"%d\", &n);\n    dfs(0);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 10\n\nstatic int n;\nstatic int used[MAXN];\nstatic int perm[MAXN];\n\n/* 递归按字典序输出 1..n 的全排列 */\nstatic void dfs(int depth)\n{\n    int i;\n\n    if (depth == n) {\n        for (i = 0; i < n; i++) {\n            printf(\"%d\", perm[i]);\n            if (i != n - 1) {\n                printf(\" \");\n            }\n        }\n        printf(\"\\n\");\n        return;\n    }\n    for (i = 1; i <= n; i++) {\n        if (!used[i]) {\n            used[i] = 1;\n            perm[depth] = i;\n            dfs(depth + 1);\n            used[i] = 0;\n        }\n    }\n}\n\nint main(void)\n{\n    scanf(\"%d\", &n);\n    dfs(0);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1\n",
+          "out": "1\n"
+        },
+        {
+          "in": "4\n",
+          "out": "1 2 3 4\n1 2 4 3\n1 3 2 4\n1 3 4 2\n1 4 2 3\n1 4 3 2\n2 1 3 4\n2 1 4 3\n2 3 1 4\n2 3 4 1\n2 4 1 3\n2 4 3 1\n3 1 2 4\n3 1 4 2\n3 2 1 4\n3 2 4 1\n3 4 1 2\n3 4 2 1\n4 1 2 3\n4 1 3 2\n4 2 1 3\n4 2 3 1\n4 3 1 2\n4 3 2 1\n"
+        },
+        {
+          "in": "5\n",
+          "out": "1 2 3 4 5\n1 2 3 5 4\n1 2 4 3 5\n1 2 4 5 3\n1 2 5 3 4\n1 2 5 4 3\n1 3 2 4 5\n1 3 2 5 4\n1 3 4 2 5\n1 3 4 5 2\n1 3 5 2 4\n1 3 5 4 2\n1 4 2 3 5\n1 4 2 5 3\n1 4 3 2 5\n1 4 3 5 2\n1 4 5 2 3\n1 4 5 3 2\n1 5 2 3 4\n1 5 2 4 3\n1 5 3 2 4\n1 5 3 4 2\n1 5 4 2 3\n1 5 4 3 2\n2 1 3 4 5\n2 1 3 5 4\n2 1 4 3 5\n2 1 4 5 3\n2 1 5 3 4\n2 1 5 4 3\n2 3 1 4 5\n2 3 1 5 4\n2 3 4 1 5\n2 3 4 5 1\n2 3 5 1 4\n2 3 5 4 1\n2 4 1 3 5\n2 4 1 5 3\n2 4 3 1 5\n2 4 3 5 1\n2 4 5 1 3\n2 4 5 3 1\n2 5 1 3 4\n2 5 1 4 3\n2 5 3 1 4\n2 5 3 4 1\n2 5 4 1 3\n2 5 4 3 1\n3 1 2 4 5\n3 1 2 5 4\n3 1 4 2 5\n3 1 4 5 2\n3 1 5 2 4\n3 1 5 4 2\n3 2 1 4 5\n3 2 1 5 4\n3 2 4 1 5\n3 2 4 5 1\n3 2 5 1 4\n3 2 5 4 1\n3 4 1 2 5\n3 4 1 5 2\n3 4 2 1 5\n3 4 2 5 1\n3 4 5 1 2\n3 4 5 2 1\n3 5 1 2 4\n3 5 1 4 2\n3 5 2 1 4\n3 5 2 4 1\n3 5 4 1 2\n3 5 4 2 1\n4 1 2 3 5\n4 1 2 5 3\n4 1 3 2 5\n4 1 3 5 2\n4 1 5 2 3\n4 1 5 3 2\n4 2 1 3 5\n4 2 1 5 3\n4 2 3 1 5\n4 2 3 5 1\n4 2 5 1 3\n4 2 5 3 1\n4 3 1 2 5\n4 3 1 5 2\n4 3 2 1 5\n4 3 2 5 1\n4 3 5 1 2\n4 3 5 2 1\n4 5 1 2 3\n4 5 1 3 2\n4 5 2 1 3\n4 5 2 3 1\n4 5 3 1 2\n4 5 3 2 1\n5 1 2 3 4\n5 1 2 4 3\n5 1 3 2 4\n5 1 3 4 2\n5 1 4 2 3\n5 1 4 3 2\n5 2 1 3 4\n5 2 1 4 3\n5 2 3 1 4\n5 2 3 4 1\n5 2 4 1 3\n5 2 4 3 1\n5 3 1 2 4\n5 3 1 4 2\n5 3 2 1 4\n5 3 2 4 1\n5 3 4 1 2\n5 3 4 2 1\n5 4 1 2 3\n5 4 1 3 2\n5 4 2 1 3\n5 4 2 3 1\n5 4 3 1 2\n5 4 3 2 1\n"
+        }
+      ]
     }
   ]
 }

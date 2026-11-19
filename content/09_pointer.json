@@ -24,7 +24,41 @@
       ],
       "hint": "`swap` 的形参是指针，函数内用 `*pa` / `*pb` 读写所指变量；调用时传地址 `&a[i]`。",
       "pitfalls": "写成 `swap(a[0], a[n-1])` 是值传递，交换无效；n = 1 时首尾是同一个元素，交换前后不变。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nvoid swap(int *pa, int *pb)\n{\n    int t = *pa;\n    *pa = *pb;\n    *pb = t;\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    swap(&a[0], &a[n - 1]);\n\n    for (i = 0; i < n; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nvoid swap(int *pa, int *pb)\n{\n    int t = *pa;\n    *pa = *pb;\n    *pb = t;\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    swap(&a[0], &a[n - 1]);\n\n    for (i = 0; i < n; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "2\n-1 3\n",
+          "out": "3 -1\n"
+        },
+        {
+          "in": "4\n1 1 0 2\n",
+          "out": "2 1 0 1\n"
+        },
+        {
+          "in": "7\n-19 -15 49 -43 36 -47 41\n",
+          "out": "41 -15 49 -43 36 -47 -19\n"
+        },
+        {
+          "in": "7\n-47 -43 -19 -15 36 41 49\n",
+          "out": "49 -43 -19 -15 36 41 -47\n"
+        },
+        {
+          "in": "7\n49 41 36 -15 -19 -43 -47\n",
+          "out": "-47 41 36 -15 -19 -43 49\n"
+        },
+        {
+          "in": "20\n-29 21 -32 31 40 10 -30 45 46 35 43 37 31 12 -16 -50 -28 13 36 43\n",
+          "out": "43 21 -32 31 40 10 -30 45 46 35 43 37 31 12 -16 -50 -28 13 36 -29\n"
+        },
+        {
+          "in": "20\n-50 -32 -30 -29 -28 -16 10 12 13 21 31 31 35 36 37 40 43 43 45 46\n",
+          "out": "46 -32 -30 -29 -28 -16 10 12 13 21 31 31 35 36 37 40 43 43 45 -50\n"
+        },
+        {
+          "in": "20\n46 45 43 43 40 37 36 35 31 31 21 13 12 10 -16 -28 -29 -30 -32 -50\n",
+          "out": "-50 45 43 43 40 37 36 35 31 31 21 13 12 10 -16 -28 -29 -30 -32 46\n"
+        }
+      ]
     },
     {
       "id": "P02",
@@ -50,7 +84,41 @@
       ],
       "hint": "用 `best` 记录当前最大元素所在地址，遇到更大值就 `best = p`；下标用 `best - a` 算出。",
       "pitfalls": "比较要用 `>` 而不是 `>=`，否则记录的是最后一次出现；最大值初值取 `*a`，全负数时写 `0` 会错。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int *p, *best;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    best = a;\n    for (p = a + 1; p < a + n; p++) {\n        if (*p > *best)\n            best = p;\n    }\n\n    printf(\"%d %d\\n\", *best, (int)(best - a));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int *p, *best;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    best = a;\n    for (p = a + 1; p < a + n; p++) {\n        if (*p > *best)\n            best = p;\n    }\n\n    printf(\"%d %d\\n\", *best, (int)(best - a));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1\n0\n",
+          "out": "0 0\n"
+        },
+        {
+          "in": "4\n9 -3 9 -3\n",
+          "out": "9 0\n"
+        },
+        {
+          "in": "7\n-34 7 -16 -20 -49 -18 25\n",
+          "out": "25 6\n"
+        },
+        {
+          "in": "7\n-49 -34 -20 -18 -16 7 25\n",
+          "out": "25 6\n"
+        },
+        {
+          "in": "7\n25 7 -16 -18 -20 -34 -49\n",
+          "out": "25 0\n"
+        },
+        {
+          "in": "20\n5 28 23 -22 -21 -13 -33 -19 -50 39 33 -23 41 -49 4 36 46 -5 -24 -42\n",
+          "out": "46 16\n"
+        },
+        {
+          "in": "20\n-50 -49 -42 -33 -24 -23 -22 -21 -19 -13 -5 4 5 23 28 33 36 39 41 46\n",
+          "out": "46 19\n"
+        },
+        {
+          "in": "20\n46 41 39 36 33 28 23 5 4 -5 -13 -19 -21 -22 -23 -24 -33 -42 -49 -50\n",
+          "out": "46 0\n"
+        }
+      ]
     },
     {
       "id": "P03",
@@ -76,7 +144,41 @@
       ],
       "hint": "先遍历一遍把和累加进 `double`，求出平均分；再遍历一遍统计 `*p > avg` 的个数。",
       "pitfalls": "平均分要用浮点类型保存，`sum / n` 两个整数相除会被截断；判断要用 `>` 不能用 `>=`。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i, cnt = 0;\n    int a[MAXN];\n    int *p;\n    double sum = 0.0, avg;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    for (p = a; p < a + n; p++)\n        sum += *p;\n    avg = sum / n;\n\n    for (p = a; p < a + n; p++) {\n        if ((double)*p > avg)\n            cnt++;\n    }\n\n    printf(\"%.2f\\n\", avg);\n    printf(\"%d\\n\", cnt);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nint main(void)\n{\n    int n, i, cnt = 0;\n    int a[MAXN];\n    int *p;\n    double sum = 0.0, avg;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    for (p = a; p < a + n; p++)\n        sum += *p;\n    avg = sum / n;\n\n    for (p = a; p < a + n; p++) {\n        if ((double)*p > avg)\n            cnt++;\n    }\n\n    printf(\"%.2f\\n\", avg);\n    printf(\"%d\\n\", cnt);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3\n0 1 1\n",
+          "out": "0.67\n2\n"
+        },
+        {
+          "in": "1\n7\n",
+          "out": "7.00\n0\n"
+        },
+        {
+          "in": "7\n30 -46 32 -42 -42 41 37\n",
+          "out": "1.43\n4\n"
+        },
+        {
+          "in": "7\n-46 -42 -42 30 32 37 41\n",
+          "out": "1.43\n4\n"
+        },
+        {
+          "in": "7\n41 37 32 30 -42 -42 -46\n",
+          "out": "1.43\n4\n"
+        },
+        {
+          "in": "20\n19 -15 -41 19 36 10 -38 -32 -48 -12 -11 -28 -32 -36 46 -20 33 -1 -19 16\n",
+          "out": "-7.70\n8\n"
+        },
+        {
+          "in": "20\n-48 -41 -38 -36 -32 -32 -28 -20 -19 -15 -12 -11 -1 10 16 19 19 33 36 46\n",
+          "out": "-7.70\n8\n"
+        },
+        {
+          "in": "20\n46 36 33 19 19 16 10 -1 -11 -12 -15 -19 -20 -28 -32 -32 -36 -38 -41 -48\n",
+          "out": "-7.70\n8\n"
+        }
+      ]
     },
     {
       "id": "P04",
@@ -102,7 +204,41 @@
       ],
       "hint": "最大值、最小值的初值都用 `*a`；循环里 `*psum += *p;`，不要忘记 `(*ppos)++` 的括号。",
       "pitfalls": "`*ppos++` 是「先把指针地址加 1」，必须写 `(*ppos)++`；最大值初值写成 0 时全负数用例会出错。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nvoid analyze(const int *a, int n, int *psum, int *pmax, int *pmin, int *ppos)\n{\n    const int *p;\n\n    *psum = 0;\n    *ppos = 0;\n    *pmax = *a;\n    *pmin = *a;\n\n    for (p = a; p < a + n; p++) {\n        *psum += *p;\n        if (*p > *pmax)\n            *pmax = *p;\n        if (*p < *pmin)\n            *pmin = *p;\n        if (*p > 0)\n            (*ppos)++;\n    }\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int sum, maxv, minv, pos;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    analyze(a, n, &sum, &maxv, &minv, &pos);\n\n    printf(\"%d %d %d %d\\n\", sum, maxv, minv, pos);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n\nvoid analyze(const int *a, int n, int *psum, int *pmax, int *pmin, int *ppos)\n{\n    const int *p;\n\n    *psum = 0;\n    *ppos = 0;\n    *pmax = *a;\n    *pmin = *a;\n\n    for (p = a; p < a + n; p++) {\n        *psum += *p;\n        if (*p > *pmax)\n            *pmax = *p;\n        if (*p < *pmin)\n            *pmin = *p;\n        if (*p > 0)\n            (*ppos)++;\n    }\n}\n\nint main(void)\n{\n    int n, i;\n    int a[MAXN];\n    int sum, maxv, minv, pos;\n\n    scanf(\"%d\", &n);\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    analyze(a, n, &sum, &maxv, &minv, &pos);\n\n    printf(\"%d %d %d %d\\n\", sum, maxv, minv, pos);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "1\n-1\n",
+          "out": "-1 -1 -1 0\n"
+        },
+        {
+          "in": "3\n-1 0 1\n",
+          "out": "0 1 -1 1\n"
+        },
+        {
+          "in": "7\n31 3 -6 -40 12 30 -6\n",
+          "out": "24 31 -40 4\n"
+        },
+        {
+          "in": "7\n-40 -6 -6 3 12 30 31\n",
+          "out": "24 31 -40 4\n"
+        },
+        {
+          "in": "7\n31 30 12 3 -6 -6 -40\n",
+          "out": "24 31 -40 4\n"
+        },
+        {
+          "in": "20\n-24 40 22 21 -5 -1 -11 -22 11 3 -20 -30 39 -35 -48 -49 -8 19 36 -13\n",
+          "out": "-75 40 -49 8\n"
+        },
+        {
+          "in": "20\n-49 -48 -35 -30 -24 -22 -20 -13 -11 -8 -5 -1 3 11 19 21 22 36 39 40\n",
+          "out": "-75 40 -49 8\n"
+        },
+        {
+          "in": "20\n40 39 36 22 21 19 11 3 -1 -5 -8 -11 -13 -20 -22 -24 -30 -35 -48 -49\n",
+          "out": "-75 40 -49 8\n"
+        }
+      ]
     },
     {
       "id": "P05",
@@ -128,7 +264,17 @@
       ],
       "hint": "`my_strlen` 里让 `p` 从 `s` 走到 `'\\0'`，返回 `p - s`；`my_strcpy` 循环结束后要补写 `*dst = '\\0'`。",
       "pitfalls": "复制循环退出时没有给目标串补 `'\\0'`，输出会越界读到垃圾字符；`isupper` 等函数的参数要转成 `unsigned char`。",
-      "solution": "#include <stdio.h>\n#include <ctype.h>\n\n#define MAXLEN 105\n\nint my_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n    return (int)(p - s);\n}\n\nvoid my_strcpy(char *dst, const char *src)\n{\n    while (*src != '\\0') {\n        *dst = *src;\n        dst++;\n        src++;\n    }\n    *dst = '\\0';\n}\n\nint main(void)\n{\n    char s[MAXLEN];\n    char copy[MAXLEN];\n    const char *p;\n    int upper = 0, lower = 0, digit = 0;\n\n    if (scanf(\"%100s\", s) != 1)\n        return 0;\n\n    my_strcpy(copy, s);\n\n    for (p = s; *p != '\\0'; p++) {\n        if (isupper((unsigned char)*p))\n            upper++;\n        else if (islower((unsigned char)*p))\n            lower++;\n        else if (isdigit((unsigned char)*p))\n            digit++;\n    }\n\n    printf(\"%d\\n\", my_strlen(s));\n    printf(\"%s\\n\", copy);\n    printf(\"%d %d %d\\n\", upper, lower, digit);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <ctype.h>\n\n#define MAXLEN 105\n\nint my_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n    return (int)(p - s);\n}\n\nvoid my_strcpy(char *dst, const char *src)\n{\n    while (*src != '\\0') {\n        *dst = *src;\n        dst++;\n        src++;\n    }\n    *dst = '\\0';\n}\n\nint main(void)\n{\n    char s[MAXLEN];\n    char copy[MAXLEN];\n    const char *p;\n    int upper = 0, lower = 0, digit = 0;\n\n    if (scanf(\"%100s\", s) != 1)\n        return 0;\n\n    my_strcpy(copy, s);\n\n    for (p = s; *p != '\\0'; p++) {\n        if (isupper((unsigned char)*p))\n            upper++;\n        else if (islower((unsigned char)*p))\n            lower++;\n        else if (isdigit((unsigned char)*p))\n            digit++;\n    }\n\n    printf(\"%d\\n\", my_strlen(s));\n    printf(\"%s\\n\", copy);\n    printf(\"%d %d %d\\n\", upper, lower, digit);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "a\n",
+          "out": "1\na\n0 1 0\n"
+        },
+        {
+          "in": "Aa09\n",
+          "out": "4\nAa09\n1 1 2\n"
+        }
+      ]
     },
     {
       "id": "P06",
@@ -158,7 +304,17 @@
       ],
       "hint": "比较循环的继续条件是 `*p != '\\0' && *p == *q`；循环结束后再判断 `*p == *q` 说明两串相等。",
       "pitfalls": "「abc」与「ab」比较时，短串先遇到 `'\\0'`，要按编码值判断短串更小，不能漏掉这个分支。",
-      "solution": "#include <stdio.h>\n\n#define MAXLEN 105\n\nint my_strcmp(const char *s1, const char *s2)\n{\n    const unsigned char *p = (const unsigned char *)s1;\n    const unsigned char *q = (const unsigned char *)s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return (*p < *q) ? -1 : 1;\n}\n\nint first_diff(const char *s1, const char *s2)\n{\n    const char *p = s1;\n    const char *q = s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return -1;\n    return (int)(p - s1);\n}\n\nint main(void)\n{\n    char s1[MAXLEN], s2[MAXLEN];\n\n    if (scanf(\"%100s\", s1) != 1)\n        return 0;\n    if (scanf(\"%100s\", s2) != 1)\n        return 0;\n\n    printf(\"%d\\n\", my_strcmp(s1, s2));\n    printf(\"%d\\n\", first_diff(s1, s2));\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 105\n\nint my_strcmp(const char *s1, const char *s2)\n{\n    const unsigned char *p = (const unsigned char *)s1;\n    const unsigned char *q = (const unsigned char *)s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return (*p < *q) ? -1 : 1;\n}\n\nint first_diff(const char *s1, const char *s2)\n{\n    const char *p = s1;\n    const char *q = s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return -1;\n    return (int)(p - s1);\n}\n\nint main(void)\n{\n    char s1[MAXLEN], s2[MAXLEN];\n\n    if (scanf(\"%100s\", s1) != 1)\n        return 0;\n    if (scanf(\"%100s\", s2) != 1)\n        return 0;\n\n    printf(\"%d\\n\", my_strcmp(s1, s2));\n    printf(\"%d\\n\", first_diff(s1, s2));\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "ab\nabc\n",
+          "out": "-1\n2\n"
+        },
+        {
+          "in": "Z\na\n",
+          "out": "-1\n0\n"
+        }
+      ]
     },
     {
       "id": "P07",
@@ -184,7 +340,17 @@
       ],
       "hint": "指针走一步判一次：跳过所有空白后若还没到串尾，就记下一个单词首地址，再把该单词后的空白写成 `'\\0'`。",
       "pitfalls": "`fgets` 会把行末 `'\\n'` 也读进来，要把它当空白处理；连续空格若处理不当会多算单词个数。",
-      "solution": "#include <stdio.h>\n\n#define MAXLEN 1005\n#define MAXW 505\n\nint split(char *s, char *words[])\n{\n    int cnt = 0;\n    char *p = s;\n\n    while (*p != '\\0') {\n        while (*p == ' ' || *p == '\\t' || *p == '\\n' || *p == '\\r')\n            p++;\n        if (*p == '\\0')\n            break;\n        if (cnt < MAXW)\n            words[cnt++] = p;\n        while (*p != '\\0' && *p != ' ' && *p != '\\t' && *p != '\\n' && *p != '\\r')\n            p++;\n        if (*p != '\\0') {\n            *p = '\\0';\n            p++;\n        }\n    }\n    return cnt;\n}\n\nint main(void)\n{\n    char text[MAXLEN];\n    char *words[MAXW];\n    int cnt, i;\n\n    if (fgets(text, sizeof text, stdin) == NULL)\n        return 0;\n\n    cnt = split(text, words);\n\n    printf(\"%d\\n\", cnt);\n    for (i = 0; i < cnt; i++)\n        printf(\"%s\\n\", words[i]);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 1005\n#define MAXW 505\n\nint split(char *s, char *words[])\n{\n    int cnt = 0;\n    char *p = s;\n\n    while (*p != '\\0') {\n        while (*p == ' ' || *p == '\\t' || *p == '\\n' || *p == '\\r')\n            p++;\n        if (*p == '\\0')\n            break;\n        if (cnt < MAXW)\n            words[cnt++] = p;\n        while (*p != '\\0' && *p != ' ' && *p != '\\t' && *p != '\\n' && *p != '\\r')\n            p++;\n        if (*p != '\\0') {\n            *p = '\\0';\n            p++;\n        }\n    }\n    return cnt;\n}\n\nint main(void)\n{\n    char text[MAXLEN];\n    char *words[MAXW];\n    int cnt, i;\n\n    if (fgets(text, sizeof text, stdin) == NULL)\n        return 0;\n\n    cnt = split(text, words);\n\n    printf(\"%d\\n\", cnt);\n    for (i = 0; i < cnt; i++)\n        printf(\"%s\\n\", words[i]);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "  a  b c  \n",
+          "out": "3\na\nb\nc\n"
+        },
+        {
+          "in": "x\n",
+          "out": "1\nx\n"
+        }
+      ]
     },
     {
       "id": "P08",
@@ -214,7 +380,17 @@
       ],
       "hint": "主串每个位置都作为起点试一次：设两个临时指针分别走主串和模式串，若模式串走到 `'\\0'` 就说明匹配成功。",
       "pitfalls": "用 `fgets` 读入后必须手动去掉行末 `'\\n'`，否则模式串永远匹配不上；下标用 `p - str1` 计算。",
-      "solution": "#include <stdio.h>\n\n#define MAXLEN 510\n\nvoid strip_newline(char *s)\n{\n    char *p = s;\n\n    while (*p != '\\0' && *p != '\\n' && *p != '\\r')\n        p++;\n    *p = '\\0';\n}\n\nchar *locatesubstr(char *str1, char *str2)\n{\n    char *p;\n    char *t;\n\n    if (*str2 == '\\0')\n        return str1;\n\n    for (p = str1; *p != '\\0'; p++) {\n        char *s = p;\n\n        t = str2;\n        while (*t != '\\0' && *s == *t) {\n            s++;\n            t++;\n        }\n        if (*t == '\\0')\n            return p;\n    }\n    return NULL;\n}\n\nint main(void)\n{\n    char str1[MAXLEN];\n    char str2[MAXLEN];\n    char *p;\n\n    if (fgets(str1, sizeof str1, stdin) == NULL)\n        return 0;\n    if (fgets(str2, sizeof str2, stdin) == NULL)\n        return 0;\n    strip_newline(str1);\n    strip_newline(str2);\n\n    p = locatesubstr(str1, str2);\n    if (p == NULL) {\n        printf(\"NULL!\\n\");\n    } else {\n        printf(\"%d\\n\", (int)(p - str1));\n        printf(\"%s\\n\", p);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 510\n\nvoid strip_newline(char *s)\n{\n    char *p = s;\n\n    while (*p != '\\0' && *p != '\\n' && *p != '\\r')\n        p++;\n    *p = '\\0';\n}\n\nchar *locatesubstr(char *str1, char *str2)\n{\n    char *p;\n    char *t;\n\n    if (*str2 == '\\0')\n        return str1;\n\n    for (p = str1; *p != '\\0'; p++) {\n        char *s = p;\n\n        t = str2;\n        while (*t != '\\0' && *s == *t) {\n            s++;\n            t++;\n        }\n        if (*t == '\\0')\n            return p;\n    }\n    return NULL;\n}\n\nint main(void)\n{\n    char str1[MAXLEN];\n    char str2[MAXLEN];\n    char *p;\n\n    if (fgets(str1, sizeof str1, stdin) == NULL)\n        return 0;\n    if (fgets(str2, sizeof str2, stdin) == NULL)\n        return 0;\n    strip_newline(str1);\n    strip_newline(str2);\n\n    p = locatesubstr(str1, str2);\n    if (p == NULL) {\n        printf(\"NULL!\\n\");\n    } else {\n        printf(\"%d\\n\", (int)(p - str1));\n        printf(\"%s\\n\", p);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "aaaab\naab\n",
+          "out": "2\naab\n"
+        },
+        {
+          "in": "abc\nabc\n",
+          "out": "0\nabc\n"
+        }
+      ]
     },
     {
       "id": "P09",
@@ -240,7 +416,17 @@
       ],
       "hint": "`src` 顺序读、`dst` 只写保留下来的字符：`*dst++ = *src;` 全部扫完后别忘了 `*dst = '\\0';`。",
       "pitfalls": "用 `for (i...) if (str[i] != ch) str[j++] = str[i];` 时下标错位会漏字符；删除后必须在新的末尾补 `'\\0'`。",
-      "solution": "#include <stdio.h>\n\n#define MAXLEN 205\n#define MAXSET 25\n\nint delchars(char *str, const char *set)\n{\n    char *dst = str;\n    char *src;\n    int removed = 0;\n\n    for (src = str; *src != '\\0'; src++) {\n        const char *q = set;\n        int hit = 0;\n\n        while (*q != '\\0') {\n            if (*q == *src) {\n                hit = 1;\n                break;\n            }\n            q++;\n        }\n        if (hit)\n            removed++;\n        else\n            *dst++ = *src;\n    }\n    *dst = '\\0';\n    return removed;\n}\n\nint main(void)\n{\n    char str[MAXLEN];\n    char set[MAXSET];\n    int removed;\n\n    if (scanf(\"%200s\", str) != 1)\n        return 0;\n    if (scanf(\"%20s\", set) != 1)\n        return 0;\n\n    removed = delchars(str, set);\n\n    printf(\"%s\\n\", str);\n    printf(\"%d\\n\", removed);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 205\n#define MAXSET 25\n\nint delchars(char *str, const char *set)\n{\n    char *dst = str;\n    char *src;\n    int removed = 0;\n\n    for (src = str; *src != '\\0'; src++) {\n        const char *q = set;\n        int hit = 0;\n\n        while (*q != '\\0') {\n            if (*q == *src) {\n                hit = 1;\n                break;\n            }\n            q++;\n        }\n        if (hit)\n            removed++;\n        else\n            *dst++ = *src;\n    }\n    *dst = '\\0';\n    return removed;\n}\n\nint main(void)\n{\n    char str[MAXLEN];\n    char set[MAXSET];\n    int removed;\n\n    if (scanf(\"%200s\", str) != 1)\n        return 0;\n    if (scanf(\"%20s\", set) != 1)\n        return 0;\n\n    removed = delchars(str, set);\n\n    printf(\"%s\\n\", str);\n    printf(\"%d\\n\", removed);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "aaaa\na\n",
+          "out": "\n4\n"
+        },
+        {
+          "in": "xyz\na\n",
+          "out": "xyz\n0\n"
+        }
+      ]
     },
     {
       "id": "P10",
@@ -266,7 +452,41 @@
       ],
       "hint": "先做一遍回文判断（不改动数据），再做一遍两端交换；`left < right` 是循环继续的条件，相遇就停。",
       "pitfalls": "回文判断要和逆序交替进行的话，必须先判后逆序，否则逆序后就永远「是回文」；忘记 `free` 会内存泄漏。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, i;\n    int *a;\n    int *left, *right;\n    int pal = 1;\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n\n    a = (int *)malloc(sizeof(int) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    left = a;\n    right = a + n - 1;\n    while (left < right) {\n        if (*left != *right)\n            pal = 0;\n        left++;\n        right--;\n    }\n\n    left = a;\n    right = a + n - 1;\n    while (left < right) {\n        int t = *left;\n\n        *left = *right;\n        *right = t;\n        left++;\n        right--;\n    }\n\n    for (i = 0; i < n; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n    printf(\"%s\\n\", pal ? \"yes\" : \"no\");\n\n    free(a);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, i;\n    int *a;\n    int *left, *right;\n    int pal = 1;\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n\n    a = (int *)malloc(sizeof(int) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    left = a;\n    right = a + n - 1;\n    while (left < right) {\n        if (*left != *right)\n            pal = 0;\n        left++;\n        right--;\n    }\n\n    left = a;\n    right = a + n - 1;\n    while (left < right) {\n        int t = *left;\n\n        *left = *right;\n        *right = t;\n        left++;\n        right--;\n    }\n\n    for (i = 0; i < n; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n    printf(\"%s\\n\", pal ? \"yes\" : \"no\");\n\n    free(a);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "4\n2 1 1 2\n",
+          "out": "2 1 1 2\nyes\n"
+        },
+        {
+          "in": "1\n7\n",
+          "out": "7\nyes\n"
+        },
+        {
+          "in": "7\n5 0 -4 -3 -4 -4 2\n",
+          "out": "2 -4 -4 -3 -4 0 5\nno\n"
+        },
+        {
+          "in": "7\n-4 -4 -4 -3 0 2 5\n",
+          "out": "5 2 0 -3 -4 -4 -4\nno\n"
+        },
+        {
+          "in": "7\n5 2 0 -3 -4 -4 -4\n",
+          "out": "-4 -4 -4 -3 0 2 5\nno\n"
+        },
+        {
+          "in": "20\n-1 -3 2 3 1 -5 5 5 -2 -4 5 0 -5 -2 -5 -5 0 -2 4 -4\n",
+          "out": "-4 4 -2 0 -5 -5 -2 -5 0 5 -4 -2 5 5 -5 1 3 2 -3 -1\nno\n"
+        },
+        {
+          "in": "20\n-5 -5 -5 -5 -4 -4 -3 -2 -2 -2 -1 0 0 1 2 3 4 5 5 5\n",
+          "out": "5 5 5 4 3 2 1 0 0 -1 -2 -2 -2 -3 -4 -4 -5 -5 -5 -5\nno\n"
+        },
+        {
+          "in": "20\n5 5 5 4 3 2 1 0 0 -1 -2 -2 -2 -3 -4 -4 -5 -5 -5 -5\n",
+          "out": "-5 -5 -5 -5 -4 -4 -3 -2 -2 -2 -1 0 0 1 2 3 4 5 5 5\nno\n"
+        }
+      ]
     },
     {
       "id": "P11",
@@ -292,7 +512,41 @@
       ],
       "hint": "设 m 为「已经保留的元素个数」，对每个新元素用指针在 `a[0..m-1]` 中比一遍，没出现过才写入 `a[m++]`。",
       "pitfalls": "一边读一边和「整个数组」比较，会把还没处理的旧值算进来；比较范围只能是已保留的 `a[0..m-1]`。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, i, m = 0;\n    int *a;\n    int *p;\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n\n    a = (int *)malloc(sizeof(int) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    for (i = 0; i < n; i++) {\n        int dup = 0;\n\n        for (p = a; p < a + m; p++) {\n            if (*p == a[i]) {\n                dup = 1;\n                break;\n            }\n        }\n        if (!dup)\n            a[m++] = a[i];\n    }\n\n    printf(\"%d\\n\", m);\n    for (i = 0; i < m; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n\n    free(a);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, i, m = 0;\n    int *a;\n    int *p;\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n\n    a = (int *)malloc(sizeof(int) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++)\n        scanf(\"%d\", &a[i]);\n\n    for (i = 0; i < n; i++) {\n        int dup = 0;\n\n        for (p = a; p < a + m; p++) {\n            if (*p == a[i]) {\n                dup = 1;\n                break;\n            }\n        }\n        if (!dup)\n            a[m++] = a[i];\n    }\n\n    printf(\"%d\\n\", m);\n    for (i = 0; i < m; i++) {\n        if (i > 0)\n            printf(\" \");\n        printf(\"%d\", a[i]);\n    }\n    printf(\"\\n\");\n\n    free(a);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "5\n1 2 1 2 3\n",
+          "out": "3\n1 2 3\n"
+        },
+        {
+          "in": "4\n-1 -1 -1 -1\n",
+          "out": "1\n-1\n"
+        },
+        {
+          "in": "7\n-5 1 -2 1 -2 1 5\n",
+          "out": "4\n-5 1 -2 5\n"
+        },
+        {
+          "in": "7\n-5 -2 -2 1 1 1 5\n",
+          "out": "4\n-5 -2 1 5\n"
+        },
+        {
+          "in": "7\n5 1 1 1 -2 -2 -5\n",
+          "out": "4\n5 1 -2 -5\n"
+        },
+        {
+          "in": "20\n-4 -2 5 -4 -2 -1 -4 -5 1 -2 0 2 -5 0 -1 5 1 1 2 -5\n",
+          "out": "8\n-4 -2 5 -1 -5 1 0 2\n"
+        },
+        {
+          "in": "20\n-5 -5 -5 -4 -4 -4 -2 -2 -2 -1 -1 0 0 1 1 1 2 2 5 5\n",
+          "out": "8\n-5 -4 -2 -1 0 1 2 5\n"
+        },
+        {
+          "in": "20\n5 5 2 2 1 1 1 0 0 -1 -1 -2 -2 -2 -4 -4 -4 -5 -5 -5\n",
+          "out": "8\n5 2 1 0 -1 -2 -4 -5\n"
+        }
+      ]
     },
     {
       "id": "P12",
@@ -318,7 +572,13 @@
       ],
       "hint": "比较函数分两级：长度不同比长度，长度相同再逐字符比；交换的是 `p[j]` 与 `p[j+1]` 这两个指针。",
       "pitfalls": "交换字符串本身（用 `strcpy`）既慢又容易越界；长度相同时如果只比长度，排序结果不稳定。",
-      "solution": "#include <stdio.h>\n\n#define MAXN 105\n#define MAXLEN 105\n\nint my_len(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n    return (int)(p - s);\n}\n\nint my_cmp(const char *s1, const char *s2)\n{\n    const char *p = s1;\n    const char *q = s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return ((unsigned char)*p < (unsigned char)*q) ? -1 : 1;\n}\n\nint main(void)\n{\n    int n, i, j;\n    char store[MAXN][MAXLEN];\n    char *p[MAXN];\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n    for (i = 0; i < n; i++) {\n        if (scanf(\"%100s\", store[i]) != 1)\n            return 0;\n        p[i] = store[i];\n    }\n\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            int la = my_len(p[j]);\n            int lb = my_len(p[j + 1]);\n            int need = 0;\n\n            if (la > lb)\n                need = 1;\n            else if (la == lb && my_cmp(p[j], p[j + 1]) > 0)\n                need = 1;\n\n            if (need) {\n                char *t = p[j];\n\n                p[j] = p[j + 1];\n                p[j + 1] = t;\n            }\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        printf(\"%s\\n\", p[i]);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXN 105\n#define MAXLEN 105\n\nint my_len(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n    return (int)(p - s);\n}\n\nint my_cmp(const char *s1, const char *s2)\n{\n    const char *p = s1;\n    const char *q = s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return ((unsigned char)*p < (unsigned char)*q) ? -1 : 1;\n}\n\nint main(void)\n{\n    int n, i, j;\n    char store[MAXN][MAXLEN];\n    char *p[MAXN];\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n    for (i = 0; i < n; i++) {\n        if (scanf(\"%100s\", store[i]) != 1)\n            return 0;\n        p[i] = store[i];\n    }\n\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            int la = my_len(p[j]);\n            int lb = my_len(p[j + 1]);\n            int need = 0;\n\n            if (la > lb)\n                need = 1;\n            else if (la == lb && my_cmp(p[j], p[j + 1]) > 0)\n                need = 1;\n\n            if (need) {\n                char *t = p[j];\n\n                p[j] = p[j + 1];\n                p[j + 1] = t;\n            }\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        printf(\"%s\\n\", p[i]);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "4\nbb\naa\nc\nz\n",
+          "out": "c\nz\naa\nbb\n"
+        }
+      ]
     },
     {
       "id": "P13",
@@ -348,7 +608,17 @@
       ],
       "hint": "开一个 `int cnt[128]` 计数表，指针从串首扫到 `'\\0'`；最后从下标 0 往 127 扫，用严格大于更新最大值。",
       "pitfalls": "从 127 往 0 扫、或用 `>=` 更新，并列时拿到的就不是 ASCII 最小的字母；忘记排除数字和空格会统计错。",
-      "solution": "#include <stdio.h>\n\n#define MAXLEN 1005\n\nint main(void)\n{\n    char text[MAXLEN];\n    const char *p;\n    int cnt[128];\n    int c, best = 0, bestc = -1, found = 0;\n\n    for (c = 0; c < 128; c++)\n        cnt[c] = 0;\n\n    if (fgets(text, sizeof text, stdin) == NULL)\n        return 0;\n\n    for (p = text; *p != '\\0'; p++) {\n        unsigned char u = (unsigned char)*p;\n\n        if ((u >= 'A' && u <= 'Z') || (u >= 'a' && u <= 'z'))\n            cnt[u]++;\n    }\n\n    for (c = 0; c < 128; c++) {\n        if (cnt[c] > 0) {\n            found = 1;\n            if (cnt[c] > best) {\n                best = cnt[c];\n                bestc = c;\n            }\n        }\n    }\n\n    if (!found) {\n        printf(\"none\\n\");\n    } else {\n        printf(\"%c\\n\", bestc);\n        printf(\"%d\\n\", best);\n    }\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n\n#define MAXLEN 1005\n\nint main(void)\n{\n    char text[MAXLEN];\n    const char *p;\n    int cnt[128];\n    int c, best = 0, bestc = -1, found = 0;\n\n    for (c = 0; c < 128; c++)\n        cnt[c] = 0;\n\n    if (fgets(text, sizeof text, stdin) == NULL)\n        return 0;\n\n    for (p = text; *p != '\\0'; p++) {\n        unsigned char u = (unsigned char)*p;\n\n        if ((u >= 'A' && u <= 'Z') || (u >= 'a' && u <= 'z'))\n            cnt[u]++;\n    }\n\n    for (c = 0; c < 128; c++) {\n        if (cnt[c] > 0) {\n            found = 1;\n            if (cnt[c] > best) {\n                best = cnt[c];\n                bestc = c;\n            }\n        }\n    }\n\n    if (!found) {\n        printf(\"none\\n\");\n    } else {\n        printf(\"%c\\n\", bestc);\n        printf(\"%d\\n\", best);\n    }\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "ZzaAaa\n",
+          "out": "a\n3\n"
+        },
+        {
+          "in": "A1aZ\n",
+          "out": "A\n1\n"
+        }
+      ]
     },
     {
       "id": "P14",
@@ -374,7 +644,13 @@
       ],
       "hint": "分配顺序是「先指针数组、再逐行」；转置输出时用双重循环但先固定列 `j` 再走行 `i`，即 `a[i][j]`。",
       "pitfalls": "只 `free(a)` 不 `free(a[i])` 会泄漏每一行的内存；中途某行分配失败时要把前面已分配的行先释放。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, m, i, j;\n    int **a;\n\n    if (scanf(\"%d %d\", &n, &m) != 2 || n <= 0 || m <= 0)\n        return 0;\n\n    a = (int **)malloc(sizeof(int *) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        a[i] = (int *)malloc(sizeof(int) * (size_t)m);\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++)\n                free(a[j]);\n            free(a);\n            return 1;\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        for (j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n\n    for (j = 0; j < m; j++) {\n        for (i = 0; i < n; i++) {\n            if (i > 0)\n                printf(\" \");\n            printf(\"%d\", a[i][j]);\n        }\n        printf(\"\\n\");\n    }\n\n    for (i = 0; i < n; i++)\n        free(a[i]);\n    free(a);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, m, i, j;\n    int **a;\n\n    if (scanf(\"%d %d\", &n, &m) != 2 || n <= 0 || m <= 0)\n        return 0;\n\n    a = (int **)malloc(sizeof(int *) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        a[i] = (int *)malloc(sizeof(int) * (size_t)m);\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++)\n                free(a[j]);\n            free(a);\n            return 1;\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        for (j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n\n    for (j = 0; j < m; j++) {\n        for (i = 0; i < n; i++) {\n            if (i > 0)\n                printf(\" \");\n            printf(\"%d\", a[i][j]);\n        }\n        printf(\"\\n\");\n    }\n\n    for (i = 0; i < n; i++)\n        free(a[i]);\n    free(a);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3 1\n1\n-2\n0\n",
+          "out": "1 -2 0\n"
+        }
+      ]
     },
     {
       "id": "P15",
@@ -400,7 +676,17 @@
       ],
       "hint": "函数名本身就是地址，`sort(arr, n, mode ? cmp_desc : cmp_asc)` 直接把比较函数传进去；`sort` 内部只交换 `char *`。",
       "pitfalls": "`scanf(\"%d\")` 之后行末的 `'\\n'` 会留在缓冲区，必须先吸掉，否则第一个字符串读到空行；`fgets` 读入后要手工去掉 `'\\n'`。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\n#define MAXLEN 210\n\nint my_strcmp(const char *s1, const char *s2)\n{\n    const unsigned char *p = (const unsigned char *)s1;\n    const unsigned char *q = (const unsigned char *)s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return (*p < *q) ? -1 : 1;\n}\n\nint cmp_asc(const char *a, const char *b)\n{\n    return my_strcmp(a, b);\n}\n\nint cmp_desc(const char *a, const char *b)\n{\n    return -my_strcmp(a, b);\n}\n\nvoid sort(char **a, int n, int (*cmp)(const char *, const char *))\n{\n    int i, j;\n\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            if (cmp(a[j], a[j + 1]) > 0) {\n                char *t = a[j];\n\n                a[j] = a[j + 1];\n                a[j + 1] = t;\n            }\n        }\n    }\n}\n\nint main(void)\n{\n    int n, mode, i, c;\n    char **arr;\n    char buf[MAXLEN];\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n    if (scanf(\"%d\", &mode) != 1)\n        return 0;\n    while ((c = getchar()) != '\\n' && c != EOF)\n        ;\n\n    arr = (char **)malloc(sizeof(char *) * (size_t)n);\n    if (arr == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        char *t, *dst;\n        const char *src;\n        int len;\n\n        if (fgets(buf, sizeof buf, stdin) == NULL)\n            buf[0] = '\\0';\n        t = buf;\n        while (*t != '\\0' && *t != '\\n' && *t != '\\r')\n            t++;\n        *t = '\\0';\n        len = (int)(t - buf);\n\n        arr[i] = (char *)malloc(sizeof(char) * (size_t)(len + 1));\n        if (arr[i] == NULL) {\n            while (i > 0)\n                free(arr[--i]);\n            free(arr);\n            return 1;\n        }\n        dst = arr[i];\n        for (src = buf; *src != '\\0'; src++)\n            *dst++ = *src;\n        *dst = '\\0';\n    }\n\n    sort(arr, n, (mode == 0) ? cmp_asc : cmp_desc);\n\n    for (i = 0; i < n; i++) {\n        printf(\"%s\\n\", arr[i]);\n        free(arr[i]);\n    }\n    free(arr);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\n#define MAXLEN 210\n\nint my_strcmp(const char *s1, const char *s2)\n{\n    const unsigned char *p = (const unsigned char *)s1;\n    const unsigned char *q = (const unsigned char *)s2;\n\n    while (*p != '\\0' && *p == *q) {\n        p++;\n        q++;\n    }\n    if (*p == *q)\n        return 0;\n    return (*p < *q) ? -1 : 1;\n}\n\nint cmp_asc(const char *a, const char *b)\n{\n    return my_strcmp(a, b);\n}\n\nint cmp_desc(const char *a, const char *b)\n{\n    return -my_strcmp(a, b);\n}\n\nvoid sort(char **a, int n, int (*cmp)(const char *, const char *))\n{\n    int i, j;\n\n    for (i = 0; i < n - 1; i++) {\n        for (j = 0; j < n - 1 - i; j++) {\n            if (cmp(a[j], a[j + 1]) > 0) {\n                char *t = a[j];\n\n                a[j] = a[j + 1];\n                a[j + 1] = t;\n            }\n        }\n    }\n}\n\nint main(void)\n{\n    int n, mode, i, c;\n    char **arr;\n    char buf[MAXLEN];\n\n    if (scanf(\"%d\", &n) != 1 || n <= 0)\n        return 0;\n    if (scanf(\"%d\", &mode) != 1)\n        return 0;\n    while ((c = getchar()) != '\\n' && c != EOF)\n        ;\n\n    arr = (char **)malloc(sizeof(char *) * (size_t)n);\n    if (arr == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        char *t, *dst;\n        const char *src;\n        int len;\n\n        if (fgets(buf, sizeof buf, stdin) == NULL)\n            buf[0] = '\\0';\n        t = buf;\n        while (*t != '\\0' && *t != '\\n' && *t != '\\r')\n            t++;\n        *t = '\\0';\n        len = (int)(t - buf);\n\n        arr[i] = (char *)malloc(sizeof(char) * (size_t)(len + 1));\n        if (arr[i] == NULL) {\n            while (i > 0)\n                free(arr[--i]);\n            free(arr);\n            return 1;\n        }\n        dst = arr[i];\n        for (src = buf; *src != '\\0'; src++)\n            *dst++ = *src;\n        *dst = '\\0';\n    }\n\n    sort(arr, n, (mode == 0) ? cmp_asc : cmp_desc);\n\n    for (i = 0; i < n; i++) {\n        printf(\"%s\\n\", arr[i]);\n        free(arr[i]);\n    }\n    free(arr);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3\n1\naa\nab\na\n",
+          "out": "ab\naa\na\n"
+        },
+        {
+          "in": "2\n0\nz\na\n",
+          "out": "a\nz\n"
+        }
+      ]
     },
     {
       "id": "P16",
@@ -426,7 +712,13 @@
       ],
       "hint": "外层循环走行、内层用两个指针 `p`、`q` 在本行内比较交换；累加时写 `total += a[i][0];`，`total` 声明成 `long long`。",
       "pitfalls": "行内排序的边界是 `a[i] + m`，写成 `a + m` 会串到别的行；和用 `int` 保存时大数据会溢出。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, m, i, j;\n    int **a;\n    long long total = 0;\n\n    if (scanf(\"%d %d\", &n, &m) != 2 || n <= 0 || m <= 0)\n        return 0;\n\n    a = (int **)malloc(sizeof(int *) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        a[i] = (int *)malloc(sizeof(int) * (size_t)m);\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++)\n                free(a[j]);\n            free(a);\n            return 1;\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        for (j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n\n    for (i = 0; i < n; i++) {\n        int *p, *q;\n\n        for (p = a[i]; p < a[i] + m - 1; p++) {\n            for (q = p + 1; q < a[i] + m; q++) {\n                if (*q < *p) {\n                    int t = *p;\n\n                    *p = *q;\n                    *q = t;\n                }\n            }\n        }\n        total += a[i][0];\n    }\n\n    for (i = 0; i < n; i++) {\n        for (j = 0; j < m; j++) {\n            if (j > 0)\n                printf(\" \");\n            printf(\"%d\", a[i][j]);\n        }\n        printf(\"\\n\");\n    }\n    printf(\"%lld\\n\", total);\n\n    for (i = 0; i < n; i++)\n        free(a[i]);\n    free(a);\n    return 0;\n}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n, m, i, j;\n    int **a;\n    long long total = 0;\n\n    if (scanf(\"%d %d\", &n, &m) != 2 || n <= 0 || m <= 0)\n        return 0;\n\n    a = (int **)malloc(sizeof(int *) * (size_t)n);\n    if (a == NULL)\n        return 1;\n\n    for (i = 0; i < n; i++) {\n        a[i] = (int *)malloc(sizeof(int) * (size_t)m);\n        if (a[i] == NULL) {\n            for (j = 0; j < i; j++)\n                free(a[j]);\n            free(a);\n            return 1;\n        }\n    }\n\n    for (i = 0; i < n; i++)\n        for (j = 0; j < m; j++)\n            scanf(\"%d\", &a[i][j]);\n\n    for (i = 0; i < n; i++) {\n        int *p, *q;\n\n        for (p = a[i]; p < a[i] + m - 1; p++) {\n            for (q = p + 1; q < a[i] + m; q++) {\n                if (*q < *p) {\n                    int t = *p;\n\n                    *p = *q;\n                    *q = t;\n                }\n            }\n        }\n        total += a[i][0];\n    }\n\n    for (i = 0; i < n; i++) {\n        for (j = 0; j < m; j++) {\n            if (j > 0)\n                printf(\" \");\n            printf(\"%d\", a[i][j]);\n        }\n        printf(\"\\n\");\n    }\n    printf(\"%lld\\n\", total);\n\n    for (i = 0; i < n; i++)\n        free(a[i]);\n    free(a);\n    return 0;\n}\n",
+      "checkpoints": [
+        {
+          "in": "3 1\n-4\n3\n-1\n",
+          "out": "-4\n3\n-1\n-2\n"
+        }
+      ]
     }
   ]
 }

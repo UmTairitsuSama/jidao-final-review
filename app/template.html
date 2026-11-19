@@ -12,9 +12,9 @@
   <div class="topbar-inner">
     <a class="brand" href="#/home" data-nav="home">
       <span class="brand-mark">C</span>
-      <span class="brand-text"><b>计导期末复习</b><small>计算导论与程序设计 · 数组 → 类的设计</small></span>
+      <span class="brand-text"><b>计导期末复习</b><small>provided by：UmTairitsuSama(songqi)</small></span>
     </a>
-    <nav class="tabs" id="nav">
+    <nav class="tabs" id="nav" aria-label="主导航">
       <a href="#/home" data-nav="home">总览</a>
       <a href="#/library" data-nav="library">精选题库</a>
       <a href="#/guide" data-nav="guide">知识精讲</a>
@@ -34,6 +34,10 @@
   <span class="muted">构建时间：%%BUILT%%</span>
 </footer>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="judge-dialog" aria-labelledby="judge-dialog-title">
+  <header><h2 id="judge-dialog-title">提交评测结果</h2><form method="dialog"><button class="btn small" autofocus>关闭</button></form></header>
+  <div class="judge-report"></div>
+</dialog>
 <script>window.__DATA__ = %%DATA%%;</script>
 <script>
 window.addEventListener('error', function (e) {
@@ -45,6 +49,7 @@ window.addEventListener('error', function (e) {
   } catch (x) {}
 });
 </script>
+%%VSCODE_ASSETS%%
 <script>%%JS%%</script>
 </body>
 </html>

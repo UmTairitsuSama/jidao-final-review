@@ -23,7 +23,17 @@
       ],
       "hint": "传入指针变量自身的地址，用 *p 修改它。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nvoid choose(int **p,int *a,int *b,int k){*p=k?b:a;}\nint main(void){int a,b,k,*p;scanf(\"%d%d%d\",&a,&b,&k);choose(&p,&a,&b,k);*p+=10;printf(\"%d %d\\n\",a,b);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nvoid choose(int **p,int *a,int *b,int k){*p=k?b:a;}\nint main(void){int a,b,k,*p;scanf(\"%d%d%d\",&a,&b,&k);choose(&p,&a,&b,k);*p+=10;printf(\"%d %d\\n\",a,b);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-100 100 0\n",
+          "out": "-90 100\n"
+        },
+        {
+          "in": "-100 100 1\n",
+          "out": "-100 110\n"
+        }
+      ]
     },
     {
       "id": "X002",
@@ -48,7 +58,17 @@
       ],
       "hint": "区分 *p 指针与 (*p)[i] 元素。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint create(int **p,int n){*p=malloc((size_t)n*sizeof **p);if(!*p)return 0;for(int i=0;i<n;i++)(*p)[i]=(i+1)*(i+1);return 1;}\nint main(void){int n,*p=NULL;scanf(\"%d\",&n);if(!create(&p,n))return 1;for(int i=0;i<n;i++)printf(\"%s%d\",i?\" \":\"\",p[i]);puts(\"\");free(p);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint create(int **p,int n){*p=malloc((size_t)n*sizeof **p);if(!*p)return 0;for(int i=0;i<n;i++)(*p)[i]=(i+1)*(i+1);return 1;}\nint main(void){int n,*p=NULL;scanf(\"%d\",&n);if(!create(&p,n))return 1;for(int i=0;i<n;i++)printf(\"%s%d\",i?\" \":\"\",p[i]);puts(\"\");free(p);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "2\n",
+          "out": "1 4\n"
+        },
+        {
+          "in": "100\n",
+          "out": "1 4 9 16 25 36 49 64 81 100 121 144 169 196 225 256 289 324 361 400 441 484 529 576 625 676 729 784 841 900 961 1024 1089 1156 1225 1296 1369 1444 1521 1600 1681 1764 1849 1936 2025 2116 2209 2304 2401 2500 2601 2704 2809 2916 3025 3136 3249 3364 3481 3600 3721 3844 3969 4096 4225 4356 4489 4624 4761 4900 5041 5184 5329 5476 5625 5776 5929 6084 6241 6400 6561 6724 6889 7056 7225 7396 7569 7744 7921 8100 8281 8464 8649 8836 9025 9216 9409 9604 9801 10000\n"
+        }
+      ]
     },
     {
       "id": "X003",
@@ -73,7 +93,13 @@
       ],
       "hint": "数组指针每次移动跨过整行，不能把 int ** 当作连续二维数组。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[20][3],s[3]={0};scanf(\"%d\",&n);int (*p)[3]=a;for(int i=0;i<n;i++)for(int j=0;j<3;j++){scanf(\"%d\",&p[i][j]);s[j]+=p[i][j];}printf(\"%d %d %d\\n\",s[0],s[1],s[2]);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[20][3],s[3]={0};scanf(\"%d\",&n);int (*p)[3]=a;for(int i=0;i<n;i++)for(int j=0;j<3;j++){scanf(\"%d\",&p[i][j]);s[j]+=p[i][j];}printf(\"%d %d %d\\n\",s[0],s[1],s[2]);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "2\n1 -2 3\n-1 2 -3\n",
+          "out": "0 0 0\n"
+        }
+      ]
     },
     {
       "id": "X004",
@@ -98,7 +124,13 @@
       ],
       "hint": "二维数组形参必须保留第二维大小。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nvoid ranges(const int a[][3],int n){for(int i=0;i<n;i++){int lo=a[i][0],hi=lo;for(int j=1;j<3;j++){if(a[i][j]<lo)lo=a[i][j];if(a[i][j]>hi)hi=a[i][j];}printf(\"%d\\n\",hi-lo);}}\nint main(void){int n,a[20][3];scanf(\"%d\",&n);for(int i=0;i<n;i++)for(int j=0;j<3;j++)scanf(\"%d\",&a[i][j]);ranges(a,n);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nvoid ranges(const int a[][3],int n){for(int i=0;i<n;i++){int lo=a[i][0],hi=lo;for(int j=1;j<3;j++){if(a[i][j]<lo)lo=a[i][j];if(a[i][j]>hi)hi=a[i][j];}printf(\"%d\\n\",hi-lo);}}\nint main(void){int n,a[20][3];scanf(\"%d\",&n);for(int i=0;i<n;i++)for(int j=0;j<3;j++)scanf(\"%d\",&a[i][j]);ranges(a,n);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "2\n-5 -1 -4\n100 0 -100\n",
+          "out": "4\n200\n"
+        }
+      ]
     },
     {
       "id": "X005",
@@ -123,7 +155,13 @@
       ],
       "hint": "realloc 失败时原指针仍有效，先用临时指针接收。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,m;scanf(\"%d%d\",&n,&m);int *p=malloc((size_t)n*sizeof *p);if(!p)return 1;for(int i=0;i<n;i++)scanf(\"%d\",p+i);int *t=realloc(p,(size_t)(n+m)*sizeof *p);if(!t){free(p);return 1;}p=t;for(int i=n;i<n+m;i++)scanf(\"%d\",p+i);int s=0;for(int i=0;i<n+m;i++)s+=p[i];printf(\"%d\\n\",s);free(p);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,m;scanf(\"%d%d\",&n,&m);int *p=malloc((size_t)n*sizeof *p);if(!p)return 1;for(int i=0;i<n;i++)scanf(\"%d\",p+i);int *t=realloc(p,(size_t)(n+m)*sizeof *p);if(!t){free(p);return 1;}p=t;for(int i=n;i<n+m;i++)scanf(\"%d\",p+i);int s=0;for(int i=0;i<n+m;i++)s+=p[i];printf(\"%d\\n\",s);free(p);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "1 3\n1 -1 2 -2\n",
+          "out": "0\n"
+        }
+      ]
     },
     {
       "id": "X006",
@@ -148,7 +186,13 @@
       ],
       "hint": "指针赋值仅复制地址；独立副本需要另分配内存并复制元素。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n;scanf(\"%d\",&n);int *a=malloc((size_t)n*sizeof *a),*b=malloc((size_t)n*sizeof *b);if(!a||!b){free(a);free(b);return 1;}for(int i=0;i<n;i++)scanf(\"%d\",a+i);memcpy(b,a,(size_t)n*sizeof *a);a[0]++;printf(\"%d %d\\n\",a[0],b[0]);free(a);free(b);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n;scanf(\"%d\",&n);int *a=malloc((size_t)n*sizeof *a),*b=malloc((size_t)n*sizeof *b);if(!a||!b){free(a);free(b);return 1;}for(int i=0;i<n;i++)scanf(\"%d\",a+i);memcpy(b,a,(size_t)n*sizeof *a);a[0]++;printf(\"%d %d\\n\",a[0],b[0]);free(a);free(b);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3\n0 -1 1\n",
+          "out": "1 0\n"
+        }
+      ]
     },
     {
       "id": "X007",
@@ -173,7 +217,17 @@
       ],
       "hint": "函数指针的返回值及参数类型必须相符。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint ab(int x){return x<0?-x:x;}int sq(int x){return x*x;}\nint main(void){int n,k,x,s=0;scanf(\"%d%d\",&n,&k);int (*f)(int)=k?sq:ab;for(int i=0;i<n;i++){scanf(\"%d\",&x);s+=f(x);}printf(\"%d\\n\",s);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint ab(int x){return x<0?-x:x;}int sq(int x){return x*x;}\nint main(void){int n,k,x,s=0;scanf(\"%d%d\",&n,&k);int (*f)(int)=k?sq:ab;for(int i=0;i<n;i++){scanf(\"%d\",&x);s+=f(x);}printf(\"%d\\n\",s);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "2 0\n-4 -4\n",
+          "out": "8\n"
+        },
+        {
+          "in": "2 1\n0 4\n",
+          "out": "16\n"
+        }
+      ]
     },
     {
       "id": "X008",
@@ -198,7 +252,17 @@
       ],
       "hint": "0是偶数，但不是正数。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint pos(int x){return x>0;}int even(int x){return x%2==0;}\nint main(void){int n,k,x,c=0;scanf(\"%d%d\",&n,&k);int (*test)(int)=k?even:pos;for(int i=0;i<n;i++){scanf(\"%d\",&x);c+=test(x);}printf(\"%d\\n\",c);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint pos(int x){return x>0;}int even(int x){return x%2==0;}\nint main(void){int n,k,x,c=0;scanf(\"%d%d\",&n,&k);int (*test)(int)=k?even:pos;for(int i=0;i<n;i++){scanf(\"%d\",&x);c+=test(x);}printf(\"%d\\n\",c);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3 0\n-2 0 3\n",
+          "out": "1\n"
+        },
+        {
+          "in": "3 1\n-2 0 1\n",
+          "out": "2\n"
+        }
+      ]
     },
     {
       "id": "X009",
@@ -223,7 +287,17 @@
       ],
       "hint": "静态局部变量只初始化一次；依次调用，避免在同一表达式中依赖求值顺序。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint tick(void){static int x=0;return x+=2;}int main(void){int n;scanf(\"%d\",&n);for(int i=0;i<n;i++)printf(\"%s%d\",i?\" \":\"\",tick());puts(\"\");return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint tick(void){static int x=0;return x+=2;}int main(void){int n;scanf(\"%d\",&n);for(int i=0;i<n;i++)printf(\"%s%d\",i?\" \":\"\",tick());puts(\"\");return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "2\n",
+          "out": "2 4\n"
+        },
+        {
+          "in": "20\n",
+          "out": "2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40\n"
+        }
+      ]
     },
     {
       "id": "X010",
@@ -248,7 +322,17 @@
       ],
       "hint": "块内同名声明遮蔽外层名字；值传递不会修改主函数变量。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nvoid f(int y){{int y=3;printf(\"%d\\n\",y);}printf(\"%d\\n\",y+1);}int main(void){int x;scanf(\"%d\",&x);f(x);printf(\"%d\\n\",x);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nvoid f(int y){{int y=3;printf(\"%d\\n\",y);}printf(\"%d\\n\",y+1);}int main(void){int x;scanf(\"%d\",&x);f(x);printf(\"%d\\n\",x);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-100\n",
+          "out": "3\n-99\n-100\n"
+        },
+        {
+          "in": "100\n",
+          "out": "3\n101\n100\n"
+        }
+      ]
     },
     {
       "id": "X011",
@@ -273,7 +357,13 @@
       ],
       "hint": "递归出口是长度1，负数数组不能用0初始化最大值。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint mx(const int *a,int n){if(n==1)return a[0];int t=mx(a,n-1);return t>a[n-1]?t:a[n-1];}int main(void){int n,a[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",mx(a,n));return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint mx(const int *a,int n){if(n==1)return a[0];int t=mx(a,n-1);return t>a[n-1]?t:a[n-1];}int main(void){int n,a[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",mx(a,n));return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "4\n-1 -3 -5 -7\n",
+          "out": "-1\n"
+        }
+      ]
     },
     {
       "id": "X012",
@@ -298,7 +388,17 @@
       ],
       "hint": "先处理n=0的出口，再读取a[n-1]。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint count(const int *a,int n){return n==0?0:count(a,n-1)+(a[n-1]<0);}int main(void){int n,a[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",count(a,n));return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint count(const int *a,int n){return n==0?0:count(a,n-1)+(a[n-1]<0);}int main(void){int n,a[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",count(a,n));return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3\n1 2 3\n",
+          "out": "0\n"
+        },
+        {
+          "in": "3\n-1 -1 -1\n",
+          "out": "3\n"
+        }
+      ]
     },
     {
       "id": "X013",
@@ -323,7 +423,17 @@
       ],
       "hint": "联合体成员共享存储，按标记读取最后写入的成员。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nenum Kind{INTEGER,REAL};struct Value{enum Kind tag;union{int i;double d;}u;};int main(void){int t,v;scanf(\"%d%d\",&t,&v);struct Value x;x.tag=t?REAL:INTEGER;if(x.tag==INTEGER){x.u.i=v;printf(\"%d\\n\",x.u.i);}else{x.u.d=v/2.0;printf(\"%.1f\\n\",x.u.d);}return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nenum Kind{INTEGER,REAL};struct Value{enum Kind tag;union{int i;double d;}u;};int main(void){int t,v;scanf(\"%d%d\",&t,&v);struct Value x;x.tag=t?REAL:INTEGER;if(x.tag==INTEGER){x.u.i=v;printf(\"%d\\n\",x.u.i);}else{x.u.d=v/2.0;printf(\"%.1f\\n\",x.u.d);}return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "1 -3\n",
+          "out": "-1.5\n"
+        },
+        {
+          "in": "0 -4\n",
+          "out": "-4\n"
+        }
+      ]
     },
     {
       "id": "X014",
@@ -348,7 +458,25 @@
       ],
       "hint": "转换需要同时检查原状态和操作。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nenum State{IDLE,WORK,DONE};int main(void){int s;char c;scanf(\"%d %c\",&s,&c);enum State x=(enum State)s;if(x==IDLE&&c=='S')x=WORK;else if(x==WORK&&c=='F')x=DONE;printf(\"%d\\n\",(int)x);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nenum State{IDLE,WORK,DONE};int main(void){int s;char c;scanf(\"%d %c\",&s,&c);enum State x=(enum State)s;if(x==IDLE&&c=='S')x=WORK;else if(x==WORK&&c=='F')x=DONE;printf(\"%d\\n\",(int)x);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "0 F\n",
+          "out": "0\n"
+        },
+        {
+          "in": "1 F\n",
+          "out": "2\n"
+        },
+        {
+          "in": "2 F\n",
+          "out": "2\n"
+        },
+        {
+          "in": "1 S\n",
+          "out": "1\n"
+        }
+      ]
     },
     {
       "id": "X015",
@@ -373,7 +501,17 @@
       ],
       "hint": "不要把有自增等副作用的表达式作为会重复展开的宏参数。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#define SQUARE(x) ((x)*(x))\nint main(void){int x;scanf(\"%d\",&x);printf(\"%d\\n\",SQUARE(x+1));return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#define SQUARE(x) ((x)*(x))\nint main(void){int x;scanf(\"%d\",&x);printf(\"%d\\n\",SQUARE(x+1));return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "0\n",
+          "out": "1\n"
+        },
+        {
+          "in": "-100\n",
+          "out": "9801\n"
+        }
+      ]
     },
     {
       "id": "X016",
@@ -398,7 +536,17 @@
       ],
       "hint": "预处理在编译前决定保留哪段代码。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#define MODE 1\nint main(void){int x;scanf(\"%d\",&x);\n#if MODE == 1\n printf(\"%d\\n\",2*x);\n#else\n printf(\"%d\\n\",3*x);\n#endif\nreturn 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#define MODE 1\nint main(void){int x;scanf(\"%d\",&x);\n#if MODE == 1\n printf(\"%d\\n\",2*x);\n#else\n printf(\"%d\\n\",3*x);\n#endif\nreturn 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-100\n",
+          "out": "-200\n"
+        },
+        {
+          "in": "100\n",
+          "out": "200\n"
+        }
+      ]
     },
     {
       "id": "X017",
@@ -423,7 +571,17 @@
       ],
       "hint": "转换必须发生在除法前，事后转换不能恢复截掉的小数。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);printf(\"%d %.2f\\n\",a/b,(double)a/b);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);printf(\"%d %.2f\\n\",a/b,(double)a/b);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "1 3\n",
+          "out": "0 0.33\n"
+        },
+        {
+          "in": "100 1\n",
+          "out": "100 100.00\n"
+        }
+      ]
     },
     {
       "id": "X018",
@@ -448,7 +606,17 @@
       ],
       "hint": "只把乘积存入long long不足以避免int乘法溢出。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);long long v=(long long)a*b;printf(\"%lld\\n\",v);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);long long v=(long long)a*b;printf(\"%lld\\n\",v);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "65536 65536\n",
+          "out": "4294967296\n"
+        },
+        {
+          "in": "1 999999999\n",
+          "out": "999999999\n"
+        }
+      ]
     },
     {
       "id": "X019",
@@ -473,7 +641,17 @@
       ],
       "hint": "清零使用与按位取反的掩码，避免使用逻辑非。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){unsigned x,k,v;scanf(\"%u%u%u\",&x,&k,&v);x=v?(x|(1u<<k)):(x&~(1u<<k));printf(\"%u\\n\",x);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){unsigned x,k,v;scanf(\"%u%u%u\",&x,&k,&v);x=v?(x|(1u<<k)):(x&~(1u<<k));printf(\"%u\\n\",x);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "255 7 0\n",
+          "out": "127\n"
+        },
+        {
+          "in": "128 7 1\n",
+          "out": "128\n"
+        }
+      ]
     },
     {
       "id": "X020",
@@ -498,7 +676,17 @@
       ],
       "hint": "位运算每一位独立；&&、||不表示集合交并。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){unsigned a,b;scanf(\"%u%u\",&a,&b);printf(\"%u %u %u\\n\",a&b,a|b,a&~b);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){unsigned a,b;scanf(\"%u%u\",&a,&b);printf(\"%u %u %u\\n\",a&b,a|b,a&~b);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "255 255\n",
+          "out": "255 255 0\n"
+        },
+        {
+          "in": "170 85\n",
+          "out": "0 255 170\n"
+        }
+      ]
     },
     {
       "id": "X021",
@@ -523,7 +711,17 @@
       ],
       "hint": "字符内容长度不包括终止符，分配容量需多1。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[31],t[31];int k;scanf(\"%30s%d\",s,&k);int n=(int)strlen(s);if(k>n)k=n;memcpy(t,s,(size_t)k);t[k]=0;puts(t);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[31],t[31];int k;scanf(\"%30s%d\",s,&k);int n=(int)strlen(s);if(k>n)k=n;memcpy(t,s,(size_t)k);t[k]=0;puts(t);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "x 30\n",
+          "out": "x\n"
+        },
+        {
+          "in": "abc 3\n",
+          "out": "abc\n"
+        }
+      ]
     },
     {
       "id": "X022",
@@ -548,7 +746,17 @@
       ],
       "hint": "最后一个位置必须留给终止符。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char a[31],b[31],t[11];scanf(\"%30s%30s\",a,b);int n=0;for(int i=0;a[i]&&n<10;i++)t[n++]=a[i];for(int i=0;b[i]&&n<10;i++)t[n++]=b[i];t[n]=0;puts(t);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char a[31],b[31],t[11];scanf(\"%30s%30s\",a,b);int n=0;for(int i=0;a[i]&&n<10;i++)t[n++]=a[i];for(int i=0;b[i]&&n<10;i++)t[n++]=b[i];t[n]=0;puts(t);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "abcdefgh xyz\n",
+          "out": "abcdefghxy\n"
+        },
+        {
+          "in": "abcdefghijkl a\n",
+          "out": "abcdefghij\n"
+        }
+      ]
     },
     {
       "id": "X023",
@@ -573,7 +781,17 @@
       ],
       "hint": "普通标量成员被独立复制。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int x,y;}Point;int main(void){Point a,b;scanf(\"%d%d\",&a.x,&a.y);b=a;a.x++;printf(\"%d %d %d\\n\",b.x,b.y,a.x);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int x,y;}Point;int main(void){Point a,b;scanf(\"%d%d\",&a.x,&a.y);b=a;a.x++;printf(\"%d %d %d\\n\",b.x,b.y,a.x);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-100 100\n",
+          "out": "-100 100 -99\n"
+        },
+        {
+          "in": "100 -100\n",
+          "out": "100 -100 101\n"
+        }
+      ]
     },
     {
       "id": "X024",
@@ -598,7 +816,17 @@
       ],
       "hint": "结构体赋值复制地址，不复制指针所指对象。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int *p;}Box;int main(void){int x;scanf(\"%d\",&x);Box a={&x},b=a;*b.p+=2;printf(\"%d %d\\n\",*a.p,*b.p);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int *p;}Box;int main(void){int x;scanf(\"%d\",&x);Box a={&x},b=a;*b.p+=2;printf(\"%d %d\\n\",*a.p,*b.p);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "0\n",
+          "out": "2 2\n"
+        },
+        {
+          "in": "100\n",
+          "out": "102 102\n"
+        }
+      ]
     },
     {
       "id": "X025",
@@ -623,7 +851,13 @@
       ],
       "hint": "释放前保存next。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct N{int v;struct N *next;};int main(void){int n,x;scanf(\"%d\",&n);struct N *h=NULL;for(int i=0;i<n;i++){scanf(\"%d\",&x);struct N *p=malloc(sizeof *p);if(!p){while(h){p=h->next;free(h);h=p;}return 1;}p->v=x;p->next=h;h=p;}int first=1;while(h){printf(\"%s%d\",first?\"\":\" \",h->v);first=0;struct N *p=h->next;free(h);h=p;}puts(\"\");return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct N{int v;struct N *next;};int main(void){int n,x;scanf(\"%d\",&n);struct N *h=NULL;for(int i=0;i<n;i++){scanf(\"%d\",&x);struct N *p=malloc(sizeof *p);if(!p){while(h){p=h->next;free(h);h=p;}return 1;}p->v=x;p->next=h;h=p;}int first=1;while(h){printf(\"%s%d\",first?\"\":\" \",h->v);first=0;struct N *p=h->next;free(h);h=p;}puts(\"\");return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "4\n1 -1 0 1\n",
+          "out": "1 0 -1 1\n"
+        }
+      ]
     },
     {
       "id": "X026",
@@ -648,7 +882,21 @@
       ],
       "hint": "二级指针把删除头节点与内部节点统一处理。",
       "pitfalls": "检查输入边界与对象生存期；不得访问越界或已经释放的对象。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct N{int v;struct N *next;};int main(void){int n,x;scanf(\"%d%d\",&n,&x);struct N *h=NULL,**tail=&h;for(int i=0;i<n;i++){struct N *p=malloc(sizeof *p);if(!p){while(h){p=h->next;free(h);h=p;}return 1;}scanf(\"%d\",&p->v);p->next=NULL;*tail=p;tail=&p->next;}struct N **link=&h;while(*link&&(*link)->v!=x)link=&(*link)->next;if(*link){struct N *p=*link;*link=p->next;free(p);}if(!h)puts(\"EMPTY\");else{int first=1;while(h){printf(\"%s%d\",first?\"\":\" \",h->v);first=0;struct N *p=h->next;free(h);h=p;}puts(\"\");}return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nstruct N{int v;struct N *next;};int main(void){int n,x;scanf(\"%d%d\",&n,&x);struct N *h=NULL,**tail=&h;for(int i=0;i<n;i++){struct N *p=malloc(sizeof *p);if(!p){while(h){p=h->next;free(h);h=p;}return 1;}scanf(\"%d\",&p->v);p->next=NULL;*tail=p;tail=&p->next;}struct N **link=&h;while(*link&&(*link)->v!=x)link=&(*link)->next;if(*link){struct N *p=*link;*link=p->next;free(p);}if(!h)puts(\"EMPTY\");else{int first=1;while(h){printf(\"%s%d\",first?\"\":\" \",h->v);first=0;struct N *p=h->next;free(h);h=p;}puts(\"\");}return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3 1\n1 2 1\n",
+          "out": "2 1\n"
+        },
+        {
+          "in": "2 4\n1 2\n",
+          "out": "1 2\n"
+        },
+        {
+          "in": "3 2\n1 3 2\n",
+          "out": "1 3\n"
+        }
+      ]
     },
     {
       "id": "V-A01",
@@ -4115,7 +4363,21 @@
       ],
       "hint": "&&左侧为假时不会计算右侧。",
       "pitfalls": "&&左侧为假时不会计算右侧。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);puts(b!=0&&a/b>2?\"YES\":\"NO\");return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);puts(b!=0&&a/b>2?\"YES\":\"NO\");return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "5 2\n",
+          "out": "NO\n"
+        },
+        {
+          "in": "-9 -3\n",
+          "out": "YES\n"
+        },
+        {
+          "in": "1 -1\n",
+          "out": "NO\n"
+        }
+      ]
     },
     {
       "id": "K002",
@@ -4140,7 +4402,17 @@
       ],
       "hint": "||左侧为真时跳过右侧，逗号运算符先递增再取b。",
       "pitfalls": "||左侧为真时跳过右侧，逗号运算符先递增再取b。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b,c=0;scanf(\"%d%d\",&a,&b);int r=a||(++c,b);printf(\"%d %d\\n\",r,c);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b,c=0;scanf(\"%d%d\",&a,&b);int r=a||(++c,b);printf(\"%d %d\\n\",r,c);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "0 0\n",
+          "out": "0 1\n"
+        },
+        {
+          "in": "1 1\n",
+          "out": "1 0\n"
+        }
+      ]
     },
     {
       "id": "K003",
@@ -4165,7 +4437,17 @@
       ],
       "hint": "break终止最近一层循环，continue跳过本轮余下语句。",
       "pitfalls": "break终止最近一层循环，continue跳过本轮余下语句。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[100],s=0;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);for(int i=0;i<n;i++){if(!a[i])break;if(a[i]<0)continue;s+=a[i];}printf(\"%d\\n\",s);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[100],s=0;scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);for(int i=0;i<n;i++){if(!a[i])break;if(a[i]<0)continue;s+=a[i];}printf(\"%d\\n\",s);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "4\n-2 5 6 -1\n",
+          "out": "11\n"
+        },
+        {
+          "in": "3\n0 5 6\n",
+          "out": "0\n"
+        }
+      ]
     },
     {
       "id": "K004",
@@ -4190,7 +4472,17 @@
       ],
       "hint": "严格大于不包含k自身。",
       "pitfalls": "严格大于不包含k自身。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,k,b=-1;scanf(\"%d%d\",&n,&k);for(int i=1;i<=n;i++){if(i%3==0)continue;if(i>k){b=i;break;}}printf(\"%d\\n\",b);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,k,b=-1;scanf(\"%d%d\",&n,&k);for(int i=1;i<=n;i++){if(i%3==0)continue;if(i>k){b=i;break;}}printf(\"%d\\n\",b);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3 2\n",
+          "out": "-1\n"
+        },
+        {
+          "in": "4 2\n",
+          "out": "4\n"
+        }
+      ]
     },
     {
       "id": "K005",
@@ -4215,7 +4507,13 @@
       ],
       "hint": "const int *允许移动指针但不允许通过它改元素；尾后指针只用于比较。",
       "pitfalls": "const int *允许移动指针但不允许通过它改元素；尾后指针只用于比较。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint sum(const int *b,const int *e){int s=0;while(b!=e)s+=*b++;return s;}int main(void){int n,a[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",sum(a,a+n));return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint sum(const int *b,const int *e){int s=0;while(b!=e)s+=*b++;return s;}int main(void){int n,a[50];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",sum(a,a+n));return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3\n-1 -2 -3\n",
+          "out": "-6\n"
+        }
+      ]
     },
     {
       "id": "K006",
@@ -4240,7 +4538,17 @@
       ],
       "hint": "int *const固定指针本身，所指对象仍可修改。",
       "pitfalls": "int *const固定指针本身，所指对象仍可修改。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);int *const p=&a;*p+=b;printf(\"%d\\n\",a);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a,b;scanf(\"%d%d\",&a,&b);int *const p=&a;*p+=b;printf(\"%d\\n\",a);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "100 -100\n",
+          "out": "0\n"
+        },
+        {
+          "in": "-50 -50\n",
+          "out": "-100\n"
+        }
+      ]
     },
     {
       "id": "K007",
@@ -4265,7 +4573,13 @@
       ],
       "hint": "数组在定义处的sizeof得到整个数组字节数。",
       "pitfalls": "数组在定义处的sizeof得到整个数组字节数。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[10]={0},s=0;scanf(\"%d\",&n);for(int i=0;i<n;i++){scanf(\"%d\",a+i);s+=a[i];}printf(\"%zu %d\\n\",sizeof a/sizeof a[0],s);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,a[10]={0},s=0;scanf(\"%d\",&n);for(int i=0;i<n;i++){scanf(\"%d\",a+i);s+=a[i];}printf(\"%zu %d\\n\",sizeof a/sizeof a[0],s);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3\n-1 0 2\n",
+          "out": "10 1\n"
+        }
+      ]
     },
     {
       "id": "K008",
@@ -4290,7 +4604,13 @@
       ],
       "hint": "函数的数组形参调整为指针，长度必须另传。",
       "pitfalls": "函数的数组形参调整为指针，长度必须另传。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint nonzero(const int a[],int n){int c=0;for(int i=0;i<n;i++)c+=a[i]!=0;return c;}int main(void){int n,a[10];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",nonzero(a,n));return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint nonzero(const int a[],int n){int c=0;for(int i=0;i<n;i++)c+=a[i]!=0;return c;}int main(void){int n,a[10];scanf(\"%d\",&n);for(int i=0;i<n;i++)scanf(\"%d\",a+i);printf(\"%d\\n\",nonzero(a,n));return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "5\n1 0 0 0 1\n",
+          "out": "2\n"
+        }
+      ]
     },
     {
       "id": "K009",
@@ -4315,7 +4635,13 @@
       ],
       "hint": "typedef别名是完整类型，与#define文本替换不同。",
       "pitfalls": "typedef别名是完整类型，与#define文本替换不同。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef int *IntPtr;int main(void){int x,y;scanf(\"%d%d\",&x,&y);IntPtr p=&x,q=&y;int t=*p;*p=*q;*q=t;printf(\"%d %d\\n\",x,y);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef int *IntPtr;int main(void){int x,y;scanf(\"%d%d\",&x,&y);IntPtr p=&x,q=&y;int t=*p;*p=*q;*q=t;printf(\"%d %d\\n\",x,y);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-100 100\n",
+          "out": "100 -100\n"
+        }
+      ]
     },
     {
       "id": "K010",
@@ -4340,7 +4666,13 @@
       ],
       "hint": "结构体值返回复制成员，不返回局部对象地址。",
       "pitfalls": "结构体值返回复制成员，不返回局部对象地址。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int lo,hi;}Range;Range ordered(int a,int b){Range r={a<b?a:b,a>b?a:b};return r;}int main(void){int a,b;scanf(\"%d%d\",&a,&b);Range r=ordered(a,b);printf(\"%d %d\\n\",r.lo,r.hi);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\ntypedef struct{int lo,hi;}Range;Range ordered(int a,int b){Range r={a<b?a:b,a>b?a:b};return r;}int main(void){int a,b;scanf(\"%d%d\",&a,&b);Range r=ordered(a,b);printf(\"%d %d\\n\",r.lo,r.hi);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-9 3\n",
+          "out": "-9 3\n"
+        }
+      ]
     },
     {
       "id": "K011",
@@ -4365,7 +4697,13 @@
       ],
       "hint": "检查打开结果，以读取函数返回值为循环条件，不能用while(!feof(f))。",
       "pitfalls": "检查打开结果，以读取函数返回值为循环条件，不能用while(!feof(f))。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,x,s=0;scanf(\"%d\",&n);FILE *f=tmpfile();if(!f)return 1;for(int i=0;i<n;i++){scanf(\"%d\",&x);fprintf(f,\"%d\\n\",x);}rewind(f);while(fscanf(f,\"%d\",&x)==1)s+=x;fclose(f);printf(\"%d\\n\",s);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int n,x,s=0;scanf(\"%d\",&n);FILE *f=tmpfile();if(!f)return 1;for(int i=0;i<n;i++){scanf(\"%d\",&x);fprintf(f,\"%d\\n\",x);}rewind(f);while(fscanf(f,\"%d\",&x)==1)s+=x;fclose(f);printf(\"%d\\n\",s);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "3\n-3 -1 -2\n",
+          "out": "-6\n"
+        }
+      ]
     },
     {
       "id": "K012",
@@ -4390,7 +4728,13 @@
       ],
       "hint": "二进制布局只供同一程序往返验证，不假设跨平台文件格式。",
       "pitfalls": "二进制布局只供同一程序往返验证，不假设跨平台文件格式。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a[3],k,x;scanf(\"%d%d%d%d\",a,a+1,a+2,&k);FILE *f=tmpfile();if(!f)return 1;if(fwrite(a,sizeof a[0],3,f)!=3){fclose(f);return 1;}if(fseek(f,(long)k*(long)sizeof(int),SEEK_SET)||fread(&x,sizeof x,1,f)!=1){fclose(f);return 1;}fclose(f);printf(\"%d\\n\",x);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){int a[3],k,x;scanf(\"%d%d%d%d\",a,a+1,a+2,&k);FILE *f=tmpfile();if(!f)return 1;if(fwrite(a,sizeof a[0],3,f)!=3){fclose(f);return 1;}if(fseek(f,(long)k*(long)sizeof(int),SEEK_SET)||fread(&x,sizeof x,1,f)!=1){fclose(f);return 1;}fclose(f);printf(\"%d\\n\",x);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "-5 3 8 2\n",
+          "out": "8\n"
+        }
+      ]
     },
     {
       "id": "K013",
@@ -4415,7 +4759,17 @@
       ],
       "hint": "void *不能直接解引用或进行标准C指针算术，恢复实际对象类型后访问。",
       "pitfalls": "void *不能直接解引用或进行标准C指针算术，恢复实际对象类型后访问。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint read_int(const void *p){return *(const int *)p;}int main(void){int x;scanf(\"%d\",&x);printf(\"%d\\n\",read_int(&x));return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint read_int(const void *p){return *(const int *)p;}int main(void){int x;scanf(\"%d\",&x);printf(\"%d\\n\",read_int(&x));return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "0\n",
+          "out": "0\n"
+        },
+        {
+          "in": "100\n",
+          "out": "100\n"
+        }
+      ]
     },
     {
       "id": "K014",
@@ -4440,7 +4794,17 @@
       ],
       "hint": "对象生存期必须覆盖使用时刻，free后即使指针非NULL也不能解引用。",
       "pitfalls": "对象生存期必须覆盖使用时刻，free后即使指针非NULL也不能解引用。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint *make(int x){int *p=malloc(sizeof *p);if(p)*p=x+1;return p;}int main(void){int x;scanf(\"%d\",&x);int *p=make(x);if(!p)return 1;printf(\"%d\\n\",*p);free(p);p=NULL;return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint *make(int x){int *p=malloc(sizeof *p);if(p)*p=x+1;return p;}int main(void){int x;scanf(\"%d\",&x);int *p=make(x);if(!p)return 1;printf(\"%d\\n\",*p);free(p);p=NULL;return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "0\n",
+          "out": "1\n"
+        },
+        {
+          "in": "100\n",
+          "out": "101\n"
+        }
+      ]
     },
     {
       "id": "K015",
@@ -4465,7 +4829,21 @@
       ],
       "hint": "移动长度要包含终止符；重叠区域使用memmove。",
       "pitfalls": "移动长度要包含终止符；重叠区域使用memmove。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[31];int l,r;scanf(\"%30s%d%d\",s,&l,&r);size_t n=strlen(s);memmove(s+l,s+r+1,n-(size_t)r);puts(s);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[31];int l,r;scanf(\"%30s%d%d\",s,&l,&r);size_t n=strlen(s);memmove(s+l,s+r+1,n-(size_t)r);puts(s);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "abc 0 1\n",
+          "out": "c\n"
+        },
+        {
+          "in": "abc 2 2\n",
+          "out": "ab\n"
+        },
+        {
+          "in": "abc 0 2\n",
+          "out": "\n"
+        }
+      ]
     },
     {
       "id": "K016",
@@ -4490,7 +4868,17 @@
       ],
       "hint": "缓冲区容量至少是原长度加2，插入末尾同样要移动终止符。",
       "pitfalls": "缓冲区容量至少是原长度加2，插入末尾同样要移动终止符。",
-      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[31],c;int k;scanf(\"%29s%d %c\",s,&k,&c);size_t n=strlen(s);memmove(s+k+1,s+k,n-(size_t)k+1);s[k]=c;puts(s);return 0;}\n"
+      "solution": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\nint main(void){char s[31],c;int k;scanf(\"%29s%d %c\",s,&k,&c);size_t n=strlen(s);memmove(s+k+1,s+k,n-(size_t)k+1);s[k]=c;puts(s);return 0;}\n",
+      "checkpoints": [
+        {
+          "in": "abc 0 X\n",
+          "out": "Xabc\n"
+        },
+        {
+          "in": "abc 3 Y\n",
+          "out": "abcY\n"
+        }
+      ]
     }
   ]
 }

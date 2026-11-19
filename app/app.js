@@ -1,4 +1,4 @@
-/* 计导期末复习 · 前端应用（无依赖，离线可用） */
+/* 计导期末复习 · 前端应用 */
 (function () {
   'use strict';
 
@@ -29,6 +29,8 @@
     { id: 'final', name: '期末新增重点', sub: '数组 → 类的设计' }
   ];
   var PAGE = 10;
+  var STATUS_LABELS = { todo: '未做', doing: '在练', done: '已掌握', review: '需复习' };
+  var searchText = new WeakMap();
 
   PROBLEMS.forEach(function (p, i) { p._i = i; });
   var BY_ID = {};
@@ -57,7 +59,7 @@
   var memoryStore = null;
 
   function emptyStore() {
-    return { answers: {}, status: {}, wrong: {}, exams: {}, settings: {} };
+    return { answers: {}, grades: {}, status: {}, wrong: {}, exams: {}, settings: {} };
   }
   function loadStore() {
     try {
@@ -89,7 +91,10 @@
   window.addEventListener('beforeunload', saveNow);
 
   function answerOf(id) { return store.answers[id] || { text: '', note: '', updated: 0 }; }
-  function statusOf(id) { return store.status[id] || 'todo'; }
+  function statusOf(id) {
+    var status = store.status[id];
+    return typeof status === 'string' && Object.hasOwn(STATUS_LABELS, status) ? status : 'todo';
+  }
   function inWrong(id) { return !!store.wrong[id]; }
   function examSession(e) { return store.exams[e.id] || null; }
 
@@ -176,13 +181,13 @@
         var rows = [];
         while (i < lines.length && /^\s*\|/.test(lines[i])) { rows.push(lines[i]); i++; }
         var cells = function (r) { return r.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (c) { return c.trim(); }); };
-        var html = '<table>';
+        var html = '<div class="md-table"><table>';
         rows.forEach(function (r, ri) {
           if (ri === 1 && /^[\s|:\-]+$/.test(r)) return;
           var tag = ri === 0 ? 'th' : 'td';
           html += '<tr>' + cells(r).map(function (c) { return '<' + tag + '>' + inline(c) + '</' + tag + '>'; }).join('') + '</tr>';
         });
-        html += '</table>';
+        html += '</table></div>';
         out.push(html);
         continue;
       }
@@ -234,6 +239,9 @@
     } else if (v === 'guide') {
       state.view = 'guide';
       state.guideId = parts[1] || null;
+    } else if (v === 'cheatsheet') {
+      state.view = 'cheatsheet';
+      state.sheetPage = Number(parts[1]) || 1;
     } else if (['home', 'exams', 'wrong', 'cheatsheet', 'data'].indexOf(v) >= 0) {
       state.view = v;
     } else {
@@ -281,17 +289,23 @@
   }
   function statusHtml(id) {
     var cur = statusOf(id);
-    var opts = [['todo', '未做', 'todo'], ['doing', '在练', 'doing'], ['done', '已掌握', 'done'], ['review', '需复习', 'review']];
-    return '<div class="status-seg">' + opts.map(function (o) {
-      return '<button class="' + o[2] + (cur === o[0] ? ' on' : '') + '" data-status="' + id + '" data-v="' + o[0] + '">' + o[1] + '</button>';
+    return '<div class="status-seg" role="group" aria-label="掌握状态">' + Object.keys(STATUS_LABELS).map(function (key) {
+      return '<button class="' + key + (cur === key ? ' on' : '') + '" data-status="' + id + '" data-v="' + key + '" aria-pressed="' + (cur === key) + '">' + STATUS_LABELS[key] + '</button>';
     }).join('') + '</div>';
   }
+  %%JUDGE%%
+
   function answerHtml(p) {
     var a = answerOf(p.id);
+    var text = String(a.text || '');
     var w = inWrong(p.id);
+    var coding = !p.id.startsWith('V-') && checkpoints(p).length > 0;
     return '<div class="answer-box">' +
       '<div class="answer-bar"><b>作答记录</b><span class="saved" id="saved-' + p.id + '">' + (a.updated ? '已保存 ' + fmtTime(a.updated) : '自动保存到本机') + '</span><span class="spacer"></span><button class="btn small" data-clear-answer="' + p.id + '">清空</button></div>' +
-      '<textarea data-answer="' + p.id + '" spellcheck="false" placeholder="在这里粘贴你的代码或思路（自动保存）">' + esc(a.text || '') + '</textarea>' +
+      (coding ? '<div class="c-editor"><pre class="c-highlight" aria-hidden="true"><span>' + highlightC(text) + '</span></pre>' : '') +
+      '<textarea data-answer="' + p.id + '"' + (coding ? ' data-code-editor wrap="off" aria-label="C 代码" autocapitalize="off" autocomplete="off"' : ' aria-label="作答记录"') +
+      ' spellcheck="false" placeholder="' + (coding ? '在这里输入 C 代码' : '在这里记录你的推导过程') + '">\n' + esc(text) + '</textarea>' +
+      (coding ? '</div>' + judgeHtml(p) : '') +
       '<input class="note" data-note="' + p.id + '" placeholder="备注：错误原因 / 关键点（自动保存）" value="' + esc(a.note || '') + '">' +
       '<div class="answer-foot">' + statusHtml(p.id) +
       '<button class="btn small wrong-btn' + (w ? ' on' : '') + '" data-wrong="' + p.id + '">' + (w ? '★ 已收录错题本' : '☆ 加入错题本') + '</button>' +
@@ -312,34 +326,43 @@
   }
   function cardHtml(p) {
     return '<article class="problem card" id="p-' + p.id + '">' +
+      '<section class="practice-statement practice-pane" tabindex="0" aria-label="题目与参考答案">' +
       '<div class="p-head"><span class="p-id">' + esc(p.id) + '</span><h3>' + esc(p.title) + '</h3><span class="stars" title="难度">' + stars(p.difficulty) + '</span></div>' +
       metaHtml(p) +
       '<div class="p-body md">' + md(p.desc) + '</div>' +
-      samplesHtml(p) + answerHtml(p) + solutionHtml(p) +
+      samplesHtml(p) + solutionHtml(p) + '</section><section class="practice-answer practice-pane" tabindex="0" aria-label="作答与评测">' + answerHtml(p) + '</section>' +
       '</article>';
   }
 
   /* ================= 路由渲染 ================= */
   function render() {
+    if (activeJudge) activeJudge.controller.abort();
+    document.getElementById('judge-dialog').close();
     if (state.timerId) { clearInterval(state.timerId); state.timerId = null; }
     var app = document.getElementById('app');
     var v = state.view;
     var nav = document.querySelectorAll('#nav a');
     for (var i = 0; i < nav.length; i++) {
       var n = nav[i].dataset.nav;
-      nav[i].classList.toggle('active', n === v || (v === 'exam' && n === 'exams'));
+      var current = n === v || (v === 'exam' && n === 'exams');
+      nav[i].classList.toggle('active', current);
+      if (current) nav[i].setAttribute('aria-current', 'page');
+      else nav[i].removeAttribute('aria-current');
     }
     document.body.classList.toggle('exam-mode', v === 'exam');
     document.body.classList.toggle('home-mode', v === 'home');
     document.body.classList.toggle('practice-mode', v === 'library' && !!state.problemId);
     if (v === 'home') app.innerHTML = viewHome();
     else if (v === 'library') { app.innerHTML = viewLibrary(); renderList(); }
-    else if (v === 'guide') { app.innerHTML = viewGuide(); if (state.guideId) scrollToGuideSection(state.guideId); }
+    else if (v === 'guide') app.innerHTML = viewChapter(GUIDE, 'guide', '知识精讲');
     else if (v === 'exams') app.innerHTML = viewExams();
     else if (v === 'exam') app.innerHTML = viewExamRoom();
     else if (v === 'wrong') app.innerHTML = viewWrong();
-    else if (v === 'cheatsheet') app.innerHTML = viewSheet();
+    else if (v === 'cheatsheet') app.innerHTML = viewChapter(SECTIONS, 'cheatsheet', '速查手册');
     else if (v === 'data') app.innerHTML = viewData();
+    var editor = app.querySelector('[data-code-editor]');
+    if (editor) editor.addEventListener('scroll', function () { syncCodeHighlight(editor, false); }, { passive: true });
+    refreshVscodeEditors();
     window.scrollTo(0, 0);
   }
 
@@ -368,7 +391,7 @@
     return '<div class="home-dashboard">' +
       '<section class="hero"><div><span class="pill accent">期末复习 · 数组 → 类的设计</span> <span class="muted small">考试语言：C（实验5–11）</span>' +
       '<h1>期末冲刺，把每个考点练成肌肉记忆。</h1>' +
-      '<p class="lead">从数组（含字符串数组）一路到函数、递归、指针、动态内存、结构体与「类」的设计思想：<b>' + PROBLEMS.length + '</b> 道精选题 + <b>' + EXAMS.length + '</b> 套限时模拟卷（其中 ' + fmCount + ' 套期末全真卷）+ 知识精讲与速查手册。答题区只做记录，不联网、不上传。</p>' +
+      '<p class="lead">从数组（含字符串数组）一路到函数、递归、指针、动态内存、结构体与「类」的设计思想：<b>' + PROBLEMS.length + '</b> 道精选题 + <b>' + EXAMS.length + '</b> 套限时模拟卷（其中 ' + fmCount + ' 套期末全真卷）+ 知识精讲与速查手册。</p>' +
       '<div class="actions"><a class="btn primary" href="#/library/' + next.id + '">开始练习 →</a><a class="btn" href="#/guide">知识精讲</a><a class="btn" href="#/exams">限时模考</a><a class="btn" href="#/cheatsheet">速查手册</a></div></div>' +
       '<div class="kpi"><div><b>' + s.answered + '<small> / ' + s.total + '</small></b><span>已作答</span></div><div><b>' + s.done + '</b><span>已掌握</span></div><div><b>' + s.wrong + '</b><span>错题待复习</span></div><div><b>' + finalProblems + '</b><span>期末新增题</span></div></div></section>' +
       catBlocks +
@@ -412,7 +435,7 @@
     return '<div class="page-head"><div><h1>精选题库</h1><p>教材与 PTA 作业中的经典题 + 自编新题，按考点分类。所有题目都附思路与完整参考代码，作答自动保存。</p></div>' +
       '<div class="muted small">共 ' + PROBLEMS.length + ' 题</div></div>' +
       '<div class="lib-layout"><aside class="sidebar card">' +
-      '<div class="side-block"><input class="search" id="searchInput" type="search" placeholder="搜索题号 / 标题 / 标签 / 题面…" value="' + esc(state.q) + '"></div>' +
+      '<div class="side-block"><input class="search" id="searchInput" type="search" aria-label="搜索题目" placeholder="搜索题号 / 标题 / 标签 / 题面…" value="' + esc(state.q) + '"></div>' +
       '<div class="side-block"><p class="label">分类</p><div class="cat-list">' + catBtns + '</div></div>' +
       '<div class="side-block"><p class="label">难度</p><div class="filter-row">' + diffBtns + '</div></div>' +
       '<div class="side-block"><p class="label">掌握状态</p><div class="filter-row">' + stBtns + '</div></div>' +
@@ -430,8 +453,10 @@
       if (state.status !== 'all' && statusOf(p.id) !== state.status) return false;
       if (state.wrongOnly && !inWrong(p.id)) return false;
       if (q) {
-        var hay = (p.id + ' ' + p.title + ' ' + (p.tags || []).join(' ') + ' ' + (p.source || '') + ' ' + p.desc + ' ' + (p.hint || '')).toLowerCase();
-        if (hay.indexOf(q) < 0) return false;
+        if (!searchText.has(p)) {
+          searchText.set(p, [p.id, p.title, (p.tags || []).join(' '), p.source, p.desc, p.hint].join(' ').toLowerCase());
+        }
+        if (!searchText.get(p).includes(q)) return false;
       }
       return true;
     });
@@ -442,7 +467,12 @@
     var list = filtered();
     var shown = list.slice(0, state.page * PAGE);
     el.innerHTML = shown.length
-      ? shown.map(function(p) { return '<a class="card problem-summary" href="#/library/' + p.id + '"><span class="p-id">' + esc(p.id) + '</span><div><h3>' + esc(p.title) + '</h3><span class="muted small">' + esc(catName(p.cat)) + ' · ' + ({todo:'未做',doing:'在练',done:'已掌握',review:'需复习'}[statusOf(p.id)]) + '</span></div><span class="stars">' + stars(p.difficulty) + '</span><span>作答 →</span></a>'; }).join('')
+      ? shown.map(function(p) {
+        var status = statusOf(p.id);
+        return '<a class="card problem-summary" href="#/library/' + p.id + '"><span class="p-id">' + esc(p.id) + '</span><div><h3>' + esc(p.title) + '</h3><span class="muted small">' +
+          esc(catName(p.cat)) + '</span></div><span class="stars" aria-label="难度 ' + p.difficulty + ' 星">' + stars(p.difficulty) +
+          '</span><span class="status-label ' + status + '">' + STATUS_LABELS[status] + '</span><span class="summary-action" aria-hidden="true">→</span></a>';
+      }).join('')
       : '<div class="card empty">没有符合条件的题目。<br>试试清空搜索词或切换到「全部题目」。</div>';
     var more = document.getElementById('loadMore');
     if (more) {
@@ -614,43 +644,31 @@
       (list.length ? '<div class="section-title"><h2 style="font-size:15px">导出的 Markdown 预览</h2><span class="sub">点右上角按钮下载 .md 文件</span></div><textarea class="export-box" readonly>' + esc(md) + '</textarea>' : '');
   }
 
-  /* ================= 速查手册 ================= */
-  function viewSheet() {
-    if (!SECTIONS.length) return '<div class="card empty">速查手册内容生成中…</div>';
-    var nav = SECTIONS.map(function (s, i) { return '<button data-sheet="' + i + '">' + esc(s.title) + '</button>'; }).join('');
-    var body = SECTIONS.map(function (s, i) {
-      return '<section class="sheet-section" id="sheet-' + i + '"><h3>' + esc(s.title) + '</h3><div class="md">' + md(s.body) + '</div></section>';
+  /* ================= 速查手册与知识精讲 ================= */
+  function viewChapter(sections, routeName, title) {
+    if (!sections.length) return '<div class="card empty">' + title + '内容生成中…</div>';
+    var guide = routeName === 'guide';
+    var found = guide ? sections.findIndex(function (section) { return section.id === state.guideId; }) : state.sheetPage - 1;
+    var index = Number.isInteger(found) && found >= 0 && found < sections.length ? found : 0;
+    var chapter = sections[index];
+    var link = function (position) {
+      return '#/' + routeName + '/' + (guide ? sections[position].id : position + 1);
+    };
+    var nav = sections.map(function (section, i) {
+      var current = i === index ? ' class="active" aria-current="page"' : '';
+      return '<a href="' + esc(link(i)) + '"' + current + '>' + esc(section.title) + '</a>';
     }).join('');
-    return '<div class="page-head"><div><h1>速查手册</h1><p>考前 10 分钟扫一遍：数据类型、格式符、运算符优先级、数组算法模板、常见坑。</p></div></div>' +
-      '<div class="sheet-layout"><aside class="sheet-nav card">' + nav + '</aside><div class="card sheet-body">' + body + '</div></div>';
-  }
-
-  /* ================= 知识精讲 ================= */
-  function viewGuide() {
-    if (!GUIDE.length) return '<div class="card empty">知识精讲内容生成中…（请重新构建网页）</div>';
-    var cur = state.guideId;
-    var nav = GUIDE.map(function (g, i) {
-      return '<button class="' + (cur === g.id ? 'active' : '') + '" data-sheet="' + i + '"><span>' + esc(g.title) + '</span>' + (g.weight ? '<i class="pill ' + (g.weight === '必考' ? 'danger' : g.weight === '高频' ? 'warn' : '') + '">' + esc(g.weight) + '</i>' : '') + '</button>';
-    }).join('');
-    var body = GUIDE.map(function (g, i) {
-      var catLinks = CATS.filter(function (c) { return c.guide === g.id; }).map(function (c) {
-        return '<a class="tag" href="#/library/' + c.id + '">' + c.name + ' → 练 ' + PROBLEMS.filter(function (p) { return p.cat === c.id; }).length + ' 题</a>';
-      }).join('');
-      return '<section class="sheet-section" id="sheet-' + i + '"><div class="guide-head"><h3>' + esc(g.title) + '</h3>' + (g.ch ? '<span class="pill">' + esc(g.ch) + '</span>' : '') + '</div><div class="md">' + md(g.body) + '</div>' + (catLinks ? '<div class="guide-links">' + catLinks + '</div>' : '') + '</section>';
-    }).join('');
-    var totalFinal = CATS.filter(function (c) { return c.group === 'final'; }).reduce(function (a, c) { return a + catStats(c.id).total; }, 0);
-    return '<div class="page-head"><div><h1>知识精讲</h1><p>期末新增考点的系统讲解：概念 → 语法 → 代码模板 → 常见错误 → 对应练习。期末新增题库共 ' + totalFinal + ' 道题，讲完一节就去练那一组。</p></div>' +
-      '<div class="muted small">' + GUIDE.length + ' 节</div></div>' +
-      '<div class="sheet-layout"><aside class="sheet-nav card">' + nav + '</aside><div class="card sheet-body">' + body + '</div></div>';
-  }
-  function scrollToGuideSection(id) {
-    for (var i = 0; i < GUIDE.length; i++) {
-      if (GUIDE[i].id === id) {
-        var sec = document.getElementById('sheet-' + i);
-        if (sec) setTimeout(function () { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
-        return;
-      }
-    }
+    var exercises = guide ? CATS.filter(function (cat) { return cat.guide === chapter.id; }).map(function (cat) {
+      return '<a class="tag" href="#/library/' + cat.id + '">' + cat.name + ' · 对应练习</a>';
+    }).join('') : '';
+    var previous = index > 0 ? '<a class="btn small" href="' + esc(link(index - 1)) + '">上一节</a>' : '';
+    var next = index + 1 < sections.length ? '<a class="btn small" href="' + esc(link(index + 1)) + '">下一节</a>' : '';
+    return '<div class="page-head"><h1>' + title + '</h1><span class="muted">' + (index + 1) + ' / ' + sections.length + ' 节</span></div>' +
+      '<div class="sheet-layout"><nav class="sheet-nav card chapter-nav" aria-label="' + title + '目录"><b>目录</b>' + nav + '</nav>' +
+      '<article class="card sheet-body"><section class="sheet-section"><div class="guide-head"><h2>' + esc(chapter.title) + '</h2>' +
+      (chapter.ch ? '<span class="pill">' + esc(chapter.ch) + '</span>' : '') + '</div><div class="md">' + md(chapter.body) + '</div>' +
+      (exercises ? '<div class="guide-links">' + exercises + '</div>' : '') + '</section>' +
+      '<nav class="chapter-pages" aria-label="章节翻页">' + previous + next + '</nav></article></div>';
   }
 
   /* ================= 数据管理 ================= */
@@ -671,7 +689,7 @@
       '<div style="margin-top:14px"><div class="kv"><span>存储占用</span><b>' + (size / 1024).toFixed(1) + ' KB</b></div><div class="kv"><span>存储键名</span><span class="mono small">' + STORE_KEY + '</span></div><div class="kv"><span>自动保存</span><b>已开启</b></div></div></div>' +
       '<div class="data-card card"><h3>清空记录</h3><p>清空会删除所有作答、状态、错题本与模考计时，不可恢复。建议先导出备份。</p>' +
       '<button class="btn danger" data-clear-all="1">清空全部记录</button>' +
-      '<p style="margin-top:14px">隐私说明：所有数据仅保存在你的浏览器本地，本页面不联网、不上传任何内容。</p></div></div>';
+      '<p style="margin-top:14px">作答和评分保存在浏览器本地。C 语言评测会联网获取编译器，程序与输入在浏览器中处理。</p></div></div>';
   }
 
   /* ================= 行为 ================= */
@@ -693,9 +711,12 @@
   }
   function setStatus(id, v) {
     store.status[id] = v;
-    save();
     var segs = document.querySelectorAll('[data-status="' + id + '"]');
-    for (var i = 0; i < segs.length; i++) segs[i].classList.toggle('on', segs[i].dataset.v === v);
+    for (var i = 0; i < segs.length; i++) {
+      var selected = segs[i].dataset.v === v;
+      segs[i].classList.toggle('on', selected);
+      segs[i].setAttribute('aria-pressed', String(selected));
+    }
   }
   function toggleWrong(id) {
     if (store.wrong[id]) {
@@ -726,7 +747,7 @@
     var idx = list.indexOf(p);
     var cat = CAT_MAP[p.cat];
     var guideBtn = (cat && cat.guide) ? '<a class="btn small" href="#/guide/' + cat.guide + '">看考点精讲</a>' : '';
-    return '<div class="practice-toolbar"><a class="btn small" href="#/library">← 返回题库</a><button class="btn small" data-toggle-list aria-expanded="true">收起题目列表</button>' + guideBtn + '<span class="muted small">作答自动保存 · ' + (idx+1) + ' / ' + list.length + '</span><span class="spacer"></span><button class="btn small" data-goto-problem="' + (list[idx-1] || p).id + '" ' + (idx === 0 ? 'disabled' : '') + '>上一题</button><button class="btn small" data-goto-problem="' + (list[idx+1] || p).id + '" ' + (idx === list.length-1 ? 'disabled' : '') + '>下一题</button></div><div class="practice-layout"><aside class="practice-nav card" aria-label="题目列表"><div class="practice-nav-title">题目列表 <span class="muted small">' + list.length + ' 题</span></div>' + list.map(function(x) { return '<a href="#/library/' + x.id + '" class="practice-link ' + (x.id === p.id ? 'active' : '') + '" ' + (x.id === p.id ? 'aria-current="page"' : '') + '><span class="mono">' + x.id + '</span><span>' + esc(x.title) + '</span></a>'; }).join('') + '</aside><section class="practice-main">' + cardHtml(p) + '</section></div>';
+    return '<div class="practice-toolbar"><a class="btn small" href="#/library">← 返回题库</a><button class="btn small" data-toggle-list aria-expanded="true">收起题目列表</button>' + guideBtn + '<span class="muted small">作答自动保存 · ' + (idx+1) + ' / ' + list.length + '</span><span class="spacer"></span><button class="btn small" data-goto-problem="' + (list[idx-1] || p).id + '" ' + (idx === 0 ? 'disabled' : '') + '>上一题</button><button class="btn small" data-goto-problem="' + (list[idx+1] || p).id + '" ' + (idx === list.length-1 ? 'disabled' : '') + '>下一题</button></div><div class="practice-layout"><aside class="practice-nav card" aria-label="题目列表"><div class="practice-nav-title">题目列表 <span class="muted small">' + list.length + ' 题</span></div>' + list.map(function(x) { return '<a href="#/library/' + x.id + '" class="practice-link ' + (x.id === p.id ? 'active' : '') + '" ' + (x.id === p.id ? 'aria-current="page"' : '') + '><span class="mono">' + x.id + '</span><span class="practice-link-title">' + esc(x.title) + '</span><span class="practice-full" data-full-score="' + x.id + '"' + (hasFullScore(x) ? '' : ' hidden') + '>100分</span></a>'; }).join('') + '</aside><section class="practice-main">' + cardHtml(p) + '</section></div>';
   }
   function download(name, text, type) {
     var blob = new Blob([text], { type: type || 'application/json;charset=utf-8' });
@@ -816,6 +837,7 @@
     }
     if ((el = t.closest('[data-status]'))) {
       setStatus(el.dataset.status, el.dataset.v);
+      save();
       return;
     }
     if ((el = t.closest('[data-wrong]'))) {
@@ -825,14 +847,33 @@
     if ((el = t.closest('[data-clear-answer]'))) {
       var cid = el.dataset.clearAnswer;
       if (!confirm('清空这道题的作答记录？')) return;
+      var previousGrade = gradeOf(BY_ID[cid]);
+      if (previousGrade) store.grades[cid] = previousGrade;
       store.answers[cid] = { text: '', note: '', updated: 0 };
       saveNow();
-      var card = document.getElementById('p-' + cid);
-      if (card) { var ta = card.querySelector('[data-answer]'); if (ta) ta.value = ''; var nt = card.querySelector('[data-note]'); if (nt) nt.value = ''; }
+      var card = el.closest('.answer-box');
+      if (activeJudge && activeJudge.box === card) {
+        activeJudge.controller.abort();
+        activeJudge = null;
+      }
+      if (card) {
+        var ta = card.querySelector('[data-answer]');
+        ta.value = '';
+        if (ta.matches('[data-code-editor]')) syncCodeHighlight(ta, true);
+        card.querySelector('[data-note]').value = '';
+      }
+      var judgeResult = card && card.querySelector('[data-judge-result]');
+      if (judgeResult) {
+        judgeResult.textContent = 'C11 · ' + checkpoints(BY_ID[cid]).length + ' 个检查点';
+        setJudgeIssues(card, '');
+      }
       var sv = document.getElementById('saved-' + cid); if (sv) sv.textContent = '已清空';
       toast('已清空');
       return;
     }
+    if ((el = t.closest('[data-judge-tab]'))) { selectJudgeTab(el); return; }
+    if ((el = t.closest('[data-issue-line]'))) { gotoJudgeIssue(el); return; }
+    if ((el = t.closest('[data-judge]'))) { handleJudge(el); return; }
     if ((el = t.closest('[data-load-more]'))) {
       state.page++; renderList(); return;
     }
@@ -869,6 +910,7 @@
       if (!confirm('确定清空全部记录吗？此操作不可恢复，建议先导出备份。')) return;
       if (!confirm('再次确认：清空全部作答、状态、错题本与模考记录？')) return;
       store = emptyStore();
+      judgeReports.clear();
       saveNow();
       render();
       toast('已清空全部记录');
@@ -901,25 +943,15 @@
     if ((el = t.closest('[data-exam-exit]'))) {
       location.hash = '#/exams'; return;
     }
-    if ((el = t.closest('[data-sheet]'))) {
-      var idx = Number(el.dataset.sheet);
-      if (state.view === 'guide') {
-        var g = GUIDE[idx];
-        if (!g) return;
-        state.guideId = g.id;
-        var target = '#/guide/' + g.id;
-        if (location.hash === target) { render(); } else { location.hash = target; }
-        return;
-      }
-      var sec = document.getElementById('sheet-' + idx);
-      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
-    }
   });
 
   document.addEventListener('input', function (ev) {
     var t = ev.target;
-    if (t.matches('[data-answer]')) { setAnswer(t.dataset.answer, t.value); return; }
+    if (t.matches('[data-answer]')) {
+      setAnswer(t.dataset.answer, t.value);
+      if (t.matches('[data-code-editor]')) syncCodeHighlight(t, true);
+      return;
+    }
     if (t.matches('[data-note]')) { setNote(t.dataset.note, t.value); return; }
     if (t.matches('[data-wrong-reason]')) {
       var id = t.dataset.wrongReason;
@@ -945,6 +977,7 @@
           var base = emptyStore();
           Object.keys(base).forEach(function (k) { if (obj[k] && typeof obj[k] === 'object') base[k] = obj[k]; });
           store = base;
+          judgeReports.clear();
           saveNow();
           render();
           toast('导入成功');
@@ -959,7 +992,14 @@
   });
 
   document.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Escape' && state.view === 'exam') {
+    if (ev.target.matches && ev.target.matches('[data-judge-tab]') && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(ev.key)) {
+      ev.preventDefault();
+      var next = ev.key === 'Home' || (ev.key !== 'End' && ev.target.dataset.judgeTab === 'terminal') ? 'issues' : 'terminal';
+      selectJudgeTab(ev.target.closest('.judge-console').querySelector('[data-judge-tab="' + next + '"]'), true);
+      return;
+    }
+    if (ev.target.matches && ev.target.matches('[data-code-editor]') && editCode(ev)) return;
+    if (ev.key === 'Escape' && !document.getElementById('judge-dialog').open && state.view === 'exam') {
       if (confirm('退出考场？作答已自动保存，下次可继续。')) location.hash = '#/exams';
     }
   });
@@ -970,6 +1010,7 @@
     var next = cur === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     store.settings.theme = next; save();
+    refreshVscodeEditors();
     toast(next === 'dark' ? '已切换到深色模式' : '已切换到浅色模式');
   });
 
