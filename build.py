@@ -18,7 +18,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "v2.1.1"
+VERSION = "v2.2"
 CATS = {"basic", "select", "loop", "array1", "array2", "mix",
         "string", "func", "pointer", "struct", "algo"}
 CAT_ORDER = ["basic", "select", "loop", "array1", "array2", "mix",
@@ -96,7 +96,7 @@ def check_problems(problems, where):
                 errors.append(f"{where} {pid}: 缺少字段 {k}")
         if q.get("cat") not in CATS:
             errors.append(f"{where} {pid}: cat 非法 {q.get('cat')!r}")
-        if not isinstance(q.get("difficulty"), int) or not 1 <= q["difficulty"] <= 5:
+        if not isinstance(q.get("difficulty"), int) or not 1 <= q["difficulty"] <= 6:
             errors.append(f"{where} {pid}: difficulty 非法")
         if not isinstance(q.get("samples"), list) or not q["samples"]:
             errors.append(f"{where} {pid}: 没有样例")
@@ -181,7 +181,7 @@ def main():
             if (stars.count(4), stars.count(5)) != (3, 2):
                 errors.append(f"{cat} 应包含 3 道四星和 2 道五星题")
         for exam in exams:
-            if sum(q["difficulty"] >= 4 for q in exam["problems"]) != 1:
+            if sum(q["difficulty"] in (4, 5) for q in exam["problems"]) != 1 or any(q["difficulty"] == 6 for q in exam["problems"]):
                 errors.append(f"{exam['id']} 应包含一道四星或五星题")
     ids = {}
     for q in allp:

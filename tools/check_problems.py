@@ -75,8 +75,8 @@ def validate(problems):
                 errors.append(f"{where}: 缺少字段 {k}")
         if q.get("cat") not in CATS:
             errors.append(f"{where}: cat 非法: {q.get('cat')!r}")
-        if not isinstance(q.get("difficulty"), int) or not 1 <= q["difficulty"] <= 5:
-            errors.append(f"{where}: difficulty 必须是 1..5 的整数")
+        if not isinstance(q.get("difficulty"), int) or not 1 <= q["difficulty"] <= 6:
+            errors.append(f"{where}: difficulty 必须是 1..6 的整数，6 表示拓展")
         if not isinstance(q.get("tags"), list) or not 1 <= len(q["tags"]) <= 6:
             errors.append(f"{where}: tags 必须是 1..6 个字符串的数组")
         for s in q.get("samples") or []:

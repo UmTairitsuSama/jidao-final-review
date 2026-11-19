@@ -10,7 +10,7 @@
         "指针数组",
         "函数题"
       ],
-      "source": "用户提供题面",
+      "source": "北邮 2025–2026-1 期末上机 · 计院、网安院、未来学院 · BYR Docs 收录 · 6-3-新计票方式一",
       "desc": "### 题目描述\n\n新学期班级选举班长。班里有 n 位同学，编号为 0 到 n−1。每位同学可投 0 到 n 票，每张票只能投给一人，同一个投票人不能对同一人重复投票，可以投给自己。某位同学投出的每张票的权值等于**该投票人收到的票数**。每位同学的最终分数等于收到的所有票的权值之和。\n\n### 输入格式\n\n第一行是 n（1 < n ≤ 100）。接下来 n 行依次描述编号 0 到 n−1 的同学收到的选票。每行先给出该同学收到的票数 m，然后给出 m 个投票人的编号。输入保证合法。\n\n### 输出格式\n\n共 2×n 行，每行一个整数。前 n 行依编号输出收到的票数，后 n 行依编号输出最终分数。\n\n### 函数接口\n\n请在作答区实现以下两个函数。网站会自动加入裁判主函数。\n\n```c\nvoid points(int *votes, int **students, int num);\nvoid count(int **students, int *ranks, int num);\n```\n\n- `points`：`votes` 依编号连续存放所有同学的记录，每条记录由票数 m 及其后的 m 个投票人编号组成。把第 i 条记录的首地址写入 `students[i]`。\n- `count`：根据 `students` 中的记录计算每位同学的分数，把 i 号同学的分数写入 `ranks[i]`。两个函数中的 `num` 都是总人数。\n\n### 裁判测试程序\n\n```c\n#include <stdio.h>\n#define MAX_NUMBER 100\n\nvoid points(int *votes, int **students, int num);\nvoid count(int **students, int *ranks, int num);\n\nint main(void)\n{\n    int num, votes[MAX_NUMBER * (MAX_NUMBER + 1)];\n    int *students[MAX_NUMBER] = {0};\n    int ranks[MAX_NUMBER];\n    int offset = 0;\n\n    if (scanf(\"%d\", &num) != 1) return 1;\n    for (int i = 0; i < num; ++i) {\n        int m;\n        if (scanf(\"%d\", &m) != 1) return 1;\n        votes[offset++] = m;\n        for (int j = 0; j < m; ++j) {\n            if (scanf(\"%d\", &votes[offset++]) != 1) return 1;\n        }\n    }\n\n    points(votes, students, num);\n    offset = 0;\n    for (int i = 0; i < num; ++i) {\n        if (students[i] != votes + offset) {\n            fprintf(stderr, \"points did not point to the record for student %d\\n\", i);\n            return 1;\n        }\n        printf(\"%d\\n\", students[i][0]);\n        offset += 1 + students[i][0];\n    }\n    count(students, ranks, num);\n    for (int i = 0; i < num; ++i) printf(\"%d\\n\", ranks[i]);\n    return 0;\n}\n```",
       "samples": [
         {
@@ -47,13 +47,14 @@
       "hint": "记录长度为票数加 1。沿 votes 前进，记录起点后，再按投票人编号找到其记录的首元素。",
       "pitfalls": "即使某位同学得零票，其记录也占一个整数。权值来自投票人的得票数。",
       "solution": "void points(int *votes, int **students, int num)\n{\n    for (int i = 0; i < num; ++i) {\n        students[i] = votes;\n        votes += 1 + votes[0];\n    }\n}\n\nvoid count(int **students, int *ranks, int num)\n{\n    for (int i = 0; i < num; ++i) {\n        ranks[i] = 0;\n        for (int j = 1; j <= students[i][0]; ++j)\n            ranks[i] += students[students[i][j]][0];\n    }\n}\n",
-      "harness": "#include <stdio.h>\n#define MAX_NUMBER 100\n\nvoid points(int *votes, int **students, int num);\nvoid count(int **students, int *ranks, int num);\n\nint main(void)\n{\n    int num, votes[MAX_NUMBER * (MAX_NUMBER + 1)];\n    int *students[MAX_NUMBER] = {0};\n    int ranks[MAX_NUMBER];\n    int offset = 0;\n\n    if (scanf(\"%d\", &num) != 1) return 1;\n    for (int i = 0; i < num; ++i) {\n        int m;\n        if (scanf(\"%d\", &m) != 1) return 1;\n        votes[offset++] = m;\n        for (int j = 0; j < m; ++j) {\n            if (scanf(\"%d\", &votes[offset++]) != 1) return 1;\n        }\n    }\n\n    points(votes, students, num);\n    offset = 0;\n    for (int i = 0; i < num; ++i) {\n        if (students[i] != votes + offset) {\n            fprintf(stderr, \"points did not point to the record for student %d\\n\", i);\n            return 1;\n        }\n        printf(\"%d\\n\", students[i][0]);\n        offset += 1 + students[i][0];\n    }\n    count(students, ranks, num);\n    for (int i = 0; i < num; ++i) printf(\"%d\\n\", ranks[i]);\n    return 0;\n}"
+      "harness": "#include <stdio.h>\n#define MAX_NUMBER 100\n\nvoid points(int *votes, int **students, int num);\nvoid count(int **students, int *ranks, int num);\n\nint main(void)\n{\n    int num, votes[MAX_NUMBER * (MAX_NUMBER + 1)];\n    int *students[MAX_NUMBER] = {0};\n    int ranks[MAX_NUMBER];\n    int offset = 0;\n\n    if (scanf(\"%d\", &num) != 1) return 1;\n    for (int i = 0; i < num; ++i) {\n        int m;\n        if (scanf(\"%d\", &m) != 1) return 1;\n        votes[offset++] = m;\n        for (int j = 0; j < m; ++j) {\n            if (scanf(\"%d\", &votes[offset++]) != 1) return 1;\n        }\n    }\n\n    points(votes, students, num);\n    offset = 0;\n    for (int i = 0; i < num; ++i) {\n        if (students[i] != votes + offset) {\n            fprintf(stderr, \"points did not point to the record for student %d\\n\", i);\n            return 1;\n        }\n        printf(\"%d\\n\", students[i][0]);\n        offset += 1 + students[i][0];\n    }\n    count(students, ranks, num);\n    for (int i = 0; i < num; ++i) printf(\"%d\\n\", ranks[i]);\n    return 0;\n}",
+      "sourceUrl": "https://wiki.byrdocs.org/exam/25-26-1-%E8%AE%A1%E7%AE%97%E5%AF%BC%E8%AE%BA%E4%B8%8E%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1-%E6%9C%9F%E6%9C%AB%EF%BC%88%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%AD%A6%E9%99%A2-%E7%BD%91%E7%BB%9C%E7%A9%BA%E9%97%B4%E5%AE%89%E5%85%A8%E5%AD%A6%E9%99%A2-%E6%9C%AA%E6%9D%A5%E5%AD%A6%E9%99%A2%EF%BC%89/"
     },
     {
       "id": "R17",
       "cat": "algo",
       "title": "矩形批量维护与查询",
-      "difficulty": 4,
+      "difficulty": 5,
       "tags": [
         "二维差分",
         "二维前缀和",
@@ -205,7 +206,7 @@
       "id": "R20",
       "cat": "algo",
       "title": "一次折扣的最短路线",
-      "difficulty": 5,
+      "difficulty": 6,
       "tags": [
         "最短路",
         "状态建模",

@@ -118,6 +118,7 @@
     return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
   }
   function stars(n) {
+    if (n === 6) return '拓展';
     n = Math.max(1, Math.min(5, n || 1));
     var out = '';
     for (var i = 0; i < 5; i++) out += i < n ? '★' : '<span class="off">★</span>';
@@ -322,7 +323,11 @@
   function metaHtml(p) {
     var cn = catName(p.cat);
     var tags = (p.tags || []).filter(function (t) { return t !== cn; });
-    return '<div class="p-meta"><span>' + esc(cn) + '</span><span class="src">' + esc(p.source || '') + '</span>' +
+    var source = esc(p.source || '');
+    if (p.sourceUrl?.startsWith('https://wiki.byrdocs.org/')) {
+      source = '<a href="' + esc(p.sourceUrl) + '" target="_blank" rel="noopener">' + source + '</a>';
+    }
+    return '<div class="p-meta"><span>' + esc(cn) + '</span><span class="src">' + source + '</span>' +
       '<span class="tagrow">' + tags.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</span></div>';
   }
   function cardHtml(p) {
@@ -427,8 +432,9 @@
           return '<button class="' + (state.cat === c.id ? 'active' : '') + '" data-cat="' + c.id + '"><span>' + c.short + '</span><span class="n">' + n + '</span></button>';
         }).join('');
       }).join('');
-    var diffBtns = [0, 1, 2, 3, 4, 5].map(function (d) {
-      return '<button class="' + (state.diff === d ? 'active' : '') + '" data-diff="' + d + '">' + (d === 0 ? '全部' : d + '★') + '</button>';
+    var diffLabels = ['全部', '1★', '2★', '3★', '4★ 橙', '5★ 黄', '拓展'];
+    var diffBtns = diffLabels.map(function (label, d) {
+      return '<button class="' + (state.diff === d ? 'active' : '') + '" data-diff="' + d + '">' + label + '</button>';
     }).join('');
     var stBtns = [['all', '全部'], ['todo', '未做'], ['doing', '在练'], ['done', '已掌握'], ['review', '需复习']].map(function (o) {
       return '<button class="' + (state.status === o[0] ? 'active' : '') + '" data-st="' + o[0] + '">' + o[1] + '</button>';
@@ -471,7 +477,7 @@
       ? shown.map(function(p) {
         var status = statusOf(p.id);
         return '<a class="card problem-summary" href="#/library/' + p.id + '"><span class="p-id">' + esc(p.id) + '</span><div><h3>' + esc(p.title) + '</h3><span class="muted small">' +
-          esc(catName(p.cat)) + '</span></div><span class="stars" aria-label="难度 ' + p.difficulty + ' 星">' + stars(p.difficulty) +
+          esc(catName(p.cat)) + '</span></div><span class="stars" aria-label="难度 ' + (p.difficulty === 6 ? '拓展' : p.difficulty + ' 星') + '">' + stars(p.difficulty) +
           '</span><span class="status-label ' + status + '">' + STATUS_LABELS[status] + '</span><span class="summary-action" aria-hidden="true">→</span></a>';
       }).join('')
       : '<div class="card empty">没有符合条件的题目。<br>试试清空搜索词或切换到「全部题目」。</div>';

@@ -237,8 +237,8 @@
           "tags": [
             "分层扩展"
           ],
-          "source": "专题挑战选题 · H-array1-3",
-          "desc": "### 题目描述\n\n本题20分。\n\n输入 n 和 n 个非负步长上限（1≤n≤200000，每个≤10^9）。从下标 0 向右跳，每次可跳 1 到当前位置的上限步。输出到末项最少次数，不可达输出 -1。",
+          "source": "专题选题 · H-array1-3",
+          "desc": "### 题目描述\n\n本题20分。\n\n输入 n 和 n 个非负步长上限（1≤n≤200000，每个≤10^9）。从下标 0 向右跳，每次可跳 1 到当前位置的上限步。\n\n### 输出要求\n\n输出到末项最少次数，不可达输出 -1。",
           "hint": "分层扩展。扫描本轮可达区间，记录下一轮最远端点。",
           "solution": "#include <stdio.h>\n\nint main(void) {\n    int n, edge = 0, far = 0, jumps = 0;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        if (i > far) {\n            puts(\"-1\");\n            return 0;\n        }\n        if (i + x > far)\n            far = i + x;\n        if (i == edge && i < n - 1) {\n            edge = far;\n            jumps++;\n        }\n    }\n    printf(\"%d\\n\", jumps);\n    return 0;\n}\n",
           "samples": [
@@ -284,7 +284,7 @@
     {
       "id": "FM8",
       "title": "期末仿真卷 8 · 矩阵与内存管理",
-      "subtitle": "新编练习卷；120分钟，100分；六题分值10、15、15、20、20、20。按本地课程范围设计，不代表学校真实命题。 压轴：连续空位的最大展区（5★）。",
+      "subtitle": "新编练习卷；120分钟，100分；六题分值10、15、15、20、20、20。按本地课程范围设计，不代表学校真实命题。 压轴：成片空地（5★）。",
       "duration": 120,
       "problems": [
         {
@@ -475,17 +475,17 @@
           ]
         },
         {
-          "id": "FM8-H",
+          "id": "FM8-C",
           "cat": "array2",
-          "title": "连续空位的最大展区",
+          "title": "成片空地",
           "difficulty": 5,
           "tags": [
             "逐行柱高与单调栈"
           ],
-          "source": "专题挑战选题 · H-array2-4",
-          "desc": "### 题目描述\n\n本题20分。\n\n输入 n m 和 n×m 个 0/1（1≤n,m≤200）。1 表示空位，求全为空位的轴对齐矩形的最大面积。不存在空位时输出 0。要求 O(nm)。",
-          "hint": "逐行柱高与单调栈。将每行视为矩形的底边。",
-          "solution": "#include <stdio.h>\nstatic long long a[202][202];\nint n, m;\nvoid read_grid(void) {\n    scanf(\"%d%d\", &n, &m);\n    for (int i = 1; i <= n; i++)\n        for (int j = 1; j <= m; j++)\n            scanf(\"%lld\", &a[i][j]);\n}\nint main(void) {\n    read_grid();\n    int h[202] = {0}, st[202], best = 0;\n    for (int i = 1; i <= n; i++) {\n        int top = 0;\n        for (int j = 1; j <= m + 1; j++) {\n            h[j] = a[i][j] ? h[j] + 1 : 0;\n            while (top && h[st[top - 1]] > h[j]) {\n                int height = h[st[--top]],\n                    area = height * (j - 1 - (top ? st[top - 1] : 0));\n                if (area > best)\n                    best = area;\n            }\n            st[top++] = j;\n        }\n    }\n    printf(\"%d\\n\", best);\n    return 0;\n}\n",
+          "source": "专题选题 · L-array2-4",
+          "desc": "### 题目描述\n\n本题20分。\n\n输入 n m（1≤n,m≤200）及 n×m 个 0 或 1，1 表示空地。\n\n### 输出要求\n\n输出只包含空地的最大轴对齐矩形面积，一块空地都没有则输出 0。",
+          "hint": "固定矩形上下边界，逐行排除含障碍的列，求当前仍可使用的最长连续列段。",
+          "solution": "#include <stdio.h>\n\nint main(void) {\n\n    int n,m,a[200][200],best=0;\n    scanf(\"%d%d\",&n,&m);\n    for(int i=0;i<n;i++) for(int j=0;j<m;j++) scanf(\"%d\",&a[i][j]);\n    for(int top=0;top<n;top++){\n        int blocked[200]={0};\n        for(int bottom=top;bottom<n;bottom++){\n            int run=0;\n            for(int j=0;j<m;j++){\n                blocked[j]|=!a[bottom][j];\n                run=blocked[j]?0:run+1;\n                int area=run*(bottom-top+1);\n                if(area>best) best=area;\n            }\n        }\n    }\n    printf(\"%d\\n\",best);\n    return 0;\n}\n",
           "samples": [
             {
               "in": "3 3\n1 1 1\n1 1 1\n1 1 1\n",
@@ -526,14 +526,14 @@
               "out": "6400\n"
             }
           ],
-          "pitfalls": "遇到零必须重置这一列的柱高，行末还要清空栈。"
+          "pitfalls": "固定矩形上下边界，逐行排除含障碍的列，求当前仍可使用的最长连续列段。"
         }
       ]
     },
     {
       "id": "FM9",
       "title": "期末仿真卷 9 · 文本与结构体封装",
-      "subtitle": "新编练习卷；120分钟，100分；六题分值10、15、15、20、20、20。按本地课程范围设计，不代表学校真实命题。 压轴：循环串的最小代表（5★）。",
+      "subtitle": "新编练习卷；120分钟，100分；六题分值10、15、15、20、20、20。按本地课程范围设计，不代表学校真实命题。 压轴：环形编号的字典序（4★）。",
       "duration": 120,
       "problems": [
         {
@@ -736,17 +736,17 @@
           ]
         },
         {
-          "id": "FM9-H",
+          "id": "FM9-C",
           "cat": "string",
-          "title": "循环串的最小代表",
-          "difficulty": 5,
+          "title": "环形编号的字典序",
+          "difficulty": 4,
           "tags": [
             "最小表示法"
           ],
-          "source": "专题挑战选题 · H-string-4",
-          "desc": "### 题目描述\n\n本题20分。\n\n输入长度 1 至 200000 的小写字母串。所有循环左移结果按字典序比较，输出最小字符串的最小起始下标（0 起）。要求 O(n)。",
-          "hint": "最小表示法。遇到不同字符后，较差候选及其已匹配前缀中的候选一起淘汰。",
-          "solution": "#include <stdio.h>\n#include <string.h>\nstatic char s[200005];\n\nint main(void) {\n    scanf(\"%200000s\", s);\n    int n = strlen(s), i = 0, j = 1, k = 0;\n    while (i < n && j < n && k < n) {\n        char a = s[(i + k) % n], b = s[(j + k) % n];\n        if (a == b) {\n            k++;\n            continue;\n        }\n        if (a > b) {\n            i += k + 1;\n            if (i == j)\n                i++;\n        } else {\n            j += k + 1;\n            if (i == j)\n                j++;\n        }\n        k = 0;\n    }\n    printf(\"%d\\n\", i < j ? i : j);\n    return 0;\n}\n",
+          "source": "专题选题 · L-string-4",
+          "desc": "### 题目描述\n\n本题20分。\n\n输入一个长 1 至 1500 的小写字母串，视为写在环上。选一个起点顺时针读一圈。\n\n### 输出要求\n\n求读得字典序最小串的最小起点下标（从 0 起）。",
+          "hint": "把字符串接成两份，逐一比较从各起点开始的同长区段。相等时保留早出现的下标。",
+          "solution": "#include <stdio.h>\n#include <string.h>\nint main(void) {\n\n    char text[3001];scanf(\"%1500s\",text);\n    int n=strlen(text),best=0;\n    memcpy(text+n,text,n);\n    for(int i=1;i<n;i++) if(memcmp(text+i,text+best,n)<0)best=i;\n    printf(\"%d\\n\",best);\n    return 0;\n}\n",
           "samples": [
             {
               "in": "abababa\n",
@@ -785,20 +785,16 @@
             {
               "in": "abacaba\n",
               "out": "6\n"
-            },
-            {
-              "in": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba\n",
-              "out": "12000\n"
             }
           ],
-          "pitfalls": "多个旋转串相同取最小下标，不能在相等字符上提前淘汰。"
+          "pitfalls": "把字符串接成两份，逐一比较从各起点开始的同长区段。相等时保留早出现的下标。"
         }
       ]
     },
     {
       "id": "FM10",
       "title": "期末仿真卷 10 · 综合推理与边界处理",
-      "subtitle": "新编练习卷；120分钟，100分；六题分值10、15、15、20、20、20。按本地课程范围设计，不代表学校真实命题。 压轴：相邻数字不同的区间计数（5★）。",
+      "subtitle": "新编练习卷；120分钟，100分；六题分值10、15、15、20、20、20。按本地课程范围设计，不代表学校真实命题。 压轴：不相邻编号的展品（5★）。",
       "duration": 120,
       "problems": [
         {
@@ -1045,54 +1041,50 @@
           ]
         },
         {
-          "id": "FM10-H",
+          "id": "FM10-C",
           "cat": "func",
-          "title": "相邻数字不同的区间计数",
+          "title": "不相邻编号的展品",
           "difficulty": 5,
           "tags": [
             "数位递归"
           ],
-          "source": "专题挑战选题 · H-func-5",
-          "desc": "### 题目描述\n\n本题20分。\n\n输入 L R（0≤L≤R≤10^18）。统计闭区间内十进制表示中相邻数字均不同的整数个数，0 也合法，忽略前导零。",
-          "hint": "数位递归。状态记录上一位、是否仍贴上界；用独立哨兵表示还未开始。",
-          "solution": "#include <stdio.h>\n#include <string.h>\nchar digits[24];\nlong long memo[20][11];\nlong long dfs(int pos, int prev, int tight) {\n    if (!digits[pos])\n        return 1;\n    if (!tight && memo[pos][prev] >= 0)\n        return memo[pos][prev];\n    int lim = tight ? digits[pos] - '0' : 9;\n    long long sum = 0;\n    for (int d = 0; d <= lim; d++) {\n        if (d == prev)\n            continue;\n        sum += dfs(pos + 1, prev == 10 && !d ? 10 : d, tight && d == lim);\n    }\n    if (!tight)\n        memo[pos][prev] = sum;\n    return sum;\n}\nlong long count_to(long long n) {\n    if (n < 0)\n        return 0;\n    sprintf(digits, \"%lld\", n);\n    memset(memo, -1, sizeof memo);\n    return dfs(0, 10, 1);\n}\nint main(void) {\n    long long l, r;\n    scanf(\"%lld%lld\", &l, &r);\n    printf(\"%lld\\n\", count_to(r) - count_to(l - 1));\n    return 0;\n}\n",
+          "source": "专题选题 · L-func-5",
+          "desc": "### 题目描述\n\n本题20分。\n\n展柜编号从 1 到 n（1≤n≤40）。选择若干展柜，任意两个入选编号不能相邻。输入 n k（0≤k≤n），统计恰选 k 个展柜的方案数，空方案算 1。",
+          "hint": "按第一个展柜是否入选拆分子问题。入选时跳过紧邻的展柜，用二维数组缓存子问题。",
+          "solution": "#include <stdio.h>\nstatic long long memo[41][41];\nlong long choose(int n,int k){\n    if(!k)return 1;\n    if(n<=0||k>(n+1)/2)return 0;\n    if(!memo[n][k])memo[n][k]=choose(n-1,k)+choose(n-2,k-1);\n    return memo[n][k];\n}\nint main(void) {\n\n    int n,k;scanf(\"%d%d\",&n,&k);\n    printf(\"%lld\\n\",choose(n,k));\n    return 0;\n}\n",
           "samples": [
             {
-              "in": "0 0\n",
-              "out": "1\n"
+              "in": "5 2\n",
+              "out": "6\n"
             }
           ],
           "checkpoints": [
             {
-              "in": "1 11\n",
-              "out": "10\n"
+              "in": "1 0\n",
+              "out": "1\n"
             },
             {
-              "in": "98 112\n",
-              "out": "10\n"
+              "in": "1 1\n",
+              "out": "1\n"
             },
             {
-              "in": "1000 1000\n",
+              "in": "8 5\n",
               "out": "0\n"
             },
             {
-              "in": "0 9999\n",
-              "out": "7381\n"
+              "in": "10 1\n",
+              "out": "10\n"
             },
             {
-              "in": "90000 110000\n",
-              "out": "13122\n"
+              "in": "40 13\n",
+              "out": "37442160\n"
             },
             {
-              "in": "0 999999999999999999\n",
-              "out": "168856464709124011\n"
-            },
-            {
-              "in": "1000000000000000000 1000000000000000000\n",
-              "out": "0\n"
+              "in": "40 20\n",
+              "out": "21\n"
             }
           ],
-          "pitfalls": "前导零与真实数字 0 的状态不同，区间从 0 开始时要处理负上界。"
+          "pitfalls": "按第一个展柜是否入选拆分子问题。入选时跳过紧邻的展柜，用二维数组缓存子问题。"
         }
       ]
     }

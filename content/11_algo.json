@@ -248,7 +248,7 @@
       "id": "R07",
       "cat": "algo",
       "title": "连续订单的最高净收益",
-      "difficulty": 3,
+      "difficulty": 4,
       "tags": [
         "最大连续子段和",
         "动态规划",
@@ -464,7 +464,7 @@
       "id": "R12",
       "cat": "algo",
       "title": "身高队列的相邻交换次数",
-      "difficulty": 3,
+      "difficulty": 6,
       "tags": [
         "归并排序",
         "逆序对",

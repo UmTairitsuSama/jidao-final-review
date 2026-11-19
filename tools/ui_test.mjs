@@ -123,6 +123,8 @@ try {
   await nav('#/library');
   const catBtns = await evaluate(`document.querySelectorAll('[data-cat]').length`);
   test('考点分类齐全', catBtns >= 12, `${catBtns} 个分类按钮`);
+  test('题库显示橙题、黄题和拓展筛选', await evaluate(
+    '["4★ 橙","5★ 黄","拓展"].every((label,i)=>document.querySelector("[data-diff=\\""+(i+4)+"\\"]").textContent===label)'));
   await click('[data-cat="array1"]');
   const count1 = await evaluate(`document.querySelectorAll('#problemList .problem-summary').length`);
   const rc = await evaluate(`document.getElementById('resultCount').textContent`);
@@ -308,6 +310,14 @@ try {
     await type(code, cloneSolution);
     const cloneGrade = await judge('submit');
     test('五星链表题通过节点与随机指针校验', cloneGrade.includes('100 / 100 分'));
+    await closeReport();
+    await nav('#/library/BYR25-61');
+    const byrdocs = await evaluate('window.__DATA__.problems.find(p => p.id === "BYR25-61")');
+    test('期末上机练习带可访问的来源链接', await evaluate(
+      'document.querySelector(".practice-statement .src a")?.href.startsWith("https://wiki.byrdocs.org/")'));
+    await type(code, byrdocs.solution);
+    const sourceGrade = await judge('submit');
+    test('期末上机函数题可直接提交函数', sourceGrade.includes('100 / 100 分'));
     await closeReport();
   }
 
