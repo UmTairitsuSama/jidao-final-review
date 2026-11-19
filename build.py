@@ -18,7 +18,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "v2.1"
+VERSION = "v2.1.1"
 CATS = {"basic", "select", "loop", "array1", "array2", "mix",
         "string", "func", "pointer", "struct", "algo"}
 CAT_ORDER = ["basic", "select", "loop", "array1", "array2", "mix",
@@ -175,6 +175,14 @@ def main():
         warnings.append(f"模拟卷数量为 {len(exams)}（预期 ≥ 6）")
 
     allp = problems + exam_problems
+    if os.path.isfile(os.path.join(args.content, "21_challenges.json")):
+        for cat in CAT_ORDER:
+            stars = [q["difficulty"] for q in problems if q["cat"] == cat]
+            if (stars.count(4), stars.count(5)) != (3, 2):
+                errors.append(f"{cat} 应包含 3 道四星和 2 道五星题")
+        for exam in exams:
+            if sum(q["difficulty"] >= 4 for q in exam["problems"]) != 1:
+                errors.append(f"{exam['id']} 应包含一道四星或五星题")
     ids = {}
     for q in allp:
         ids.setdefault(q.get("id"), 0)

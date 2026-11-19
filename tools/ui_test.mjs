@@ -296,6 +296,19 @@ try {
     const examGrade = await judge('submit');
     test('模考题按自身分值识别满分', examGrade.includes('10 / 10 分') && (await store()).status['FM7-1'] === 'done');
     await closeReport();
+    await click('[data-exam-no="6"]');
+    const finale = await evaluate('window.__DATA__.exams.find(e => e.id === "FM7").problems.at(-1)');
+    await type(code, finale.solution);
+    const finalGrade = await judge('submit');
+    test('高星压轴题按卷面分独立评测', finale.difficulty === 4 && finalGrade.includes('20 / 20 分') &&
+      (await store()).grades[finale.id]?.latest === 20);
+    await closeReport();
+    await nav('#/library/H-pointer-5');
+    const cloneSolution = await evaluate('window.__DATA__.problems.find(p => p.id === "H-pointer-5").solution');
+    await type(code, cloneSolution);
+    const cloneGrade = await judge('submit');
+    test('五星链表题通过节点与随机指针校验', cloneGrade.includes('100 / 100 分'));
+    await closeReport();
   }
 
   // 4. 搜索

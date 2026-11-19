@@ -1,6 +1,7 @@
 import json,pathlib,random,itertools,tempfile,subprocess,shutil
 R=pathlib.Path(__file__).resolve().parents[1]
 qs={q['id']:q for e in json.loads((R/'content/17_four_new_exams.json').read_text(encoding='utf-8'))['exams'] for q in e['problems']}
+qs.update({q['id']:q for q in json.loads((R/'content/22_former_exam_questions.json').read_text(encoding='utf-8'))['problems']})
 rng=random.Random(20261115);count=0
 def cases(id):
     for _ in range(40):
