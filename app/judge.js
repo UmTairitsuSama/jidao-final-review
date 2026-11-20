@@ -18,6 +18,8 @@
   }
 
   const cLiterals = /(?<comment>\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|(?![\s\S])))|(?<string>"(?:\\[\s\S]|[^"\\\n])*(?:"|\\?)|'(?:\\[\s\S]|[^'\\\n])*(?:'|\\?))/g;
+  const bracketPairs = { '(': ')', '[': ']', '{': '}' };
+  const codePairTokens = new RegExp(cLiterals.source + '|[(){}\\[\\]]', 'g');
   let vscodeHighlight, vscodeLoading;
 
   async function unpackVscodeAsset(encoded) {
@@ -86,15 +88,91 @@
 
   function syncCodeHighlight(editor, refresh) {
     const display = editor.previousElementSibling;
-    if (refresh) display.firstElementChild.innerHTML = highlightCode(editor.value, judgeLanguage(BY_ID[editor.dataset.answer]));
+    if (refresh) {
+      display.firstElementChild.innerHTML = highlightCode(editor.value, judgeLanguage(BY_ID[editor.dataset.answer]));
+      if (editor.dataset.pairIndex !== undefined) showCodePair(editor, Number(editor.dataset.pairIndex));
+    }
     display.firstElementChild.style.transform = 'translate(' + -editor.scrollLeft + 'px,' + -editor.scrollTop + 'px)';
+  }
+
+  function matchingCodeIndex(value, target) {
+    const stack = [];
+    for (const token of value.matchAll(codePairTokens)) {
+      const start = token.index;
+      const symbol = token[0];
+      if (token.groups.comment) continue;
+      if (token.groups.string) {
+        const end = start + symbol.length - 1;
+        if ((target === start || target === end) && closedCodeQuote(symbol)) return target === start ? end : start;
+        continue;
+      }
+      if (bracketPairs[symbol]) {
+        stack.push(token);
+      } else if (stack.length && bracketPairs[stack.at(-1)[0]] === symbol) {
+        const open = stack.pop().index;
+        if (target === start || target === open) return target === start ? open : start;
+      } else {
+        stack.length = 0;
+      }
+    }
+    return -1;
+  }
+
+  function codeCharacterRange(editor, index) {
+    const text = editor.previousElementSibling.firstElementChild;
+    const walker = document.createTreeWalker(text, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (index < node.length) {
+        const range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, index + 1);
+        return range;
+      }
+      index -= node.length;
+    }
+    return null;
+  }
+
+  function clearCodePair(editor) {
+    delete editor.dataset.pairIndex;
+    editor.previousElementSibling.querySelectorAll('.code-pair-match').forEach((mark) => {
+      const parent = mark.parentNode;
+      mark.replaceWith(...mark.childNodes);
+      parent.normalize();
+    });
+  }
+
+  function showCodePair(editor, index) {
+    const other = matchingCodeIndex(editor.value, index);
+    if (other < 0) return;
+    editor.dataset.pairIndex = index;
+    for (const offset of [Math.max(index, other), Math.min(index, other)]) {
+      const mark = document.createElement('span');
+      mark.className = 'code-pair-match';
+      codeCharacterRange(editor, offset)?.surroundContents(mark);
+    }
+  }
+
+  function clickCodePair(event) {
+    const editor = event.currentTarget;
+    clearCodePair(editor);
+    if (editor.selectionStart !== editor.selectionEnd) return;
+    for (const index of [editor.selectionStart - 1, editor.selectionStart]) {
+      if (index < 0 || !/[()[\]{}"']/.test(editor.value.charAt(index))) continue;
+      const rect = codeCharacterRange(editor, index)?.getBoundingClientRect();
+      if (rect && event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom) {
+        showCodePair(editor, index);
+        return;
+      }
+    }
   }
 
   function editCode(event) {
     if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return false;
     const editor = event.target;
     const key = event.key;
-    const pairs = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'" };
+    const pairs = { ...bracketPairs, '"': '"', "'": "'" };
     const closing = Object.values(pairs).includes(key);
     if (key !== 'Enter' && key !== 'Tab' && key !== 'Backspace' && !pairs[key] && !closing) return false;
     let start = editor.selectionStart;
@@ -157,9 +235,12 @@
     if (!last || last.index + last[0].length !== before.length) return false;
     if (last.groups.comment) return last[0].startsWith('//') || !last[0].endsWith('*/');
     if (!last.groups.string) return false;
-    const literal = last[0];
-    return literal.length === 1 || literal[0] !== literal.at(-1) ||
-      (literal.slice(0, -1).match(/\\+$/)?.[0].length || 0) % 2 !== 0;
+    return !closedCodeQuote(last[0]);
+  }
+
+  function closedCodeQuote(literal) {
+    return literal.length > 1 && literal[0] === literal.at(-1) &&
+      (literal.slice(0, -1).match(/\\+$/)?.[0].length || 0) % 2 === 0;
   }
 
   function checkpoints(p) {

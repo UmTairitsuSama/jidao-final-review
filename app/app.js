@@ -296,6 +296,21 @@
   }
   %%JUDGE%%
 
+  function syncAnswerEditor(editor, refresh) {
+    var container = editor.closest('.answer-editor');
+    var numbers = container.querySelector('.answer-line-numbers');
+    if (refresh) {
+      var count = editor.value.split('\n').length;
+      if (numbers.dataset.count !== String(count)) {
+        numbers.textContent = Array.from({ length: count }, function (_, i) { return i + 1; }).join('\n');
+        numbers.dataset.count = count;
+        container.style.setProperty('--line-number-width', Math.max(2, String(count).length) + 'ch');
+      }
+    }
+    numbers.style.transform = 'translateY(' + -editor.scrollTop + 'px)';
+    if (editor.matches('[data-code-editor]')) syncCodeHighlight(editor, refresh);
+  }
+
   function answerHtml(p) {
     var a = answerOf(p.id);
     var text = String(a.text || '');
@@ -304,10 +319,12 @@
     return '<div class="answer-box">' +
       '<div class="answer-bar"><b>作答记录</b><span class="saved" id="saved-' + p.id + '">' + (a.updated ? '已保存 ' + fmtTime(a.updated) : '自动保存到本机') + '</span><span class="spacer"></span>' +
       (coding ? judgeLanguageHtml(p) : '') + '<button class="btn small" data-clear-answer="' + p.id + '">清空</button></div>' +
-      (coding ? '<div class="c-editor"><pre class="c-highlight" aria-hidden="true"><span>' + highlightCode(text, judgeLanguage(p)) + '</span></pre>' : '') +
-      '<textarea data-answer="' + p.id + '"' + (coding ? ' data-code-editor wrap="off" aria-label="代码" autocapitalize="off" autocomplete="off"' : ' aria-label="作答记录"') +
+      '<div class="answer-editor' + (coding ? ' c-editor' : '') + '">' +
+      '<div class="answer-gutter" aria-hidden="true"><pre class="answer-line-numbers"></pre></div><div class="answer-editor-content">' +
+      (coding ? '<pre class="c-highlight" aria-hidden="true"><span></span></pre>' : '') +
+      '<textarea data-answer="' + p.id + '" wrap="off"' + (coding ? ' data-code-editor aria-label="代码" autocapitalize="off" autocomplete="off"' : ' aria-label="作答记录"') +
       ' spellcheck="false" placeholder="' + (coding ? (p.harness ? '在这里实现题目要求的函数' : '在这里输入代码') : '在这里记录你的推导过程') + '">\n' + esc(text) + '</textarea>' +
-      (coding ? '</div>' + judgeHtml(p) : '') +
+      '</div></div>' + (coding ? judgeHtml(p) : '') +
       '<input class="note" data-note="' + p.id + '" placeholder="备注：错误原因 / 关键点（自动保存）" value="' + esc(a.note || '') + '">' +
       '<div class="answer-foot">' + statusHtml(p.id) +
       '<button class="btn small wrong-btn' + (w ? ' on' : '') + '" data-wrong="' + p.id + '">' + (w ? '★ 已收录错题本' : '☆ 加入错题本') + '</button>' +
@@ -366,8 +383,19 @@
     else if (v === 'wrong') app.innerHTML = viewWrong();
     else if (v === 'cheatsheet') app.innerHTML = viewChapter(SECTIONS, 'cheatsheet', '速查手册');
     else if (v === 'data') app.innerHTML = viewData();
-    var editor = app.querySelector('[data-code-editor]');
-    if (editor) editor.addEventListener('scroll', function () { syncCodeHighlight(editor, false); }, { passive: true });
+    app.querySelectorAll('[data-answer]').forEach(function (editor) {
+      syncAnswerEditor(editor, true);
+      editor.addEventListener('scroll', function () { syncAnswerEditor(editor, false); }, { passive: true });
+      editor.addEventListener('pointerdown', function () { editor.classList.add('pointer-focus'); });
+      editor.addEventListener('blur', function () { editor.classList.remove('pointer-focus'); });
+      if (editor.matches('[data-code-editor]')) {
+        editor.addEventListener('click', clickCodePair);
+        editor.addEventListener('blur', function () { clearCodePair(editor); });
+        editor.addEventListener('select', function () {
+          if (editor.selectionStart !== editor.selectionEnd) clearCodePair(editor);
+        });
+      }
+    });
     refreshVscodeEditors();
     window.scrollTo(0, 0);
   }
@@ -866,7 +894,8 @@
       if (card) {
         var ta = card.querySelector('[data-answer]');
         ta.value = '';
-        if (ta.matches('[data-code-editor]')) syncCodeHighlight(ta, true);
+        delete ta.dataset.pairIndex;
+        syncAnswerEditor(ta, true);
         card.querySelector('[data-note]').value = '';
       }
       var judgeResult = card && card.querySelector('[data-judge-result]');
@@ -956,7 +985,8 @@
     var t = ev.target;
     if (t.matches('[data-answer]')) {
       setAnswer(t.dataset.answer, t.value);
-      if (t.matches('[data-code-editor]')) syncCodeHighlight(t, true);
+      delete t.dataset.pairIndex;
+      syncAnswerEditor(t, true);
       return;
     }
     if (t.matches('[data-note]')) { setNote(t.dataset.note, t.value); return; }
@@ -1006,7 +1036,10 @@
       selectJudgeTab(ev.target.closest('.judge-console').querySelector('[data-judge-tab="' + next + '"]'), true);
       return;
     }
-    if (ev.target.matches && ev.target.matches('[data-code-editor]') && editCode(ev)) return;
+    if (ev.target.matches && ev.target.matches('[data-code-editor]')) {
+      if (ev.target.dataset.pairIndex !== undefined) clearCodePair(ev.target);
+      if (editCode(ev)) return;
+    }
     if (ev.key === 'Escape' && !document.getElementById('judge-dialog').open && state.view === 'exam') {
       if (confirm('退出考场？作答已自动保存，下次可继续。')) location.hash = '#/exams';
     }

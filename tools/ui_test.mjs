@@ -137,6 +137,70 @@ try {
   await click('[data-toggle-list]');
   test('收起列表', await evaluate('document.querySelector(".practice-layout").classList.contains("list-collapsed")'));
   await click('[data-toggle-list]');
+  test('空白作答区从第 1 行开始', await evaluate('document.querySelector(".answer-line-numbers").textContent === "1"'));
+  const answerPoint = await evaluate(`(() => {
+    const { left, top } = document.querySelector('[data-answer]').getBoundingClientRect();
+    return { x: left + 20, y: top + 20 };
+  })()`);
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', ...answerPoint, button: 'left', clickCount: 1 });
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...answerPoint, button: 'left', clickCount: 1 });
+  const answerFocus = `document.activeElement.matches('[data-answer]') && getComputedStyle(document.activeElement).outlineStyle`;
+  test('点击作答区可输入且无蓝色焦点框', await evaluate(`(${answerFocus}) === 'none'`));
+  await evaluate(`document.querySelector('[data-clear-answer]').focus()`);
+  await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+  await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+  test('Tab 进入作答区仍显示焦点框', await evaluate(`(${answerFocus}) === 'solid'`));
+  const pairCode = '{ /* } */\n  f(a[0], ")");\n}';
+  await type('[data-code-editor]', pairCode);
+  async function checkCodePair(clicked, expected) {
+    const point = await evaluate(`(() => {
+      const walker = document.createTreeWalker(document.querySelector('.c-highlight'), NodeFilter.SHOW_TEXT);
+      let offset = ${clicked};
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (offset < node.length) {
+          const range = document.createRange();
+          range.setStart(node, offset);
+          range.setEnd(node, offset + 1);
+          const rect = range.getBoundingClientRect();
+          return { x: rect.left + rect.width * 0.75, y: rect.top + rect.height / 2 };
+        }
+        offset -= node.length;
+      }
+    })()`);
+    await send('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
+    await send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
+    const marks = await evaluate(`[...document.querySelectorAll('.code-pair-match')].map((mark) => {
+      const prefix = document.createRange();
+      prefix.setStart(document.querySelector('.c-highlight'), 0);
+      prefix.setEndBefore(mark);
+      return prefix.toString().length;
+    })`);
+    return JSON.stringify(marks) === JSON.stringify(expected);
+  }
+  test('单击闭合括号可配对，跳过注释和字符串内的括号',
+    await checkCodePair(pairCode.lastIndexOf('}'), [0, pairCode.lastIndexOf('}')]) &&
+    await checkCodePair(pairCode.indexOf('('), [pairCode.indexOf('('), pairCode.lastIndexOf(')')]) &&
+    await checkCodePair(pairCode.indexOf('['), [pairCode.indexOf('['), pairCode.indexOf(']')]) &&
+    await checkCodePair(pairCode.indexOf('"'), [pairCode.indexOf('"'), pairCode.lastIndexOf('"')]) &&
+    await checkCodePair(pairCode.indexOf('}'), []));
+  await type('[data-answer]', 'x'.repeat(300) + '\n'.repeat(101));
+  test('作答行号包含空行并跟随纵向滚动', await evaluate(`(() => {
+    const editor = document.querySelector('[data-answer]');
+    const numbers = document.querySelector('.answer-line-numbers');
+    editor.scrollTop = 100;
+    editor.scrollLeft = 100;
+    return new Promise((resolve) => requestAnimationFrame(() => {
+      const lines = numbers.textContent.split('\\n');
+      const gutter = getComputedStyle(numbers.parentElement);
+      const field = getComputedStyle(editor);
+      resolve(lines.length === 102 && lines[101] === '102' &&
+        gutter.lineHeight === field.lineHeight && getComputedStyle(numbers).paddingTop === field.paddingTop &&
+        editor.scrollTop > 0 && editor.scrollLeft > 0 &&
+        numbers.style.transform === 'translateY(' + -editor.scrollTop + 'px)');
+    }));
+  })()`));
+  await click('[data-clear-answer]');
+  test('清空作答后行号恢复到第 1 行', await evaluate('document.querySelector(".answer-line-numbers").textContent === "1"'));
   await type(`[data-answer="${firstId}"]`, 'int main(){ /* 我的作答 */ return 0; }');
   let s = await store();
   test('作答自动保存到 localStorage', !!(s.answers && s.answers[firstId] && s.answers[firstId].text.includes('我的作答')), firstId);
@@ -360,7 +424,8 @@ try {
   const timerTxt = await evaluate(`(document.getElementById('examTimer')||{}).textContent`);
   test('倒计时运行', /^\d{2,3}:\d{2}$/.test(timerTxt || ''), timerTxt);
   const examQid = await evaluate(`document.querySelector('.exam-main .p-id').textContent.trim()`);
-  await type(`[data-answer="${examQid}"]`, '/* 模考作答 */');
+  await type(`[data-answer="${examQid}"]`, '/* 模考作答 */\n\n');
+  test('模考作答区同步显示行号', await evaluate('document.querySelector(".answer-line-numbers").dataset.count === "3"'));
   await click('[data-exam-no="2"]');
   const q2 = await evaluate(`document.querySelector('.exam-main .p-id').textContent.trim()`);
   test('考场切题', q2 !== examQid, `${examQid} → ${q2}`);
