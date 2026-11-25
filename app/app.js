@@ -630,11 +630,12 @@
       '<button class="btn small" data-exam-exit="1">退出考场</button></div>' +
       '<div class="exam-body"><aside class="exam-nav"><div class="legend">题号颜色：<b style="color:var(--teal)">绿</b>=已作答，蓝=当前题</div>' + navBtns +
       '<div style="margin-top:14px"><div class="muted small">已作答 ' + answeredN + '/' + total + '</div><div class="bar thin" style="margin-top:6px"><i style="width:' + pct(answeredN, total) + '%"></i></div></div></aside>' +
-      '<div class="exam-main"><div class="q-wrap">' + banner +
+      '<div class="exam-main card"><section class="practice-statement practice-pane" tabindex="0" aria-label="题面">' +
       '<div class="q-head"><span class="p-id">' + esc(q.id) + '</span><h2>' + esc(q.title) + '</h2><span class="stars">' + stars(q.difficulty) + '</span></div>' +
-      metaHtml(q) + examStatement(q) + answerHtml(q, e.kind === 'past' && submitted) +
-      (submitted ? solutionHtml(q) : '<div class="muted small" style="margin-top:12px">交卷后可查看参考答案。</div>') +
-      '</div></div></div>' +
+      metaHtml(q) + examStatement(q) + '</section><section class="practice-answer practice-pane" tabindex="0" aria-label="作答与评测">' +
+      banner + answerHtml(q, e.kind === 'past' && submitted) +
+      (submitted ? solutionHtml(q) : '') +
+      '</section></div></div>' +
       '<div class="exam-foot"><button class="btn" data-exam-prev="1"' + (no <= 1 ? ' disabled' : '') + '>← 上一题</button>' +
       '<button class="btn" data-exam-next="1"' + (no >= total ? ' disabled' : '') + '>下一题 →</button><span class="spacer"></span>' +
       (submitted ? '<span class="muted small">已交卷，可继续查看解析</span>' : '<button class="btn teal" data-exam-submit="1">交卷并查看参考答案</button>') +

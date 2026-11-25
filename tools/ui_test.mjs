@@ -442,6 +442,15 @@ try {
     'document.querySelectorAll("[data-exam-no]").length === 5 && ' +
     'document.querySelector(".exam-head .sub").textContent.includes("60 分钟") && ' +
     'document.querySelector("#examTimer").textContent.match(/^(60:00|59:[0-5][0-9])$/) && !document.querySelector(".solution")'));
+  test('考场沿用左右独立滚动的题面和作答栏', await evaluate(`(() => {
+    const left = document.querySelector('.exam-main .practice-statement');
+    const right = document.querySelector('.exam-main .practice-answer');
+    const a = left.getBoundingClientRect(), b = right.getBoundingClientRect();
+    left.scrollTop = 100;
+    return a.top === b.top && a.right === b.left && Math.abs(a.width - b.width) < 1 &&
+      left.scrollTop > 0 && right.scrollTop === 0 && !left.querySelector('.solution, [data-answer]') &&
+      !!right.querySelector('[data-answer]') && !!right.querySelector('[data-judge="submit"]');
+  })()`));
   const realStartedAt = (await store()).exams.REAL2025.startedAt;
   await click('[data-exam-no="4"]');
   test('双十二订单展示原题文字、样例和栈限制', await evaluate(
@@ -475,7 +484,8 @@ try {
   await waitFor(() => evaluate('!!document.querySelector(".exam-submitted")'));
   const expired = (await store()).exams.REAL2025.submittedAt;
   test('一小时到点交卷并锁定作答和评测', expired === realStartedAt + 3600000 && await evaluate(
-    '!!document.querySelector(".solution") && !document.querySelector("[data-answer], [data-judge=submit], [data-judge=run]")'));
+    '!!document.querySelector(".exam-main .practice-answer .solution") && !document.querySelector(".exam-main .practice-statement .solution") && ' +
+    '!document.querySelector("[data-answer], [data-judge=submit], [data-judge=run]")'));
   await evaluate('Date.now = window.originalDateNow');
 
   // 8. 主题切换
