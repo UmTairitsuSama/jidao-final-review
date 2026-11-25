@@ -417,7 +417,7 @@ try {
   await nav('#/exams');
   const examCards = await evaluate(`document.querySelectorAll('[data-start-exam]').length`);
   test('模拟卷列表', examCards >= 6, `${examCards} 套`);
-  await click('[data-start-exam]');
+  await click('[data-start-exam="FM1"]');
   await sleep(600);
   const inRoom = await evaluate(`!!document.querySelector('.exam-room')`);
   test('进入考场', inRoom);
@@ -435,6 +435,48 @@ try {
   const submitted = await evaluate(`!!document.querySelector('.exam-submitted')`);
   test('交卷后显示参考答案', submitted);
   await shot('05-exam-submitted');
+
+  await nav('#/exams');
+  await click('[data-start-exam="REAL2025"]');
+  test('真题卷五题、60 分钟，考中隐藏参考答案', await evaluate(
+    'document.querySelectorAll("[data-exam-no]").length === 5 && ' +
+    'document.querySelector(".exam-head .sub").textContent.includes("60 分钟") && ' +
+    'document.querySelector("#examTimer").textContent.match(/^(60:00|59:[0-5][0-9])$/) && !document.querySelector(".solution")'));
+  const realStartedAt = (await store()).exams.REAL2025.startedAt;
+  await click('[data-exam-no="4"]');
+  test('双十二订单展示原题文字、样例和栈限制', await evaluate(
+    'document.querySelector(".q-desc").textContent.includes("凑满减精过会计") && ' +
+    'document.querySelector(".samples").textContent.includes("409") && ' +
+    'document.querySelector(".exam-limits").textContent.includes("8192 KB")'));
+  await click('[data-exam-no="5"]');
+  test('最大池化原图加载', await evaluate(
+    '[...document.querySelectorAll(".exam-statement-images img")].filter(img => img.complete && img.naturalWidth > 0).length === 2'));
+  if (args.includes('--judge')) {
+    await click('[data-exam-no="1"]');
+    const solution = await evaluate('window.__DATA__.exams.find(e => e.id === "REAL2025").problems[0].solution');
+    await type('[data-answer]', solution);
+    await click('[data-judge="sample"]');
+    for (let i = 0; i < 2; i++) {
+      await click('[data-judge="run"]');
+      await waitFor(() => evaluate('document.querySelector("[data-judge-result]").textContent.includes("运行完成")'), 130000);
+      await click('[data-judge="submit"]');
+      await waitFor(() => evaluate('document.querySelector("#judge-dialog").open'), 130000);
+      test('真题卷重复自测与提交 · 第 ' + (i + 1) + ' 次', await evaluate(
+        'document.querySelector(".judge-report").textContent.includes("100 / 100 分")'));
+      await evaluate('document.querySelector("#judge-dialog").close()');
+    }
+  }
+  await click('[data-exam-exit]');
+  await send('Page.reload');
+  await sleep(1200);
+  await click('a[href="#/exam/REAL2025"]');
+  test('返回真题考场沿用开考时间', (await store()).exams.REAL2025.startedAt === realStartedAt);
+  await evaluate('window.originalDateNow = Date.now; Date.now = () => ' + (realStartedAt + 3600000));
+  await waitFor(() => evaluate('!!document.querySelector(".exam-submitted")'));
+  const expired = (await store()).exams.REAL2025.submittedAt;
+  test('一小时到点交卷并锁定作答和评测', expired === realStartedAt + 3600000 && await evaluate(
+    '!!document.querySelector(".solution") && !document.querySelector("[data-answer], [data-judge=submit], [data-judge=run]")'));
+  await evaluate('Date.now = window.originalDateNow');
 
   // 8. 主题切换
   await nav('#/home');

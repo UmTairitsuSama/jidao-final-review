@@ -96,7 +96,14 @@
     return typeof status === 'string' && Object.hasOwn(STATUS_LABELS, status) ? status : 'todo';
   }
   function inWrong(id) { return !!store.wrong[id]; }
-  function examSession(e) { return store.exams[e.id] || null; }
+  function examSession(e) {
+    var session = store.exams[e.id];
+    if (e.kind === 'past' && session && !session.submittedAt && Date.now() >= examDeadline(e, session)) {
+      session.submittedAt = examDeadline(e, session);
+      saveNow();
+    }
+    return session || null;
+  }
 
   /* ================= 工具 ================= */
   function esc(s) {
@@ -112,7 +119,7 @@
   }
   function fmtClock(ms) {
     if (ms < 0) ms = 0;
-    var s = Math.floor(ms / 1000);
+    var s = Math.ceil(ms / 1000);
     var m = Math.floor(s / 60);
     s = s % 60;
     return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
@@ -311,8 +318,14 @@
     if (editor.matches('[data-code-editor]')) syncCodeHighlight(editor, refresh);
   }
 
-  function answerHtml(p) {
+  function answerHtml(p, locked) {
     var a = answerOf(p.id);
+    if (locked) {
+      var grade = gradeOf(p);
+      return '<div class="answer-box"><div class="answer-bar"><b>作答记录</b>' +
+        (grade ? '<span>最高 ' + esc(grade.best) + ' / ' + esc(grade.max) + ' 分</span>' : '') +
+        '</div><pre class="code"><code>' + esc(a.text || '（未作答）') + '</code></pre></div>';
+    }
     var text = String(a.text || '');
     var w = inWrong(p.id);
     var coding = !p.id.startsWith('V-') && checkpoints(p).length > 0;
@@ -398,6 +411,10 @@
     });
     refreshVscodeEditors();
     window.scrollTo(0, 0);
+    if (v === 'exam') {
+      var e = examById(state.examId);
+      if (e) startTimer(e);
+    }
   }
 
   /* ================= 总览 ================= */
@@ -444,7 +461,7 @@
       }).join('') + '</ul></div>' +
       '<div class="card" style="padding:18px 20px"><h2 style="font-size:15px;margin-bottom:10px">机考高频坑（先背下来）</h2><ul class="tips">' +
       TIPS.slice(0, 8).map(function (t, i) { return '<li><span class="n">' + (i + 1) + '</span><span>' + esc(t) + '</span></li>'; }).join('') + '</ul></div></div>' +
-      '<div class="home-bottom"><a class="card" href="#/wrong"><b>错题本</b><span>回顾 ' + s.wrong + ' 道错题，巩固薄弱点 →</span></a><a class="card" href="#/exams"><b>模拟考试</b><span>' + EXAMS.length + ' 套试卷 · 期末卷 120 分钟 →</span></a><a class="card" href="#/data"><b>学习数据</b><span>导出备份，保存复习进度 →</span></a></div></div>';
+      '<div class="home-bottom"><a class="card" href="#/wrong"><b>错题本</b><span>回顾 ' + s.wrong + ' 道错题，巩固薄弱点 →</span></a><a class="card" href="#/exams"><b>模拟考试</b><span>' + EXAMS.length + ' 套试卷 · 含 60 分钟期末真题 →</span></a><a class="card" href="#/data"><b>学习数据</b><span>导出备份，保存复习进度 →</span></a></div></div>';
   }
 
   /* ================= 题库 ================= */
@@ -553,10 +570,12 @@
   }
   function viewExams() {
     var intro = '<div class="card" style="padding:16px 20px;margin-bottom:16px;background:var(--panel-2)">' +
-      '<b>模拟考试说明</b><div class="muted small" style="margin-top:4px">期末卷每套 6 题、限时 120 分钟，按本地课程资料覆盖函数、字符串、指针、结构体与算法。FM7–FM10为新增仿真卷，每卷100分；练习卷不代表学校真实命题。「期中范围热身卷」每套 5 题、限时 90 分钟。点开始后计时，交卷后显示参考答案；作答自动保存，可随时退出再继续。</div></div>';
-    var fm = EXAMS.filter(function (e) { return /^FM/.test(e.id || ''); });
-    var warm = EXAMS.filter(function (e) { return !/^FM/.test(e.id || ''); });
+      '<b>模拟考试说明</b><div class="muted small" style="margin-top:4px">期末全真模拟卷每套 6 题、限时 120 分钟，按本地课程资料覆盖函数、字符串、指针、结构体与算法。FM7–FM10为新增仿真卷，每卷100分；练习卷不代表学校真实命题。「期中范围热身卷」每套 5 题、限时 90 分钟。点开始后计时，交卷后显示参考答案；作答自动保存，可随时退出再继续。</div></div>';
+    var past = EXAMS.filter(function (e) { return e.kind === 'past'; });
+    var fm = EXAMS.filter(function (e) { return e.kind !== 'past' && /^FM/.test(e.id || ''); });
+    var warm = EXAMS.filter(function (e) { return e.kind !== 'past' && !/^FM/.test(e.id || ''); });
     var blocks = '';
+    if (past.length) blocks += '<div class="section-title"><h2>期末机考真题</h2><span class="sub">考试期间可不限次数自测和提交</span></div><div class="grid cols-2">' + past.map(examCard).join('') + '</div>';
     if (fm.length) blocks += '<div class="section-title"><h2>期末全真模拟卷</h2><span class="sub">6 题 / 120 分钟 · 覆盖实验 5–11</span></div><div class="grid cols-2">' + fm.map(examCard).join('') + '</div>';
     if (warm.length) blocks += '<div class="section-title"><h2>期中范围热身卷</h2><span class="sub">5 题 / 90 分钟 · Ch1–Ch4</span></div><div class="grid cols-2">' + warm.map(examCard).join('') + '</div>';
     return '<div class="page-head"><div><h1>模拟考试</h1><p>共 ' + EXAMS.length + ' 套限时训练，其中 ' + fm.length + ' 套期末全真卷。建议先按考点练熟新增内容，再用全真卷检验。</p></div></div>' +
@@ -569,13 +588,25 @@
     return null;
   }
   function sessionOf(e) {
-    var s = store.exams[e.id];
+    var s = examSession(e);
     if (!s) {
       s = { startedAt: Date.now(), submittedAt: null, current: 1 };
       store.exams[e.id] = s;
-      save();
+      saveNow();
     }
     return s;
+  }
+  function examStatement(q) {
+    if (q.statementImages) {
+      return '<div class="exam-statement-images">' + q.statementImages.map(function (image) {
+        return '<img src="data:image/png;base64,' + esc(image.data) + '" alt="' + esc(image.alt) + '">';
+      }).join('') + '</div>';
+    }
+    var limits = q.originalLimits
+      ? '<dl class="exam-limits"><dt>代码长度限制</dt><dd>16 KB</dd><dt>时间限制</dt><dd>400 ms</dd><dt>内存限制</dt><dd>64 MB</dd>' +
+        (q.stackLimitKb ? '<dt>栈限制</dt><dd>' + esc(q.stackLimitKb) + ' KB</dd>' : '') + '</dl>'
+      : '';
+    return '<div class="q-desc md">' + md(q.desc) + '</div>' + samplesHtml(q) + limits;
   }
   function viewExamRoom() {
     var e = examById(state.examId);
@@ -601,13 +632,25 @@
       '<div style="margin-top:14px"><div class="muted small">已作答 ' + answeredN + '/' + total + '</div><div class="bar thin" style="margin-top:6px"><i style="width:' + pct(answeredN, total) + '%"></i></div></div></aside>' +
       '<div class="exam-main"><div class="q-wrap">' + banner +
       '<div class="q-head"><span class="p-id">' + esc(q.id) + '</span><h2>' + esc(q.title) + '</h2><span class="stars">' + stars(q.difficulty) + '</span></div>' +
-      metaHtml(q) + '<div class="q-desc md">' + md(q.desc) + '</div>' + samplesHtml(q) + answerHtml(q) +
+      metaHtml(q) + examStatement(q) + answerHtml(q, e.kind === 'past' && submitted) +
       (submitted ? solutionHtml(q) : '<div class="muted small" style="margin-top:12px">交卷后可查看参考答案。</div>') +
       '</div></div></div>' +
       '<div class="exam-foot"><button class="btn" data-exam-prev="1"' + (no <= 1 ? ' disabled' : '') + '>← 上一题</button>' +
       '<button class="btn" data-exam-next="1"' + (no >= total ? ' disabled' : '') + '>下一题 →</button><span class="spacer"></span>' +
       (submitted ? '<span class="muted small">已交卷，可继续查看解析</span>' : '<button class="btn teal" data-exam-submit="1">交卷并查看参考答案</button>') +
       '</div></div>';
+  }
+  function examDeadline(e, session) {
+    return session.startedAt + e.duration * 60000;
+  }
+  function judgeWithinExamTime(problem) {
+    var exam = problem._exam && examById(problem._exam);
+    if (!exam || exam.kind !== 'past') return true;
+    var session = store.exams[exam.id];
+    if (!session || session.submittedAt) return false;
+    if (Date.now() < examDeadline(exam, session)) return true;
+    submitExam(exam, true);
+    return false;
   }
   function startTimer(e) {
     if (state.timerId) clearInterval(state.timerId);
@@ -616,7 +659,7 @@
     var tick = function () {
       var s = store.exams[e.id];
       if (!s || s.submittedAt) { clearInterval(state.timerId); state.timerId = null; return; }
-      var left = s.startedAt + (e.duration || 90) * 60000 - Date.now();
+      var left = examDeadline(e, s) - Date.now();
       var el = document.getElementById('examTimer');
       if (el) {
         el.textContent = fmtClock(left);
@@ -628,14 +671,16 @@
         submitExam(e, true);
       }
     };
-    tick();
     state.timerId = setInterval(tick, 1000);
+    tick();
   }
   function submitExam(e, auto) {
     var s = store.exams[e.id];
     if (!s || s.submittedAt) return;
-    if (!auto && !confirm('确定交卷吗？交卷后可以查看参考答案，但仍可继续修改作答记录。')) return;
-    s.submittedAt = Date.now();
+    if (!auto && !confirm(e.kind === 'past'
+      ? '确定交卷吗？交卷后本场作答结束，可以查看参考答案。'
+      : '确定交卷吗？交卷后可以查看参考答案，但仍可继续修改作答记录。')) return;
+    s.submittedAt = auto ? examDeadline(e, s) : Math.min(Date.now(), examDeadline(e, s));
     saveNow();
     render();
     toast(auto ? '时间到，已自动交卷' : '已交卷，参考答案已显示');
@@ -1066,17 +1111,5 @@
   applyTheme();
   route();
 
-  if (state.view === 'exam') {
-    var e = examById(state.examId);
-    if (e) startTimer(e);
-  }
-  var _origRender = render;
-  render = function () {
-    _origRender();
-    if (state.view === 'exam') {
-      var ex = examById(state.examId);
-      if (ex) startTimer(ex);
-    }
-  };
   window.__SITE__ = { problems: PROBLEMS.length, exams: EXAMS.length, sections: SECTIONS.length };
 })();

@@ -9,8 +9,12 @@
   const nativeJudge = window.__NATIVE_JUDGE__;
   const judgeLanguages = { c: 'C11', cpp: 'C++17' };
 
+  function isPastExamProblem(p) {
+    return p._exam && examById(p._exam)?.kind === 'past';
+  }
+
   function judgeLanguage(p) {
-    return answerOf(p.id).language === 'cpp' ? 'cpp' : 'c';
+    return !isPastExamProblem(p) && answerOf(p.id).language === 'cpp' ? 'cpp' : 'c';
   }
 
   function judgeReady(p) {
@@ -387,6 +391,7 @@
   }
 
   function judgeLanguageHtml(p) {
+    if (isPastExamProblem(p)) return '<span class="judge-language">C11</span>';
     const language = judgeLanguage(p);
     return '<label class="judge-language">语言 <select data-judge-language="' + esc(p.id) + '">' +
       Object.entries(judgeLanguages).map(([key, label]) =>
@@ -427,7 +432,7 @@
         worker.onmessage = ({ data: message }) => {
           if (message.running) {
             clearTimeout(timer);
-            timer = setTimeout(() => finish(null, { status: 'timeout', out: '', err: '' }), 2000);
+            timer = setTimeout(() => finish(null, { status: 'timeout', out: '', err: '' }), data.timeLimitMs ?? 2000);
           } else if (message.toolError) {
             finish(new Error('评测环境加载或执行失败：' + message.toolError));
           } else {
@@ -479,6 +484,7 @@
     const problem = BY_ID[editor.dataset.answer];
     const maxScore = maxJudgeScore(problem);
     const action = button.dataset.judge;
+    if (!judgeWithinExamTime(problem)) return;
     if (action === 'report') {
       showJudgeReport(problem, judgeReports.get(problem.id));
       return;
@@ -497,7 +503,13 @@
     const language = judgeLanguage(problem);
     const source = editor.value;
     const customInput = input.value;
+    const timeLimitMs = problem.originalLimits ? 400 : undefined;
     if (!source.trim()) { result.textContent = '请先输入代码。'; editor.focus(); return; }
+    if (problem.originalLimits &&
+        new TextEncoder().encode(source).length > 16 * 1024) {
+      result.textContent = '代码长度不得超过 16 KB。';
+      return;
+    }
     if (source.length > 65536 || (action === 'run' && customInput.length > 65536)) {
       result.textContent = '代码和自测输入各最多 65,536 个字符。';
       return;
@@ -514,6 +526,7 @@
       const submission = problem.harness ? problem.harness + '\n#line 1 "' + file + '"\n' + source : source;
       const compiled = !nativeJudge && lastCompilation?.source === submission && lastCompilation.language === language
         ? lastCompilation.compiled : await judgeTask({ source: submission, language }, controller.signal);
+      if (controller.signal.aborted || !judgeWithinExamTime(problem)) return;
       lastCompilation = { source: submission, language, compiled };
       const diagnostics = (compiled.compileOutput || '').slice(0, 5000).trim();
       setJudgeIssues(box, diagnostics.replace(/\x1b\[[0-9;]*m/g, ''));
@@ -526,7 +539,8 @@
       }
       if (action === 'run') {
         result.textContent = '正在运行自测…';
-        const run = await judgeTask({ module: compiled.module, input: customInput }, controller.signal);
+        const run = await judgeTask({ module: compiled.module, input: customInput, timeLimitMs }, controller.signal);
+        if (controller.signal.aborted || !judgeWithinExamTime(problem)) return;
         result.textContent = (run.status === 'ok' ? '运行完成' : verdicts[run.status]) +
           '\n标准输出\n' + (run.out || '（无输出）') +
           (run.err ? '\n\n标准错误\n' + run.err : '') +
@@ -536,12 +550,14 @@
       }
       const cases = checkpoints(problem);
       const runs = [];
+      const normalize = problem.strictOutput ? (value) => value.replace(/\r\n/g, '\n') : normalizeOutput;
       let passed = 0;
       for (const [index, test] of cases.entries()) {
         if (!box.isConnected) return;
         result.textContent = '正在评测 ' + (index + 1) + ' / ' + cases.length;
-        const run = await judgeTask({ module: compiled.module, input: test.in }, controller.signal);
-        const status = run.status === 'ok' && normalizeOutput(run.out) !== normalizeOutput(test.out)
+        const run = await judgeTask({ module: compiled.module, input: test.in, timeLimitMs }, controller.signal);
+        if (controller.signal.aborted || !judgeWithinExamTime(problem)) return;
+        const status = run.status === 'ok' && normalize(run.out) !== normalize(test.out)
           ? 'wrong' : run.status;
         if (status === 'ok') passed++;
         runs.push({ ...run, status });

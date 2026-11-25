@@ -73,11 +73,11 @@ class LocalJudge:
             self.ticket = secrets.token_urlsafe(24)
         return {"module": self.ticket, "compileOutput": diagnostics}
 
-    def run(self, ticket, input_text):
+    def run(self, ticket, input_text, time_limit_ms):
         if not self.ticket or not hmac.compare_digest(ticket, self.ticket):
             raise ValueError("本机程序已过期，请重新编译。")
         with tempfile.TemporaryDirectory(dir=self.directory) as running:
-            return capture([str(self.executable)], running, input_text, 2)
+            return capture([str(self.executable)], running, input_text, time_limit_ms / 1000)
 
 
 def serve(port, html, compilers, open_browser):
@@ -99,7 +99,7 @@ def serve(port, html, compilers, open_browser):
             self.send_header("Content-Length", str(len(content)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'")
+            self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'")
             self.end_headers()
             try:
                 self.wfile.write(content)
@@ -133,7 +133,10 @@ def serve(port, html, compilers, open_browser):
                 if isinstance(source, str) and len(source) <= OUTPUT_LIMIT:
                     result = judge.compile(source, data.get("language", "c"))
                 elif isinstance(data.get("module"), str) and isinstance(data.get("input"), str) and len(data["input"]) <= INPUT_LIMIT:
-                    result = judge.run(data["module"], data["input"])
+                    time_limit_ms = data.get("timeLimitMs", 2000)
+                    if type(time_limit_ms) is not int or not 1 <= time_limit_ms <= 2000:
+                        raise ValueError("运行时间限制无效。")
+                    result = judge.run(data["module"], data["input"], time_limit_ms)
                 else:
                     raise ValueError("评测请求格式无效。")
                 status = 200

@@ -232,6 +232,10 @@ details.solution .sol-body h4{font-size:13px;margin:10px 0 3px;color:var(--text)
 .exam-main .q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .exam-main h2{font-size:19px}
 .exam-main .q-desc{font-size:14.5px;color:var(--text-2)}
+.exam-statement-images{display:grid;gap:8px}
+.exam-statement-images img{display:block;width:100%;height:auto;border-radius:6px}
+.exam-limits{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;color:var(--muted);font-size:13px}
+.exam-limits dd{margin:0}
 .exam-main .answer-box{margin-top:16px}
 .exam-main .answer-box textarea[data-answer]{height:230px}
 @media(max-width:760px){

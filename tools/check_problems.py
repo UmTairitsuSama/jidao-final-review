@@ -141,14 +141,15 @@ def check(problems):
                 print("       " + (err or "").replace("\n", "\n       ")[:1200])
                 continue
             bad = []
+            normalize = (lambda text: text.replace("\r\n", "\n")) if q.get("strictOutput") else norm
             cases = (q.get("samples") or []) + (q.get("checkpoints") or [])
             for j, s in enumerate(cases, 1):
                 total_cases += 1
                 out, err = run_case(exe, tmp, s)
                 if out is None:
                     bad.append((j, s["out"], err))
-                elif norm(out) != norm(s["out"]):
-                    bad.append((j, norm(s["out"]), norm(out)))
+                elif normalize(out) != normalize(s["out"]):
+                    bad.append((j, normalize(s["out"]), normalize(out)))
             if bad:
                 fails += 1
                 print(f"[FAIL] {tag} 样例不匹配 {len(bad)} 组")
